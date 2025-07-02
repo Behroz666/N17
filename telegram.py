@@ -1,5 +1,4 @@
 import requests
-import json
 
 def send_message(config, text):
     url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendMessage"
@@ -37,6 +36,6 @@ def send_gallery(config, text, links):
     
     payload = {
         "chat_id": config["Chat id"],
-        "media": json.dumps(media) 
+        "media": media 
     }
-    requests.post(url, data=payload)
+    requests.post(url, json=payload)
