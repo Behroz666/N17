@@ -1,6 +1,11 @@
 import feedparser
 import re
 
+def extract_id(url):
+    last_part = url.split('/')[-1]
+    id_part = last_part.split('#')[0]
+    return id_part
+
 def get_rss_feed(config):
     feed = feedparser.parse(config["RSS"])
     response = []
@@ -10,7 +15,7 @@ def get_rss_feed(config):
         for entry in feed.entries:
             img_urls = re.findall(r'<img src="(.*?)"', entry.summary)
             if img_urls:
-                response.append([entry.link, entry.title, img_urls[0]])
+                response.append([extract_id(entry.link), entry.title, img_urls[0]])
             else:
-                response.append([entry.link, entry.title, 0])
+                response.append([extract_id(entry.link), entry.title, 0])
     return response
