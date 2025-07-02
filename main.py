@@ -35,7 +35,6 @@ if __name__ == "__main__":
             except:
                 if tweet[0] in tweet_ids["done"]:
                     tweet_ids["done"].remove(tweet[0])
-                time.sleep(60)
                 continue
     
     with open('tweet_ids.json', 'w', encoding='utf-8') as file:
