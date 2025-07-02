@@ -15,15 +15,23 @@ if __name__ == "__main__":
     tweets = get_rss_feed(config)
     for tweet in tweets:
         if tweet[0] not in tweet_ids["done"]:
-            print(tweet[1])
-            fa = translate(config, tweet[1])
-            message = f"🇬🇧:\n\n<blockquote expandable>{tweet[1]}</blockquote>\n\n🇮🇷:\n\n{fa}\n\n🔗:\n{tweet[0].replace("rss.xcancel", "x")}"
-            if tweet[2] == 0:
-                send_message(config, message)
-            else:
-                send_image(config, message, tweet[2])
-            tweet_ids["done"].append(tweet[0])
-            time.sleep(45)
+            try:
+                print(tweet[1])
+                try:
+                    fa = translate(config, tweet[1])
+                except:
+                    time.sleep(60)
+                    fa = translate(config, tweet[1])
+                message = f"🇬🇧:\n\n<blockquote expandable>{tweet[1]}</blockquote>\n\n🇮🇷:\n\n{fa}\n\n🔗:\n{tweet[0].replace("rss.xcancel", "x")}"
+                if tweet[2] == 0:
+                    send_message(config, message)
+                else:
+                    send_image(config, message, tweet[2])
+                tweet_ids["done"].append(tweet[0])
+                time.sleep(45)
+            except:
+                time.sleep(60)
+                continue
     
     with open('tweet_ids.json', 'w', encoding='utf-8') as file:
         json.dump(tweet_ids, file)
