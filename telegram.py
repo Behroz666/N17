@@ -24,10 +24,10 @@ def send_gallery(config, text, links):
     url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendMediaGroup"
     
     media = []
-    for i, url in enumerate(links):
+    for i, link in enumerate(links):
         media_item = {
             "type": "photo",
-            "media": url
+            "media": link
         }
         if i == 0:
             media_item["caption"] = text
