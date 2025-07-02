@@ -5,7 +5,7 @@ def send_message(config, text):
     url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendMessage"
     payload = {
         "chat_id": config["Chat id"],
-        "text": text.replace("#",""),
+        "text": text,
         "parse_mode": "HTML",
         "disable_web_page_preview":True
     }
@@ -16,7 +16,7 @@ def send_image(config, text, link):
     payload = {
         "chat_id": config["Chat id"],
         'photo': link,
-        "caption": text.replace("#",""),
+        "caption": text,
         "parse_mode": "HTML"
     }
     requests.post(url, data=payload)
