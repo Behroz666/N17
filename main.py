@@ -23,7 +23,7 @@ if __name__ == "__main__":
                     time.sleep(60)
                     fa = translate(config, tweet[1])
                 link = tweet[0].replace("rss.","").replace("xcancel", "x")
-                message = f"{fa}\n\n<blockquote expandable><a href='{link}'>🇬🇧</a>\n{tweet[1]}</blockquote>"
+                message = f"{fa}\n\n<blockquote expandable><a href='{link}'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
                 if tweet[2] == 0:
                     send_message(config, message)
                 else:
