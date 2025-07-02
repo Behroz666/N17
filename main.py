@@ -28,9 +28,9 @@ if __name__ == "__main__":
                     send_message(config, message)
                 else:
                     if len(tweet[3]) == 1:
-                        send_image(config, message, tweet[3])
+                        send_image(config, message, tweet[3][0])
                     else:
-                        send_image(config, message, tweet[3])
+                        send_gallery(config, message, tweet[3])
                 tweet_ids["done"].append(tweet[0])
                 time.sleep(45)
             except:
