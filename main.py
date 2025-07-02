@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     tweets = get_rss_feed(config)
     for tweet in tweets:
-        if tweet[0] not in tweet_ids["done"]:
+        if tweet[0][20:] not in tweet_ids["done"][20:]:
             try:
                 print(tweet[1])
                 try:
