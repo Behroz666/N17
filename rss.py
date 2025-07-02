@@ -7,7 +7,7 @@ def extract_id(url):
     return id_part
 
 def get_rss_feed(config):
-    feed = feedparser.parse(config["RSS"])
+    feed = feedparser.parse(f"https://xcancel.com/{config["page"]}/rss")
     response = []
     if feed.bozo:
         print("There was an error parsing the feed.")
