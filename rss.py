@@ -15,7 +15,7 @@ def get_rss_feed(config):
         for entry in feed.entries:
             img_urls = re.findall(r'<img src="(.*?)"', entry.summary)
             if img_urls:
-                response.append([extract_id(entry.link), entry.title, img_urls[0]])
+                response.append([extract_id(entry.link), entry.title, 1, img_urls])
             else:
-                response.append([extract_id(entry.link), entry.title, 0])
+                response.append([extract_id(entry.link), entry.title, 0, []])
     return response

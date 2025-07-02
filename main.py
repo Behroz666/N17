@@ -2,7 +2,7 @@ import json
 import time
 from rss import get_rss_feed
 from translate import translate
-from telegram import send_image, send_message
+from telegram import send_image, send_message, send_gallery
 
 if __name__ == "__main__":
 
@@ -27,7 +27,10 @@ if __name__ == "__main__":
                 if tweet[2] == 0:
                     send_message(config, message)
                 else:
-                    send_image(config, message, tweet[2])
+                    if len(tweet[3]) == 1:
+                        send_image(config, message, tweet[3])
+                    else:
+                        send_image(config, message, tweet[3])
                 tweet_ids["done"].append(tweet[0])
                 time.sleep(45)
             except:
