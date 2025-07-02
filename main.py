@@ -23,7 +23,7 @@ if __name__ == "__main__":
             else:
                 send_image(config, message, tweet[2])
             tweet_ids["done"].append(tweet[0])
-            time.sleep(2)
+            time.sleep(45)
     
     with open('tweet_ids.json', 'w', encoding='utf-8') as file:
         json.dump(tweet_ids, file)
