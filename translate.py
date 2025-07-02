@@ -5,7 +5,7 @@ def translate(config, text):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
-        "Authorization": f"Bearer {config["AI Token"]}",
+        "Authorization": f"Bearer {config['AI Token']}",
         "Content-Type": "application/json",
     },
     data=json.dumps({
