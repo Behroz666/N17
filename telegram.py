@@ -8,7 +8,8 @@ def send_message(config, text):
         "parse_mode": "HTML",
         "disable_web_page_preview":True
     }
-    requests.post(url, data=payload)
+    response = requests.post(url, data=payload)
+    return response.json()
 
 def send_image(config, text, link):
     url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendPhoto"
@@ -18,7 +19,8 @@ def send_image(config, text, link):
         "caption": text,
         "parse_mode": "HTML"
     }
-    requests.post(url, data=payload)
+    response = requests.post(url, data=payload)
+    return response.json()
 
 def send_gallery(config, text, links):
     url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendMediaGroup"
@@ -38,4 +40,15 @@ def send_gallery(config, text, links):
         "chat_id": config["Chat id"],
         "media": media 
     }
-    requests.post(url, json=payload)
+    response = requests.post(url, json=payload)
+    return response.json()
+
+def pin_message(config, message_id):
+    url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendMediaGroup"
+    payload = {
+        "chat_id": config["Chat id"],
+        'message_id': message_id,
+        "disable_notification": True
+    }
+    response = requests.post(url, data=payload)
+    return response.json()

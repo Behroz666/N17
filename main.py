@@ -2,7 +2,7 @@ import json
 import time
 from rss import get_rss_feed
 from translate import translate
-from telegram import send_image, send_message, send_gallery
+from telegram import send_image, send_message, send_gallery, pin_message
 
 if __name__ == "__main__":
 
@@ -24,12 +24,14 @@ if __name__ == "__main__":
                     fa = translate(config, tweet[1])
                 message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
                 if tweet[2] == 0:
-                    send_message(config, message)
+                    response_json = send_message(config, message)
                 else:
                     if len(tweet[3]) == 1:
-                        send_image(config, message, tweet[3][0])
+                        response_json = send_image(config, message, tweet[3][0])
                     else:
-                        send_gallery(config, message, tweet[3])
+                        response_json = send_gallery(config, message, tweet[3])
+                message_id = response_json['result']['message_id']
+                pin_message(config, message_id)
                 tweet_ids["done"].append(tweet[0])
                 time.sleep(45)
             except:
