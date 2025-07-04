@@ -1,4 +1,5 @@
 import json
+import time
 from rss import get_rss_feed
 from datetime import datetime, timedelta, timezone
 from translate import summarize
@@ -18,6 +19,7 @@ if __name__ == "__main__":
             one_day_ago_utc = now_local.astimezone(timezone.utc) - timedelta(days=1)
             if tweet[4] > one_day_ago_utc:
                 last_day_news.append(tweet[1])
+        time.sleep(30)
     print(last_day_news)
     text = summarize(config, last_day_news)
     message = "خلاصه اخبار امروز:\n\n" + text + "\n\n@N17_Tottenham"
