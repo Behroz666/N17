@@ -44,7 +44,7 @@ def send_gallery(config, text, links):
     return response.json()
 
 def pin_message(config, message_id):
-    url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendMediaGroup"
+    url = f"https://api.telegram.org/bot{config["Bot Token"]}/pinChatMessage"
     payload = {
         "chat_id": config["Chat id"],
         'message_id': message_id,
