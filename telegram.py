@@ -1,9 +1,9 @@
 import requests
 
-def send_message(config, text):
+def send_message(config, text, chat_id):
     url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendMessage"
     payload = {
-        "chat_id": config["Chat id"],
+        "chat_id": chat_id,
         "text": text,
         "parse_mode": "HTML",
         "disable_web_page_preview":True
@@ -14,7 +14,7 @@ def send_message(config, text):
 def send_image(config, text, link):
     url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendPhoto"
     payload = {
-        "chat_id": config["Chat id"],
+        "chat_id": config["Main Chat id"],
         'photo': link,
         "caption": text,
         "parse_mode": "HTML"
@@ -37,7 +37,7 @@ def send_gallery(config, text, links):
         media.append(media_item)
     
     payload = {
-        "chat_id": config["Chat id"],
+        "chat_id": config["Main Chat id"],
         "media": media 
     }
     response = requests.post(url, json=payload)
@@ -46,7 +46,7 @@ def send_gallery(config, text, links):
 def pin_message(config, message_id):
     url = f"https://api.telegram.org/bot{config["Bot Token"]}/pinChatMessage"
     payload = {
-        "chat_id": config["Chat id"],
+        "chat_id": config["Main Chat id"],
         'message_id': message_id,
         "disable_notification": True
     }
@@ -56,7 +56,7 @@ def pin_message(config, message_id):
 def delete_message(config, message_id):
     url = f"https://api.telegram.org/bot{config['Bot Token']}/deleteMessage"
     payload = {
-        "chat_id": config["Chat id"],
+        "chat_id": config["Main Chat id"],
         "message_id": message_id
     }
     response = requests.post(url, data=payload)

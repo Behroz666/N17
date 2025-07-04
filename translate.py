@@ -17,7 +17,7 @@ def summarize(config, text):
             },
             {
             "role": "system",
-            "content": config["Summarize Prompt"]
+            "content": config["Summarize System Prompt"]
             }
         ],
         
@@ -44,7 +44,7 @@ def translate(config, text):
             },
             {
             "role": "system",
-            "content": config["System Prompt"]
+            "content": config["Translation System Prompt"]
             }
         ],
         

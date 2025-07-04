@@ -18,8 +18,8 @@ if __name__ == "__main__":
             one_day_ago_utc = now_local.astimezone(timezone.utc) - timedelta(days=1)
             if tweet[4] > one_day_ago_utc:
                 last_day_news.append(tweet[1])
-
+    print(last_day_news)
     text = summarize(config, last_day_news)
     message = "خلاصه اخبار امروز:\n\n" + text + "\n\n@N17_Tottenham"
-    send_message(config, message)
+    send_message(config, message, config["Summary Chat id"])
 

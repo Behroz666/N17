@@ -25,7 +25,7 @@ if __name__ == "__main__":
                 message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
                 print(message)
                 if tweet[2] == 0:
-                    response_json = send_message(config, message)
+                    response_json = send_message(config, message, config["Main Chat id"])
                 else:
                     if len(tweet[3]) == 1:
                         response_json = send_image(config, message, tweet[3][0])
