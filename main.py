@@ -12,7 +12,7 @@ if __name__ == "__main__":
     with open('tweet_ids.json', 'r', encoding='utf-8') as file:
         tweet_ids = json.load(file)
 
-    tweets = get_rss_feed(config)
+    tweets = get_rss_feed(config["page"])
     for tweet in tweets:
         if tweet[0] not in tweet_ids["done"]:
             try:
