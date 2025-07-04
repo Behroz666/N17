@@ -13,6 +13,7 @@ if __name__ == "__main__":
     last_day_news = []
 
     for page in config["pages"]:
+        print(page)
         tweets = get_rss_feed(page)
         for tweet in tweets:
             now_local = datetime.now().astimezone()

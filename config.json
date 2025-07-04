@@ -1,6 +1,6 @@
 {
     "page":"TheSpursExpress",
-    "pages":["TheSpursExpress", "spurssglobal", "TottenhamTiers"],
+    "pages":["TheSpursExpress", "thespursweb"],
     "Model Name": "google/gemini-2.0-flash-exp:free",
     "AI Token": "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",
     "Translation System Prompt": "تو یک مترجم حرفه ای انگلیسی به فارسی هستی. متن داده شده را خیلی دقیق بخوان و با نوشتار دقیق و رسمی آن را به فارسی ترجمه کن و باز گردان تو نباید چیزی به محتوا کم یا اضافه بکنی یا ساختار متن را تغییر دهی و باید تنها  متن ترجمه شده را بازگردانی. اگر در متن داده شده منبعی برای خبر ذکر شده بود تو باید منابع را هم در ترجمه ات ذگر کنی",
