@@ -52,3 +52,12 @@ def pin_message(config, message_id):
     }
     response = requests.post(url, data=payload)
     return response.json()
+
+def delete_message(config, message_id):
+    url = f"https://api.telegram.org/bot{config['Bot Token']}/deleteMessage"
+    payload = {
+        "chat_id": config["Chat id"],
+        "message_id": message_id
+    }
+    response = requests.post(url, data=payload)
+    return response.json()
