@@ -46,7 +46,7 @@ def send_gallery(config, text, links):
     response_json = response.json()
     print(response_json)
     print(response_json['result'][1]['message_id'])
-    return int(response_json['result'][1]['message_id']) + len(links) - 1
+    return int(response_json['result'][1]['message_id']) + len(links) - 2
 
 def pin_message(config, message_id):
     print(message_id)
