@@ -44,7 +44,7 @@ def send_gallery(config, text, links):
     }
     response = requests.post(url, json=payload)
     response_json = response.json()
-    print(response)
+    print(response_json)
     print(response_json['result']['message_id'])
     return int(response_json['result']['message_id']) + len(links) - 1
 
