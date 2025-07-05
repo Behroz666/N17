@@ -47,16 +47,14 @@ def send_gallery(config, text, links):
     return response_json['result']['message_id'] + len(links) - 1
 
 def pin_message(config, message_id):
+    print(message_id)
     url = f"https://api.telegram.org/bot{config["Bot Token"]}/pinChatMessage"
     payload = {
         "chat_id": config["Main Chat id"],
         'message_id': message_id,
         "disable_notification": True
     }
-    response = requests.post(url, data=payload)
-    print(response.json())
-    print(message_id)
-    return response.json()
+    print(requests.post(url, data=payload))
 
 def delete_message(config, message_id):
     url = f"https://api.telegram.org/bot{config['Bot Token']}/deleteMessage"
