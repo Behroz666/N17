@@ -54,6 +54,8 @@ def pin_message(config, message_id):
         "disable_notification": True
     }
     response = requests.post(url, data=payload)
+    print(response.json())
+    print(message_id)
     return response.json()
 
 def delete_message(config, message_id):
