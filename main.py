@@ -35,6 +35,7 @@ if __name__ == "__main__":
                 pin_message(config, message_id)
                 delete_message(config, message_id + 1)
                 tweet_ids["done"].append(tweet[0])
+                print(tweet_ids)
                 time.sleep(45)
             except:
                 if tweet[0] in tweet_ids["done"]:
