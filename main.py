@@ -31,11 +31,11 @@ if __name__ == "__main__":
                         response_json = send_image(config, message, tweet[3][0])
                     else:
                         response_json = send_gallery(config, message, tweet[3])
+                print(response_json)
                 message_id = response_json['result']['message_id']
                 pin_message(config, message_id)
                 delete_message(config, message_id + 1)
                 tweet_ids["done"].append(tweet[0])
-                print("ids:" + tweet_ids)
                 time.sleep(45)
             except:
                 if tweet[0] in tweet_ids["done"]:
