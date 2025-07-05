@@ -35,7 +35,7 @@ if __name__ == "__main__":
                 pin_message(config, message_id)
                 delete_message(config, message_id + 1)
                 tweet_ids["done"].append(tweet[0])
-                print(tweet_ids)
+                print("ids:" + tweet_ids)
                 time.sleep(45)
             except:
                 if tweet[0] in tweet_ids["done"]:
@@ -44,3 +44,4 @@ if __name__ == "__main__":
     
     with open('tweet_ids.json', 'w', encoding='utf-8') as file:
         json.dump(tweet_ids, file)
+        print("saving done")
