@@ -19,6 +19,7 @@ if __name__ == "__main__":
                 print(tweet[1])
 
                 if len(tweet[1]) == 0 or tweet[1] == "Gif":
+                    tweet_ids["done"].append(tweet[0])
                     continue
                 else:
                     try:
