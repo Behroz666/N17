@@ -17,12 +17,37 @@ if __name__ == "__main__":
         if tweet[0] not in tweet_ids["done"]:
             try:
                 print(tweet[1])
-                try:
-                    fa = translate(config, tweet[1])
-                except:
-                    time.sleep(60)
-                    fa = translate(config, tweet[1])
-                message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+
+                if len(tweet[1]) == 0 or tweet[1] == "Gif":
+                    tweet_ids["done"].append(tweet[0])
+                    continue
+                else:
+                    try:
+                        fa = translate(config, tweet[1])
+                    except:
+                        time.sleep(60)
+                        fa = translate(config, tweet[1])
+
+                if len(fa) < (len(tweet[1])/2):
+                    continue
+                    
+                if tweet[2] == 0:
+                    limit = 4096
+                    if len(fa + tweet[1]) < (limit - 256):
+                        message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                    elif len(fa) < (limit - 456):
+                        message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1][:(limit - 256 -len(fa))]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                    else:
+                        message = f"{fa[:(limit - 196)].replace("#","")}\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                else:
+                    limit = 1024
+                    if len(fa + tweet[1]) < (limit - 256):
+                        message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                    elif len(fa) < (limit - 456):
+                        message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1][:(limit - 256 -len(fa))]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                    else:
+                        message = f"{fa[:(limit - 196)].replace("#","")}\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+
                 print(message)
                 if tweet[2] == 0:
                     message_id = send_message(config, message, config["Main Chat id"])
