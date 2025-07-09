@@ -17,11 +17,15 @@ if __name__ == "__main__":
         if tweet[0] not in tweet_ids["done"]:
             try:
                 print(tweet[1])
-                try:
-                    fa = translate(config, tweet[1])
-                except:
-                    time.sleep(60)
-                    fa = translate(config, tweet[1])
+
+                if len(tweet[1]) == 0 or tweet[1] == "Gif":
+                    continue
+                else:
+                    try:
+                        fa = translate(config, tweet[1])
+                    except:
+                        time.sleep(60)
+                        fa = translate(config, tweet[1])
                     
                 if tweet[2] == 0:
                     limit = 4096
