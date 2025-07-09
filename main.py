@@ -26,6 +26,9 @@ if __name__ == "__main__":
                     except:
                         time.sleep(60)
                         fa = translate(config, tweet[1])
+
+                if len(fa) < (len(tweet[1])/2):
+                    continue
                     
                 if tweet[2] == 0:
                     limit = 4096
