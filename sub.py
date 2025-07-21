@@ -26,3 +26,6 @@ if __name__ == "__main__":
     message = "خلاصه اخبار امروز:\n\n" + text + "\n\n@N17_Tottenham"
     send_message(config, message, config["Summary Chat id"])
 
+    for admin in config["admins"]:
+        send_message(config, message, admin)
+
