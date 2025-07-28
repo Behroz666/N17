@@ -24,4 +24,6 @@ jobs:
         pip install google-api-python-client requests yt-dlp
 
     - name: Run YouTube to Telegram script
+      env:
+        YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
       run: python yt.py
