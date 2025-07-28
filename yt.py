@@ -111,13 +111,13 @@ def get_video_info_and_size(video_url, quality_format, cookies_file_path=None):
     Returns (estimated_size_bytes, filename) or (None, None) on failure.
     """
     ydl_opts = {
-        'format': quality_format,
+        'format': quality_format, # yt-dlp will select the best matching format
         'simulate': True,  # Only simulate, don't download
         'force_generic_extractor': True, # Important for consistent info extraction
         'quiet': True,     # Suppress console output
         'no_warnings': True, # Suppress warnings
         'skip_download': True, # Ensure no download occurs
-        'print_json': True, # Print info as JSON
+        # 'print_json': True, # Not strictly necessary when using as library, extract_info returns dict
     }
     if cookies_file_path:
         ydl_opts['cookiefile'] = cookies_file_path # Pass the cookie file path
@@ -126,27 +126,15 @@ def get_video_info_and_size(video_url, quality_format, cookies_file_path=None):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=False)
             
-            best_format = None
-            if 'formats' in info_dict:
-                for f in info_dict['formats']:
-                    if f.get('format_note') and quality_format in f.get('format_note'):
-                        best_format = f
-                        break
-                    # More robust check based on height/vcodec
-                    if 'height' in f and 'vcodec' in f and f['vcodec'] != 'none':
-                        if '360p' in quality_format and f['height'] <= 360:
-                            best_format = f
-                            break
-                        if '240p' in quality_format and f['height'] <= 240:
-                            best_format = f
-                            break
+            # After extract_info, info_dict should contain details of the *selected* format
+            # based on the 'format' option.
+            estimated_size = info_dict.get('filesize') or info_dict.get('filesize_approx')
+            filename = ydl.prepare_filename(info_dict) # Get the expected filename
             
-            if best_format:
-                estimated_size = best_format.get('filesize') or best_format.get('filesize_approx')
-                filename = ydl.prepare_filename(info_dict) # Get the expected filename
+            if estimated_size is not None:
                 return estimated_size, filename
             else:
-                print(f"Could not find a suitable format for {video_url} with quality {quality_format}")
+                print(f"Could not get estimated size from info_dict for {video_url} with quality {quality_format}. Info_dict keys: {info_dict.keys()}")
                 return None, None
     except yt_dlp.utils.DownloadError as e:
         print(f"yt-dlp error getting info for {video_url} with {quality_format}: {e}")
@@ -175,9 +163,10 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token, telegra
             print("No YouTube cookies provided. Proceeding without cookies.")
 
         # Define quality formats to try, in order of preference
+        # Using simpler 'best[height<=X]' to let yt-dlp select the best overall format
         quality_options = [
-            ('bestvideo[height<=360]+bestaudio/best[height<=360]', '360p'),
-            ('bestvideo[height<=240]+bestaudio/best[height<=240]', '240p'),
+            ('best[height<=360]', '360p'),
+            ('best[height<=240]', '240p'),
             ('worst', 'worst_quality') # Fallback to absolute smallest if 240p is still too big
         ]
 
@@ -300,3 +289,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
