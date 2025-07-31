@@ -23,6 +23,7 @@ if __name__ == "__main__":
         time.sleep(30)
     print(last_day_news)
     text = summarize(config, last_day_news)
+    text = text.replace("**", "").replace("*   ", "")
     message = "خلاصه اخبار امروز:\n\n" + text + "\n\n<a href='https://t.me/+QjvW46AcqcAwZjg8'>برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>" + "\n\n@N17_Tottenham"
     send_message(config, message, config["Summary Chat id"])
 

@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 import yt_dlp
 import json # To parse yt_dlp output for size estimation
 import tempfile
+from telegram import send_message
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -138,9 +139,11 @@ def get_video_info_and_size(video_url, quality_format, cookies_file_path=None):
                 return None, None
     except yt_dlp.utils.DownloadError as e:
         print(f"yt-dlp error getting info for {video_url} with {quality_format}: {e}")
+        send_message(config, "YT error", 1140637004)
         return None, None
     except Exception as e:
         print(f"General error getting video info for {video_url} with {quality_format}: {e}")
+        send_message(config, "YT error", 1140637004)
         return None, None
 
 def download_and_upload_video(video_id, video_title, telegram_bot_token, telegram_chat_id, youtube_cookies_str):
