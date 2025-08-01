@@ -6,6 +6,7 @@ import yt_dlp
 import json # To parse yt_dlp output for size estimation
 import tempfile
 from telegram import send_message
+import subprocess
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -29,6 +30,35 @@ YOUTUBE_COOKIES = os.environ.get('YOUTUBE_COOKIES')
 # --- YouTube API Setup ---
 # Build the YouTube API client
 youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
+
+def compress_video(input_path: str, output_path: str, crf: int = 28, preset: str = 'slow'):
+    """
+    Run one-pass FFmpeg re-encode at the given CRF & preset.
+    Returns True if the process succeeds.
+    """
+    cmd = [
+        'ffmpeg', '-y',
+        '-i', input_path,
+        '-c:v', 'libx264', '-crf', str(crf), '-preset', preset,
+        '-c:a', 'aac', '-b:a', '64k',
+        output_path
+    ]
+    subprocess.run(cmd, check=True)
+    return os.path.exists(output_path)
+
+def compress_to_limit(input_path: str, output_path: str, size_limit: int,
+                      start_crf: int = 28, max_crf: int = 40, step: int = 2):
+    """
+    Loop CRF from start_crf up to max_crf to try and get under size_limit.
+    Returns True and leaves output_path if successful; False otherwise.
+    """
+    crf = start_crf
+    while crf <= max_crf:
+        compress_video(input_path, output_path, crf=crf)
+        if os.path.getsize(output_path) <= size_limit:
+            return True
+        crf += step
+    return False
 
 def get_channel_uploads_playlist_id(youtube_service, channel_id):
     """
@@ -148,113 +178,59 @@ def get_video_info_and_size(video_url, quality_format, cookies_file_path=None):
         send_message(config, f"YT error\n\n{a}", 1140637004)
         return None, None
 
-def download_and_upload_video(video_id, video_title, telegram_bot_token, telegram_chat_id, youtube_cookies_str):
-    """
-    Downloads a video from YouTube at the best possible quality within Telegram's size limit
-    and uploads it to Telegram.
-    """
-    video_url = f"https://www.youtube.com/watch?v={video_id}"
-    temp_filename = f"{video_id}.mp4" # Temporary filename for download
-    cookies_file_path = None # Initialize cookie file path
+def download_and_upload_video(video_id, video_title, telegram_bot_token,
+                              telegram_chat_id, youtube_cookies_str):
+    video_url = f"https://youtube.com/watch?v={video_id}"
+    raw_file = f"{video_id}_raw.mp4"
+    base_compressed = f"{video_id}_base.mp4"
+    final_file = f"{video_id}_final.mp4"
 
-    try:
-        # Create a temporary file for cookies
-        if youtube_cookies_str:
-            with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as temp_cookie_file:
-                temp_cookie_file.write(youtube_cookies_str)
-                cookies_file_path = temp_cookie_file.name
-            print(f"Temporary cookie file created at: {cookies_file_path}")
-        else:
-            print("No YouTube cookies provided. Proceeding without cookies.")
+    # 1. Download at 360p
+    ydl_opts = {
+        'format': 'best[height<=360]',
+        'outtmpl': raw_file,
+        'quiet': True, 'no_warnings': True
+    }
+    if youtube_cookies_str:
+        with tempfile.NamedTemporaryFile('w', delete=False) as ck:
+            ck.write(youtube_cookies_str)
+            ydl_opts['cookiefile'] = ck.name
 
-        # Define quality formats to try, in order of preference
-        # Using simpler 'best[height<=X]' to let yt-dlp select the best overall format
-        quality_options = [
-            ('best[height<=360]', '360p'),
-            ('best[height<=240]', '240p'),
-            ('worst', 'worst_quality') # Fallback to absolute smallest if 240p is still too big
-        ]
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([video_url])
 
-        download_format = None
-        final_filename = None
-        estimated_size = None
+    # 2. Base recompress (everyone gets this)
+    compress_video(raw_file, base_compressed, crf=28, preset='slow')
+    os.remove(raw_file)
 
-        # Step 1: Check estimated size for each quality option
-        for format_string, quality_name in quality_options:
-            print(f"Checking estimated size for {video_title} ({video_id}) at {quality_name}...")
-            current_estimated_size, current_filename = get_video_info_and_size(video_url, format_string, cookies_file_path)
-
-            if current_estimated_size is not None:
-                print(f"Estimated size for {quality_name}: {current_estimated_size / (1024 * 1024):.2f} MB")
-                if current_estimated_size <= TELEGRAM_API_LIMIT_BYTES:
-                    download_format = format_string
-                    estimated_size = current_estimated_size
-                    final_filename = current_filename # This filename is what yt-dlp would use
-                    print(f"Selected {quality_name} for download. Estimated size: {estimated_size / (1024 * 1024):.2f} MB")
-                    break # Found a suitable quality, stop checking
-                else:
-                    print(f"{quality_name} ({current_estimated_size / (1024 * 1024):.2f} MB) is too large for Telegram's {TELEGRAM_API_LIMIT_BYTES / (1024 * 1024):.2f} MB limit.")
-            else:
-                print(f"Could not get estimated size for {quality_name} for {video_title} ({video_id}).")
-
-        if not download_format:
-            print(f"No suitable quality found for '{video_title}' (ID: {video_id}) within Telegram's size limit. Skipping.")
+    # 3. If still too big, loop tighter CRF
+    if os.path.getsize(base_compressed) > TELEGRAM_API_LIMIT_BYTES:
+        success = compress_to_limit(
+            base_compressed, final_file,
+            TELEGRAM_API_LIMIT_BYTES,
+            start_crf=30, max_crf=40, step=2
+        )
+        if not success:
+            print(f"Still >50 MB after crf loop; skipping upload of {video_title}")
+            os.remove(base_compressed)
             return
+        os.remove(base_compressed)
+    else:
+        # base_compressed is already under limit
+        os.rename(base_compressed, final_file)
 
-        # Step 2: Download the video
-        print(f"Attempting to download '{video_title}' (ID: {video_id}) with format: {download_format}...")
-        ydl_opts = {
-            'format': download_format,
-            'outtmpl': temp_filename, # Save to the temporary filename
-            'merge_output_format': 'mp4', # Ensure output is mp4 if merging
-            'quiet': True,
-            'no_warnings': True,
-        }
-        if cookies_file_path:
-            ydl_opts['cookiefile'] = cookies_file_path # Pass the cookie file path
+    # 4. Upload final_file
+    with open(final_file, 'rb') as f:
+        requests.post(
+            f"https://api.telegram.org/bot{telegram_bot_token}/sendVideo",
+            files={'video': f},
+            data={'chat_id': telegram_chat_id,
+                  'caption': f"New video: {video_title}\n{video_url}"}
+        )
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([video_url])
-        print(f"Successfully downloaded '{video_title}' to {temp_filename}")
-
-        # Verify actual file size before uploading
-        actual_file_size = os.path.getsize(temp_filename)
-        print(f"Actual downloaded file size: {actual_file_size / (1024 * 1024):.2f} MB")
-
-        if actual_file_size > TELEGRAM_API_LIMIT_BYTES:
-            print(f"Downloaded file '{temp_filename}' is still too large ({actual_file_size / (1024 * 1024):.2f} MB) after download. Skipping upload.")
-            return # Don't upload if it's over the limit
-
-        # Step 3: Upload to Telegram
-        print(f"Uploading '{video_title}' to Telegram...")
-        telegram_api_url = f"https://api.telegram.org/bot{telegram_bot_token}/sendVideo"
-        
-        with open(temp_filename, 'rb') as video_file:
-            files = {'video': video_file}
-            data = {
-                'chat_id': telegram_chat_id,
-                'caption': f"New video: {video_title}\n{video_url}"
-            }
-            response = requests.post(telegram_api_url, files=files, data=data)
-
-            if response.status_code == 200:
-                print(f"Successfully uploaded '{video_title}' to Telegram.")
-            else:
-                print(f"Failed to upload '{video_title}' to Telegram. Status code: {response.status_code}, Response: {response.text}")
-
-    except yt_dlp.utils.DownloadError as e:
-        print(f"yt-dlp error downloading {video_title} ({video_id}): {e}")
-    except Exception as e:
-        print(f"An unexpected error occurred during download or upload for {video_title} ({video_id}): {e}")
-    finally:
-        # Clean up the downloaded file
-        if os.path.exists(temp_filename):
-            os.remove(temp_filename)
-            print(f"Cleaned up temporary video file: {temp_filename}")
-        # Clean up the temporary cookie file
-        if cookies_file_path and os.path.exists(cookies_file_path):
-            os.remove(cookies_file_path)
-            print(f"Cleaned up temporary cookie file: {cookies_file_path}")
+    os.remove(final_file)
+    if 'cookiefile' in ydl_opts and os.path.exists(ydl_opts['cookiefile']):
+        os.remove(ydl_opts['cookiefile'])
 
 def main():
     """
