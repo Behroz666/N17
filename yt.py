@@ -184,53 +184,61 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
     raw_file = f"{video_id}_raw.mp4"
     base_compressed = f"{video_id}_base.mp4"
     final_file = f"{video_id}_final.mp4"
+    try:
+        # 1. Download at 360p
+        ydl_opts = {
+            'format': 'best[height<=360]',
+            'outtmpl': raw_file,
+            'quiet': True, 'no_warnings': True
+        }
+        if youtube_cookies_str:
+            with tempfile.NamedTemporaryFile('w', delete=False) as ck:
+                ck.write(youtube_cookies_str)
+                ydl_opts['cookiefile'] = ck.name
 
-    # 1. Download at 360p
-    ydl_opts = {
-        'format': 'best[height<=360]',
-        'outtmpl': raw_file,
-        'quiet': True, 'no_warnings': True
-    }
-    if youtube_cookies_str:
-        with tempfile.NamedTemporaryFile('w', delete=False) as ck:
-            ck.write(youtube_cookies_str)
-            ydl_opts['cookiefile'] = ck.name
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([video_url])
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([video_url])
+        # 2. Base recompress (everyone gets this)
+        compress_video(raw_file, base_compressed, crf=28, preset='slow')
+        os.remove(raw_file)
 
-    # 2. Base recompress (everyone gets this)
-    compress_video(raw_file, base_compressed, crf=28, preset='slow')
-    os.remove(raw_file)
-
-    # 3. If still too big, loop tighter CRF
-    if os.path.getsize(base_compressed) > TELEGRAM_API_LIMIT_BYTES:
-        success = compress_to_limit(
-            base_compressed, final_file,
-            TELEGRAM_API_LIMIT_BYTES,
-            start_crf=30, max_crf=40, step=2
-        )
-        if not success:
-            print(f"Still >50 MB after crf loop; skipping upload of {video_title}")
+        # 3. If still too big, loop tighter CRF
+        if os.path.getsize(base_compressed) > TELEGRAM_API_LIMIT_BYTES:
+            success = compress_to_limit(
+                base_compressed, final_file,
+                TELEGRAM_API_LIMIT_BYTES,
+                start_crf=30, max_crf=40, step=2
+            )
+            if not success:
+                print(f"Still >50 MB after crf loop; skipping upload of {video_title}")
+                os.remove(base_compressed)
+                return
             os.remove(base_compressed)
-            return
-        os.remove(base_compressed)
-    else:
-        # base_compressed is already under limit
-        os.rename(base_compressed, final_file)
+        else:
+            # base_compressed is already under limit
+            os.rename(base_compressed, final_file)
 
-    # 4. Upload final_file
-    with open(final_file, 'rb') as f:
-        requests.post(
-            f"https://api.telegram.org/bot{telegram_bot_token}/sendVideo",
-            files={'video': f},
-            data={'chat_id': telegram_chat_id,
-                  'caption': f"New video: {video_title}\n{video_url}"}
-        )
+        # 4. Upload final_file
+        with open(final_file, 'rb') as f:
+            requests.post(
+                f"https://api.telegram.org/bot{telegram_bot_token}/sendVideo",
+                files={'video': f},
+                data={'chat_id': telegram_chat_id,
+                    'caption': f"New video: {video_title}\n{video_url}"}
+            )
 
-    os.remove(final_file)
-    if 'cookiefile' in ydl_opts and os.path.exists(ydl_opts['cookiefile']):
-        os.remove(ydl_opts['cookiefile'])
+        os.remove(final_file)
+        if 'cookiefile' in ydl_opts and os.path.exists(ydl_opts['cookiefile']):
+            os.remove(ydl_opts['cookiefile'])
+    except yt_dlp.utils.DownloadError as e:
+        a = f"yt-dlp error downloading {video_title} ({video_id}): {e}"
+        print(a)
+        send_message(config, f"YT error\n\n{a}", 1140637004)
+    except Exception as e:
+        a = f"An unexpected error occurred during download or upload for {video_title} ({video_id}): {e}"
+        print(a)
+        send_message(config, f"YT error\n\n{a}", 1140637004)
 
 def main():
     """
