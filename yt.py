@@ -138,12 +138,14 @@ def get_video_info_and_size(video_url, quality_format, cookies_file_path=None):
                 print(f"Could not get estimated size from info_dict for {video_url} with quality {quality_format}. Info_dict keys: {info_dict.keys()}")
                 return None, None
     except yt_dlp.utils.DownloadError as e:
-        print(f"yt-dlp error getting info for {video_url} with {quality_format}: {e}")
-        send_message(config, "YT error", 1140637004)
+        a = f"yt-dlp error getting info for {video_url} with {quality_format}: {e}"
+        print(a)
+        send_message(config, f"YT error\n\n{a}", 1140637004)
         return None, None
     except Exception as e:
-        print(f"General error getting video info for {video_url} with {quality_format}: {e}")
-        send_message(config, "YT error", 1140637004)
+        a = f"General error getting video info for {video_url} with {quality_format}: {e}"
+        print(a)
+        send_message(config, f"YT error\n\n{a}", 1140637004)
         return None, None
 
 def download_and_upload_video(video_id, video_title, telegram_bot_token, telegram_chat_id, youtube_cookies_str):
