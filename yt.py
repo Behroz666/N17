@@ -170,12 +170,12 @@ def get_video_info_and_size(video_url, quality_format, cookies_file_path=None):
     except yt_dlp.utils.DownloadError as e:
         a = f"yt-dlp error getting info for {video_url} with {quality_format}: {e}"
         print(a)
-        send_message(config, f"YT error\n\n{a}", 1140637004)
+        send_message(config, f"{a}", 1140637004)
         return None, None
     except Exception as e:
         a = f"General error getting video info for {video_url} with {quality_format}: {e}"
         print(a)
-        send_message(config, f"YT error\n\n{a}", 1140637004)
+        send_message(config, f"{a}", 1140637004)
         return None, None
 
 def download_and_upload_video(video_id, video_title, telegram_bot_token,
@@ -187,7 +187,7 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
     try:
         # 1. Download at 360p
         ydl_opts = {
-            'format': 'best[height<=360]',
+            'format': 'bv*[height<=360]+ba/best',
             'outtmpl': raw_file,
             'quiet': True, 'no_warnings': True
         }
@@ -234,11 +234,12 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
     except yt_dlp.utils.DownloadError as e:
         a = f"yt-dlp error downloading {video_title} ({video_id}): {e}"
         print(a)
-        send_message(config, f"YT error\n\n{a}", 1140637004)
+        if "This video is available in Korea, Republic of." not in a:
+            send_message(config, f"{a}", 1140637004)
     except Exception as e:
         a = f"An unexpected error occurred during download or upload for {video_title} ({video_id}): {e}"
         print(a)
-        send_message(config, f"YT error\n\n{a}", 1140637004)
+        send_message(config, f"{a}", 1140637004)
 
 def main():
     """
