@@ -7,6 +7,7 @@ import json # To parse yt_dlp output for size estimation
 import tempfile
 from telegram import send_message
 import subprocess
+import glob
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -188,7 +189,8 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
         # 1. Download at 360p
         ydl_opts = {
             'format': 'bv*[height<=360]+ba/best',
-            'outtmpl': raw_file,
+            'merge_output_format': 'mp4',  # <-- This line forces proper .mp4 container
+            'outtmpl': f"{video_id}_raw.%(ext)s",  # Let yt-dlp choose correct extension
             'quiet': True, 'no_warnings': True
         }
         if youtube_cookies_str:
@@ -198,6 +200,11 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([video_url])
+
+        downloaded_files = glob.glob(f"{video_id}_raw.*")
+        if downloaded_files:
+            downloaded_path = downloaded_files[0]
+            os.rename(downloaded_path, raw_file)
 
         if os.path.exists(raw_file):
             print(f"{raw_file}exists")
