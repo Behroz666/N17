@@ -32,7 +32,28 @@ YOUTUBE_COOKIES = os.environ.get('YOUTUBE_COOKIES')
 # Build the YouTube API client
 youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
 
-def compress_video(input_path: str, output_path: str, crf: int = 28, preset: str = 'slow'):
+def get_video_height(path: str) -> int:
+    """
+    Uses ffprobe to get the height of the video.
+    Returns 0 if it cannot determine height.
+    """
+    try:
+        cmd = [
+            'ffprobe', '-v', 'error',
+            '-select_streams', 'v:0',
+            '-show_entries', 'stream=height',
+            '-of', 'json',
+            path
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        probe = json.loads(result.stdout)
+        height = probe['streams'][0]['height']
+        return int(height)
+    except Exception as e:
+        print(f"Error probing video height: {e}")
+        return 0
+
+def compress_video(input_path: str, output_path: str, crf: int = 28, preset: str = 'slow', max_height: int = None):
     """
     Run one-pass FFmpeg re-encode at the given CRF & preset.
     Returns True if the process succeeds.
@@ -42,8 +63,12 @@ def compress_video(input_path: str, output_path: str, crf: int = 28, preset: str
         '-i', input_path,
         '-c:v', 'libx264', '-crf', str(crf), '-preset', preset,
         '-c:a', 'aac', '-b:a', '64k',
-        output_path
     ]
+    if max_height is not None:
+        # Add scale filter to maintain aspect ratio but limit height
+        scale_filter = f"scale=-2:min({max_height},ih)"
+        cmd += ['-vf', scale_filter]
+    cmd.append(output_path)
     subprocess.run(cmd, check=True)
     return os.path.exists(output_path)
 
@@ -214,8 +239,13 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
             for f in os.listdir():
                 print("Found file:", f)
 
+        # Get video height after download
+        height = get_video_height(raw_file)
+        print(f"Downloaded video height: {height}")
+        max_height = 640 if height > 640 else None
+
         # 2. Base recompress (everyone gets this)
-        compress_video(raw_file, base_compressed, crf=28, preset='slow')
+        compress_video(raw_file, base_compressed, crf=28, preset='slow', max_height=max_height)
         os.remove(raw_file)
 
         # 3. If still too big, loop tighter CRF
