@@ -199,6 +199,9 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([video_url])
 
+        if os.path.exists(raw_file):
+            print(f"{raw_file}exists")
+            
         # 2. Base recompress (everyone gets this)
         compress_video(raw_file, base_compressed, crf=28, preset='slow')
         os.remove(raw_file)
