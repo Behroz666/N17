@@ -66,8 +66,8 @@ def compress_video(input_path: str, output_path: str, crf: int = 28, preset: str
     ]
     if max_height is not None:
         # Add scale filter to maintain aspect ratio but limit height
-        scale_filter = f"scale=-2:min({max_height},ih)"
-        cmd += ['-vf', scale_filter]
+        scale_expr = f"scale=-2:'if(gt(ih,{max_height}),{max_height},ih)'"
+        cmd += ['-vf', scale_expr]
     cmd.append(output_path)
     subprocess.run(cmd, check=True)
     return os.path.exists(output_path)
