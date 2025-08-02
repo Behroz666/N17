@@ -201,7 +201,12 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
 
         if os.path.exists(raw_file):
             print(f"{raw_file}exists")
-            
+
+        if not os.path.exists(raw_file):
+            print(f"ERROR: Expected raw file {raw_file} not found.")
+            for f in os.listdir():
+                print("Found file:", f)
+
         # 2. Base recompress (everyone gets this)
         compress_video(raw_file, base_compressed, crf=28, preset='slow')
         os.remove(raw_file)
