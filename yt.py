@@ -188,7 +188,7 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
     try:
         # 1. Download at 360p
         ydl_opts = {
-            'format': 'bv*[height<=360]+ba/best',
+            'format': 'bv*[width<=640]+ba/best',
             'merge_output_format': 'mp4',  # <-- This line forces proper .mp4 container
             'outtmpl': f"{video_id}_raw.%(ext)s",  # Let yt-dlp choose correct extension
             'quiet': True, 'no_warnings': True
