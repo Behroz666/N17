@@ -58,8 +58,9 @@ def download_latest_tiktoks(username, max_downloads=10):
         count += 1
 
         raw_file = dlp_result.stdout.strip()
+        print(raw_file)
         compressed_file = f"{video_id}_360p.mp4"
-
+        print(f"compressing new video: {raw_file} to {compressed_file}")
         ffmpeg_cmd = [
             "ffmpeg", "-i", raw_file,
             "-vf", "scale=360:-2",
