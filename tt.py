@@ -7,7 +7,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
 
 TELEGRAM_BOT_TOKEN = config["Bot Token"]
-TELEGRAM_CHAT_ID = config["Summary Chat id"]
+TELEGRAM_CHAT_ID = config["Main Chat id"]
 
 HISTORY_FILE = "downloaded_tiktoks.json"
 
@@ -81,7 +81,7 @@ def download_latest_tiktoks(username, max_downloads=10):
                 f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
                 files={'video': f},
                 data={'chat_id': TELEGRAM_CHAT_ID,
-                    'caption': f"New video:{video_url}"}
+                    'caption': f"New video: \n{video_url}"}
             )
             response.raise_for_status()
         
