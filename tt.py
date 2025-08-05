@@ -8,6 +8,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
 
 TELEGRAM_BOT_TOKEN = config["Bot Token"]
 TELEGRAM_CHAT_ID = config["Main Chat id"]
+LARGE_FILE_CHAT_ID = config["Summary Chat id"]
 
 HISTORY_FILE = "downloaded_tiktoks.json"
 
@@ -76,11 +77,14 @@ def download_latest_tiktoks(username, max_downloads=10):
         subprocess.run(ffmpeg_cmd, check=True)
         os.remove(raw_file)
 
+        file_size_mb = os.path.getsize(compressed_file) / (1024 * 1024)
+        target_chat_id = TELEGRAM_CHAT_ID if file_size_mb <= 7 else LARGE_FILE_CHAT_ID
+
         with open(compressed_file, "rb") as f:
             response = requests.post(
                 f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
                 files={'video': f},
-                data={'chat_id': TELEGRAM_CHAT_ID,
+                data={'chat_id': target_chat_id,
                     'caption': f"New video: \n{video_url}"}
             )
             response.raise_for_status()
