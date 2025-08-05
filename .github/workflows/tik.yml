@@ -30,12 +30,13 @@ jobs:
 
     - name: Run tiktok to Telegram script
       run: python tt.py
-      
+
     - name: Upload downloaded videos as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
           name: tiktoks
-          path: "*.mp4"
+          path: |
+            *.mp4
 
     - name: Commit history file
       run: |
