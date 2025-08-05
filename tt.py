@@ -1,6 +1,13 @@
 import subprocess
 import json
 import os
+import requests
+
+with open('config.json', 'r', encoding='utf-8') as file:
+    config = json.load(file)
+
+TELEGRAM_BOT_TOKEN = config["Bot Token"]
+TELEGRAM_CHAT_ID = config["Summary Chat id"]
 
 HISTORY_FILE = "downloaded_tiktoks.json"
 
@@ -41,9 +48,38 @@ def download_latest_tiktoks(username, max_downloads=10):
             continue
 
         print(f"Downloading new video: {video_url}")
-        subprocess.run(["yt-dlp", video_url])
+        output_template = "%(id)s.%(ext)s"
+        dlp_result = subprocess.run(
+            ["yt-dlp", "--print", "filename", "-o", output_template, video_url],
+            capture_output=True, text=True, check=True
+        )
+
         new_ids.add(video_id)
         count += 1
+
+        raw_file = dlp_result.stdout.strip()
+        compressed_file = f"{video_id}_360p.mp4"
+
+        ffmpeg_cmd = [
+            "ffmpeg", "-i", raw_file,
+            "-vf", "scale=360:-2",
+            "-c:v", "libx264", "-crf", "23", "-preset", "slow",
+            "-c:a", "aac", "-b:a", "128k",
+            compressed_file
+        ]
+        os.remove(raw_file)
+        subprocess.run(ffmpeg_cmd, check=True)
+
+        with open(compressed_file, "rb") as f:
+            response = requests.post(
+                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
+                files={'video': f},
+                data={'chat_id': TELEGRAM_CHAT_ID,
+                    'caption': f"New video:{video_url}"}
+            )
+            response.raise_for_status()
+        
+        os.remove(compressed_file)
 
         if count >= max_downloads:
             break
