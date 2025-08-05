@@ -49,6 +49,11 @@ def download_latest_tiktoks(username, max_downloads=10):
 
         print(f"Downloading new video: {video_url}")
         output_template = "%(id)s.%(ext)s"
+
+        subprocess.run([
+            "yt-dlp", "-o", output_template, video_url
+        ], check=True)
+        # for getting the name
         dlp_result = subprocess.run(
             ["yt-dlp", "--print", "filename", "-o", output_template, video_url],
             capture_output=True, text=True, check=True
@@ -68,8 +73,8 @@ def download_latest_tiktoks(username, max_downloads=10):
             "-c:a", "aac", "-b:a", "128k",
             compressed_file
         ]
-        os.remove(raw_file)
         subprocess.run(ffmpeg_cmd, check=True)
+        os.remove(raw_file)
 
         with open(compressed_file, "rb") as f:
             response = requests.post(
