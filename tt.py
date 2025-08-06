@@ -46,6 +46,7 @@ def download_latest_tiktoks(username, max_downloads=10):
         
         if video_id in downloaded_ids:
             print(f"Skipping already downloaded: {video_url}")
+            count += 1
             continue
 
         print(f"Downloading new video: {video_url}")
