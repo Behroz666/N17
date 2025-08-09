@@ -15,6 +15,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
 # --- Configuration Constants ---
 # Telegram Bot API file size limit in bytes (50 MB)
 TELEGRAM_API_LIMIT_BYTES = 50 * 1024 * 1024
+SIZE_LIMIT = 80 * 1024 * 1024
 
 # --- Environment Variables (to be set in GitHub Secrets) ---
 # Your YouTube Data API v3 key
@@ -238,44 +239,47 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
             print(f"ERROR: Expected raw file {raw_file} not found.")
             for f in os.listdir():
                 print("Found file:", f)
+        if os.path.getsize(raw_file) < SIZE_LIMIT:
+            # Get video height after download
+            height = get_video_height(raw_file)
+            print(f"Downloaded video height: {height}")
+            max_height = 640 if height > 640 else None
 
-        # Get video height after download
-        height = get_video_height(raw_file)
-        print(f"Downloaded video height: {height}")
-        max_height = 640 if height > 640 else None
+            # 2. Base recompress (everyone gets this)
+            compress_video(raw_file, base_compressed, crf=28, preset='slow', max_height=max_height)
+            os.remove(raw_file)
 
-        # 2. Base recompress (everyone gets this)
-        compress_video(raw_file, base_compressed, crf=28, preset='slow', max_height=max_height)
-        os.remove(raw_file)
-
-        # 3. If still too big, loop tighter CRF
-        if os.path.getsize(base_compressed) > TELEGRAM_API_LIMIT_BYTES:
-            success = compress_to_limit(
-                base_compressed, final_file,
-                TELEGRAM_API_LIMIT_BYTES,
-                start_crf=30, max_crf=40, step=2
-            )
-            if not success:
-                print(f"Still >50 MB after crf loop; skipping upload of {video_title}")
+            # 3. If still too big, loop tighter CRF
+            if os.path.getsize(base_compressed) > TELEGRAM_API_LIMIT_BYTES:
+                success = compress_to_limit(
+                    base_compressed, final_file,
+                    TELEGRAM_API_LIMIT_BYTES,
+                    start_crf=30, max_crf=40, step=2
+                )
+                if not success:
+                    print(f"Still >50 MB after crf loop; skipping upload of {video_title}")
+                    os.remove(base_compressed)
+                    return
                 os.remove(base_compressed)
-                return
-            os.remove(base_compressed)
+            else:
+                # base_compressed is already under limit
+                os.rename(base_compressed, final_file)
+
+            # 4. Upload final_file
+            with open(final_file, 'rb') as f:
+                requests.post(
+                    f"https://api.telegram.org/bot{telegram_bot_token}/sendVideo",
+                    files={'video': f},
+                    data={'chat_id': telegram_chat_id,
+                        'caption': f"New video: {video_title}\n{video_url}"}
+                )
+
+            os.remove(final_file)
+            if 'cookiefile' in ydl_opts and os.path.exists(ydl_opts['cookiefile']):
+                os.remove(ydl_opts['cookiefile'])
         else:
-            # base_compressed is already under limit
-            os.rename(base_compressed, final_file)
-
-        # 4. Upload final_file
-        with open(final_file, 'rb') as f:
-            requests.post(
-                f"https://api.telegram.org/bot{telegram_bot_token}/sendVideo",
-                files={'video': f},
-                data={'chat_id': telegram_chat_id,
-                    'caption': f"New video: {video_title}\n{video_url}"}
-            )
-
-        os.remove(final_file)
-        if 'cookiefile' in ydl_opts and os.path.exists(ydl_opts['cookiefile']):
-            os.remove(ydl_opts['cookiefile'])
+            os.remove(raw_file)
+            return
     except yt_dlp.utils.DownloadError as e:
         a = f"yt-dlp error downloading {video_title} ({video_id}): {e}"
         print(a)

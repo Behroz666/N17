@@ -9,6 +9,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
 TELEGRAM_BOT_TOKEN = config["Bot Token"]
 TELEGRAM_CHAT_ID = config["Main Chat id"]
 LARGE_FILE_CHAT_ID = config["Summary Chat id"]
+TELEGRAM_API_LIMIT_BYTES = 50 * 1024 * 1024
 
 HISTORY_FILE = "downloaded_tiktoks.json"
 
@@ -65,32 +66,34 @@ def download_latest_tiktoks(username, max_downloads=10):
         count += 1
 
         raw_file = dlp_result.stdout.strip()
-        print(raw_file)
-        compressed_file = f"{video_id}_360p.mp4"
-        print(f"compressing new video: {raw_file} to {compressed_file}")
-        ffmpeg_cmd = [
-            "ffmpeg", "-i", raw_file,
-            "-vf", "scale=360:-2",
-            "-c:v", "libx264", "-crf", "23", "-preset", "slow",
-            "-c:a", "aac", "-b:a", "128k",
-            compressed_file
-        ]
-        subprocess.run(ffmpeg_cmd, check=True)
-        os.remove(raw_file)
+        if os.path.getsize(raw_file) > TELEGRAM_API_LIMIT_BYTES:
+            compressed_file = f"{video_id}_360p.mp4"
+            print(f"compressing new video: {raw_file} to {compressed_file}")
+            ffmpeg_cmd = [
+                "ffmpeg", "-i", raw_file,
+                "-vf", "scale=360:-2",
+                "-c:v", "libx264", "-crf", "23", "-preset", "slow",
+                "-c:a", "aac", "-b:a", "128k",
+                compressed_file
+            ]
+            subprocess.run(ffmpeg_cmd, check=True)
+            os.remove(raw_file)
 
-        file_size_mb = os.path.getsize(compressed_file) / (1024 * 1024)
-        target_chat_id = TELEGRAM_CHAT_ID if file_size_mb <= 7 else LARGE_FILE_CHAT_ID
+            file_size_mb = os.path.getsize(compressed_file) / (1024 * 1024)
+            target_chat_id = TELEGRAM_CHAT_ID if file_size_mb <= 7 else LARGE_FILE_CHAT_ID
 
-        with open(compressed_file, "rb") as f:
-            response = requests.post(
-                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
-                files={'video': f},
-                data={'chat_id': target_chat_id,
-                    'caption': f"New video: \n{video_url}"}
-            )
-            response.raise_for_status()
-        
-        os.remove(compressed_file)
+            with open(compressed_file, "rb") as f:
+                response = requests.post(
+                    f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
+                    files={'video': f},
+                    data={'chat_id': target_chat_id,
+                        'caption': f"New video: \n{video_url}"}
+                )
+                response.raise_for_status()
+            
+            os.remove(compressed_file)
+        else:
+            os.remove(raw_file)
 
         if count >= max_downloads:
             break
