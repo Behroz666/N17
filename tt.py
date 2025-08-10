@@ -66,7 +66,7 @@ def download_latest_tiktoks(username, max_downloads=10):
         count += 1
 
         raw_file = dlp_result.stdout.strip()
-        if os.path.getsize(raw_file) > TELEGRAM_API_LIMIT_BYTES:
+        if os.path.getsize(raw_file) < TELEGRAM_API_LIMIT_BYTES:
             compressed_file = f"{video_id}_360p.mp4"
             print(f"compressing new video: {raw_file} to {compressed_file}")
             ffmpeg_cmd = [
