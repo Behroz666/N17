@@ -24,13 +24,16 @@ if __name__ == "__main__":
     print(last_day_news)
     text = summarize(config, last_day_news)
     text = text.replace("**", "").replace("*   ", "")
-    final = ""
-    parts = text.split("\n\n")
-    for part in parts:
-        emoji = part[:1]
-        body = part.replace(emoji, "")
-        result = body.split(":", 1)[1].strip()
-        final = final + emoji + " " + result + "\n\n"
+    if ":" in text :
+        final = ""
+        parts = text.split("\n\n")
+        for part in parts:
+            emoji = part[:1]
+            body = part.replace(emoji, "")
+            result = body.split(":", 1)[1].strip()
+            final = final + emoji + " " + result + "\n\n"
+    else: 
+        final = text
     message = "خلاصه اخبار امروز:\n\n" + final + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>" + "\n\n@N17_Tottenham"
     send_message(config, message, config["Summary Chat id"])
 
