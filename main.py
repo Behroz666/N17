@@ -30,23 +30,25 @@ if __name__ == "__main__":
 
                 if len(fa) < (len(tweet[1])/2):
                     continue
+
+                fa = fa.replace("#","").replace("قدوس","کودوس")
                     
                 if tweet[2] == 0:
                     limit = 4096
                     if len(fa + tweet[1]) < (limit - 256):
-                        message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                        message = f"{fa}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
                     elif len(fa) < (limit - 456):
-                        message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1][:(limit - 256 -len(fa))]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                        message = f"{fa}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1][:(limit - 256 -len(fa))]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
                     else:
-                        message = f"{fa[:(limit - 196)].replace("#","")}\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                        message = f"{fa[:(limit - 196)]}\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
                 else:
                     limit = 1024
                     if len(fa + tweet[1]) < (limit - 256):
-                        message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                        message = f"{fa}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
                     elif len(fa) < (limit - 456):
-                        message = f"{fa.replace("#","")}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1][:(limit - 256 -len(fa))]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                        message = f"{fa}\n\n<blockquote expandable><a href='https://x.com/{config["page"]}/status/{tweet[0]}#m'>🇬🇧</a>: {tweet[1][:(limit - 256 -len(fa))]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
                     else:
-                        message = f"{fa[:(limit - 196)].replace("#","")}\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+                        message = f"{fa[:(limit - 196)]}\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
 
                 print(message)
                 if tweet[2] == 0:
