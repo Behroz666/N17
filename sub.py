@@ -18,7 +18,7 @@ if __name__ == "__main__":
         for tweet in tweets:
             now_local = datetime.now().astimezone()
             one_day_ago_utc = now_local.astimezone(timezone.utc) - timedelta(days=1)
-            if tweet[4] > one_day_ago_utc:
+            if tweet[4] > one_day_ago_utc and all(x not in tweet[1] for x in ["🎙️", "🗣️"]):
                 last_day_news.append(tweet[1])
         time.sleep(30)
     print(last_day_news)
