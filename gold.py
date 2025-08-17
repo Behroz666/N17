@@ -87,7 +87,7 @@ if __name__ == "__main__":
             print(f"Banner Image: {banner_url}")
         summary = article_summarize(config, article_text)
         print(summary)
-        text = text + f"<blockquote expandable>{summary}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
+        text = text + f"<blockquote expandable>{summary}</blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
         send_image(config, text, banner_url)
         new_seen.add(link)
 
