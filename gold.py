@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     for title, link in articles:
 
-        if any(char in title for char in ["Tottenham team confirmed vs", "LIVE", "highlights"]):
+        if any(char in title for char in ["Tottenham team confirmed vs", "LIVE", "highlights", "player rating"]):
             continue
 
         if link in seen_articles:
