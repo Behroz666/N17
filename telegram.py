@@ -1,7 +1,7 @@
 import requests
 
 def send_message(config, text, chat_id):
-    url = f"https://api.telegram.org/bot{config["Bot Token"]}/sendMessage"
+    url = f"https://api.telegram.org/bot{config['Bot Token']}/sendMessage"
     payload = {
         "chat_id": chat_id,
         "text": text,
