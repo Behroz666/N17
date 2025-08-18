@@ -86,7 +86,7 @@ if __name__ == "__main__":
             continue  # Skip if older than 1 day
         
         text = f"<a href='{link}'>{translate(config, title)}</a>\n\n"
-        time.sleep(10)
+        time.sleep(5)
 
         print(f"\n--- {title} ({pub_date}) ---")
         if banner_url:
@@ -95,7 +95,7 @@ if __name__ == "__main__":
         print(summary)
         text = text + f"<blockquote expandable>{summary}</blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
         send_image(config, text, banner_url)
-        time.sleep(20)
+        time.sleep(5)
         new_seen.add(link)
 
     # Save updated seen URLs

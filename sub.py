@@ -25,10 +25,10 @@ if __name__ == "__main__":
                 last_day_news.append(tweet[1])
             if tweet[4] > three_hours_ago_uts and all(x not in tweet[1] for x in ["🎙️", "🗣️"]):
                 last_hours_news.append(tweet[1])
-        time.sleep(30)
+        time.sleep(10)
     print(last_day_news)
     news.append(summarize(config, last_day_news))
-    time.sleep(60)
+    time.sleep(20)
     news.append(summarize(config, last_hours_news))
     for text in news:
         text = text.replace("**", "").replace("*   ", "")
