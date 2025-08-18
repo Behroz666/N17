@@ -9,7 +9,7 @@ if __name__ == "__main__":
     with open('config.json', 'r', encoding='utf-8') as file:
         config = json.load(file)
 
-    with open('tweet_ids.json', 'r', encoding='utf-8') as file:
+    with open('new_tweet_ids.json', 'r', encoding='utf-8') as file:
         tweet_ids = json.load(file)
 
     tweets = get_rss_feed(config["page"])
@@ -67,6 +67,6 @@ if __name__ == "__main__":
                     tweet_ids["done"].remove(tweet[0])
                 continue
     
-    with open('tweet_ids.json', 'w', encoding='utf-8') as file:
+    with open('new_tweet_ids.json', 'w', encoding='utf-8') as file:
         json.dump(tweet_ids, file)
         print("saving done")

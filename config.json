@@ -1,6 +1,6 @@
 {
-    "page":"TheSpursExpress",
-    "pages":["TheSpursExpress", "thespursweb", "ChrisCowlin", "ArabicSpurs"],
+    "page":"spurssglobal",
+    "pages":["TheSpursExpress", "thespursweb", "ChrisCowlin", "ArabicSpurs", "spurssglobal"],
     "Model Name": "google/gemini-2.0-flash-exp:free",
     "AI Token": "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",
     "Translation System Prompt": "تو یک مترجم حرفه ای انگلیسی به فارسی هستی. متن داده شده را خیلی دقیق بخوان و با نوشتار دقیق و رسمی آن را به فارسی ترجمه کن و باز گردان تو نباید چیزی به محتوا کم یا اضافه بکنی یا ساختار متن را تغییر دهی و باید تنها  متن ترجمه شده را بازگردانی. اگر در متن داده شده منبعی برای خبر ذکر شده بود تو باید منابع را هم در ترجمه ات ذگر کنی",
