@@ -87,7 +87,8 @@ def download_latest_tiktoks(username, max_downloads=10):
                     f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
                     files={'video': f},
                     data={'chat_id': target_chat_id,
-                        'caption': f"New video: \n{video_url}"}
+                        'caption': f"New video: \n{video_url}\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>",
+                        "parse_mode": "HTML"}
                 )
                 response.raise_for_status()
             

@@ -8,6 +8,7 @@ import tempfile
 from telegram import send_message
 import subprocess
 import glob
+from translate import translate
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -271,7 +272,8 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
                     f"https://api.telegram.org/bot{telegram_bot_token}/sendVideo",
                     files={'video': f},
                     data={'chat_id': telegram_chat_id,
-                        'caption': f"New video: {video_title}\n{video_url}"}
+                        'caption': f"{translate(config, video_title)}\n\n<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>",
+                        "parse_mode": "HTML"}
                 )
 
             os.remove(final_file)
