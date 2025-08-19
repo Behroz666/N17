@@ -12,11 +12,6 @@ SEEN_FILE = "seen_articles.json"
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
 
-# Placeholder AI summarization function (you will replace with your own)
-def summarize_text(text: str) -> str:
-    # TODO: Replace this with your AI summarizer function
-    return text[:200] + "... [summary truncated]"
-
 if os.path.exists(SEEN_FILE):
     with open(SEEN_FILE, "r") as f:
         seen_articles = set(json.load(f))
