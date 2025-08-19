@@ -4,7 +4,7 @@ import json
 import os
 from datetime import datetime, timedelta, timezone
 from translate import article_summarize, translate
-from telegram import send_image
+from telegram import send_image , send_message
 import time
 
 SEEN_FILE = "seen_articles.json"
@@ -88,7 +88,10 @@ if __name__ == "__main__":
         fa_title = translate(config, title)
         print(title + "\n\n turns into" + fa_title)
 
-        text = f"<a href='{link}'>{fa_title}</a>\n\n"
+        if len(fa_title) < 2 * len(title):
+            text = f"<a href='{link}'>{fa_title}</a>\n\n"
+        else:
+            text = f"<a href='{link}'>{title}</a>\n\n"
         time.sleep(5)
 
         print(f"\n--- {title} ({pub_date}) ---")
@@ -97,7 +100,10 @@ if __name__ == "__main__":
         summary = article_summarize(config, article_text)
         print(summary)
         text = text + f"<blockquote expandable>{summary}</blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
-        send_image(config, text, banner_url)
+        if len(text) < 1024 :
+            send_image(config, text, banner_url)
+        else:
+            send_message(config, text, config["Main Chat id"])
         time.sleep(5)
         new_seen.add(link)
 
