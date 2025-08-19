@@ -4,6 +4,7 @@ from rss import get_rss_feed
 from datetime import datetime, timedelta, timezone
 from translate import summarize
 from telegram import send_message
+import re
 
 if __name__ == "__main__":
 
@@ -32,14 +33,15 @@ if __name__ == "__main__":
     news.append(summarize(config, last_hours_news))
     for text in news:
         text = text.replace("**", "").replace("*   ", "")
-        if text.count(":") > 2:
+        # pattern = re.compile(r"([\u2600-\u27BF\u1F300-\u1FAFF]\uFE0F?)\s*[^:\n]+:\s*")
+        # final = pattern.sub(r"\1 ", text)
+        if text.count(":") > 1:
             final = ""
             parts = text.split("\n\n")
             for part in parts:
-                emoji = part[:1]
-                body = part.replace(emoji, "")
-                result = body.split(":", 1)[1].strip().replace("\n","")
-                final = final + emoji + " " + result + "\n\n"
+                pattern = r"^(\S)\s*.+?:\s*"
+                result = re.sub(pattern, r"\1 ", part)
+                final = final + result + "\n\n"
         else: 
             final = text
         message = "خلاصه اخبار امروز:\n\n" + final + "\n<a href='https://t.me/+QjvW46AcqcAwZjg8'>برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>" + "\n\n@N17_Tottenham"
