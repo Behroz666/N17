@@ -89,9 +89,9 @@ if __name__ == "__main__":
         print(title + "\n\n turns into" + fa_title)
 
         if len(fa_title) < 2 * len(title):
-            text = f"<a href='{link}'>{fa_title}</a>\n\n"
-        else:
-            text = f"<a href='{link}'>{title}</a>\n\n"
+            title = fa_title
+
+        text = f"<a href='{link}'>{title}</a>\n\n"
         time.sleep(5)
 
         print(f"\n--- {title} ({pub_date}) ---")
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         summary = article_summarize(config, article_text)
         print(summary)
         text = text + f"<blockquote expandable>{summary}</blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
-        if len(text) < 1024 :
+        if len(summary + title) < 995 :
             send_image(config, text, banner_url)
         else:
             send_message(config, text, config["Main Chat id"])
