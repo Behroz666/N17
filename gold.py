@@ -85,7 +85,10 @@ if __name__ == "__main__":
         if pub_date < one_day_ago:
             continue  # Skip if older than 1 day
         
-        text = f"<a href='{link}'>{translate(config, title)}</a>\n\n"
+        fa_title = translate(config, title)
+        print(title + "\n\n turns into" + fa_title)
+
+        text = f"<a href='{link}'>{fa_title}</a>\n\n"
         time.sleep(5)
 
         print(f"\n--- {title} ({pub_date}) ---")
