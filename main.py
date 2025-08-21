@@ -22,11 +22,14 @@ if __name__ == "__main__":
                     tweet_ids["done"].append(tweet[0])
                     continue
                 else:
-                    try:
-                        fa = translate(config, tweet[1])
-                    except:
-                        time.sleep(60)
-                        fa = translate(config, tweet[1])
+                    if len(tweet[1]) < 5:
+                        fa = tweet[1]
+                    else:
+                        try:
+                            fa = translate(config, tweet[1])
+                        except:
+                            time.sleep(60)
+                            fa = translate(config, tweet[1])
 
                 if len(fa) < (len(tweet[1])/2):
                     continue
