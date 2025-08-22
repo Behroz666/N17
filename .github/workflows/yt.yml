@@ -18,15 +18,36 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install FFmpeg
+    - name: Cache FFmpeg
+      uses: actions/cache@v3
+      with:
+        path: ~/.ffmpeg
+        key: ${{ runner.os }}-ffmpeg
+        restore-keys: |
+          ${{ runner.os }}-ffmpeg
+
+    - name: Install FFmpeg (if not cached)
       run: |
-        sudo apt update
-        sudo apt install -y ffmpeg
+        if [ ! -f ~/.ffmpeg/ffmpeg ]; then
+          mkdir -p ~/.ffmpeg
+          curl -L https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -o /tmp/ffmpeg.tar.xz
+          tar -xJf /tmp/ffmpeg.tar.xz -C ~/.ffmpeg --strip-components=1
+        fi
+        export PATH=$HOME/.ffmpeg:$PATH
+        ffmpeg -version  # verify installation
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install google-api-python-client requests yt-dlp
+        pip install -r requirements.txt
 
     - name: Run YouTube to Telegram script
       env:

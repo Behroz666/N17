@@ -1,0 +1,5 @@
+requests
+feedparser
+beautifulsoup4
+yt-dlp
+google-api-python-client
