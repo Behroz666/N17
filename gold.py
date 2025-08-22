@@ -98,6 +98,7 @@ if __name__ == "__main__":
         if len(summary + title) < 995 :
             send_image(config, text, banner_url)
         else:
+            send_image(config, "", banner_url)
             send_message(config, text, config["Main Chat id"])
         time.sleep(5)
         new_seen.add(link)
