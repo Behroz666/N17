@@ -33,8 +33,8 @@ jobs:
           curl -L https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -o /tmp/ffmpeg.tar.xz
           tar -xJf /tmp/ffmpeg.tar.xz -C ~/.ffmpeg --strip-components=1
         fi
-        export PATH=$HOME/.ffmpeg:$PATH
-        ffmpeg -version  # verify installation
+        echo "FFMPEG_HOME=$HOME/.ffmpeg" >> $GITHUB_ENV
+        echo "$HOME/.ffmpeg" >> $GITHUB_PATH
 
     - name: Cache pip dependencies
       uses: actions/cache@v3
