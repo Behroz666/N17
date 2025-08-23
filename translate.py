@@ -1,11 +1,14 @@
 import requests
 import json
+import os
+
+AI_TOKEN = os.environ.get('AI_TOKEN')
 
 def article_summarize(config, text):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
-        "Authorization": f"Bearer {config['AI Token']}",
+        "Authorization": f"Bearer {AI_TOKEN}",
         "Content-Type": "application/json",
     },
     data=json.dumps({
@@ -32,7 +35,7 @@ def summarize(config, text):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
-        "Authorization": f"Bearer {config['AI Token']}",
+        "Authorization": f"Bearer {AI_TOKEN}",
         "Content-Type": "application/json",
     },
     data=json.dumps({
@@ -59,7 +62,7 @@ def translate(config, text):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
-        "Authorization": f"Bearer {config['AI Token']}",
+        "Authorization": f"Bearer {AI_TOKEN}",
         "Content-Type": "application/json",
     },
     data=json.dumps({

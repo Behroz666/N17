@@ -52,4 +52,5 @@ jobs:
     - name: Run YouTube to Telegram script
       env:
         YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
+        AI_TOKEN: ${{ secrets.AI_TOKEN }}
       run: python yt.py
