@@ -20,7 +20,7 @@ SIZE_LIMIT = 80 * 1024 * 1024
 
 # --- Environment Variables (to be set in GitHub Secrets) ---
 # Your YouTube Data API v3 key
-YOUTUBE_API_KEY = config["Google"]
+YOUTUBE_API_KEY = os.environ.get('GOOGLE')
 # The ID of the YouTube channel you want to monitor
 YOUTUBE_CHANNEL_ID = "UCEg25rdRZXg32iwai6N6l0w"
 # Your Telegram Bot Token (get from BotFather)
