@@ -50,10 +50,9 @@ if __name__ == "__main__":
                     continue
 
                 fa = fa.replace("#","").replace("قدوس","کودوس")
-                    
+                url = f"https://x.com/{config["page"]}/status/{tweet[0]}#m"
                 if tweet[2] == 0:
                     limit = 4096
-                    url = f"https://x.com/{config["page"]}/status/{tweet[0]}#m"
                     if len(fa + tweet[1]) < (limit - 256):
                         message = f"{fa}\n\n<blockquote expandable><a href='{url}'>🇬🇧</a>: {tweet[1]}</blockquote>\n\n<a href='{"https://t.me/+2TG8ZxphObwzN2Q0"}'>VivaSpurs</a> | <a href='{"https://t.me/N17_Tottenham"}'>N17 Tottenham</a>"
                     elif len(fa) < (limit - 456):
