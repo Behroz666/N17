@@ -79,7 +79,7 @@ if __name__ == "__main__":
                             try:
                                 file_name = download_twitter_video(url, tweet[0])
                                 with open(file_name, 'rb') as f:
-                                    requests.post(
+                                    response = requests.post(
                                         f"https://api.telegram.org/bot{os.environ.get('BOT_TOKEN')}/sendVideo",
                                         files={'video': f},
                                         data={'chat_id': config["Main Chat id"],
@@ -87,6 +87,8 @@ if __name__ == "__main__":
                                             "parse_mode": "HTML"}
                                     )
                                 os.remove(file_name)
+                                response_json = response.json()
+                                message_id = response_json['result']['message_id']
                             except:
                                 message_id = send_image(config, message, tweet[3][0])
                     else:
