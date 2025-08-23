@@ -37,4 +37,5 @@ jobs:
     - name: Run sub.py
       env:
         AI_TOKEN: ${{ secrets.AI_TOKEN }}
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: python sub.py

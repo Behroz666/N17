@@ -81,7 +81,7 @@ if __name__ == "__main__":
                                 file_name = download_twitter_video(url, tweet[0])
                                 with open(file_name, 'rb') as f:
                                     requests.post(
-                                        f"https://api.telegram.org/bot{config["Bot Token"]}/sendVideo",
+                                        f"https://api.telegram.org/bot{os.environ.get('BOT_TOKEN')}/sendVideo",
                                         files={'video': f},
                                         data={'chat_id': config["Main Chat id"],
                                             'caption': message,

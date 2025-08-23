@@ -53,4 +53,5 @@ jobs:
       env:
         YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
         AI_TOKEN: ${{ secrets.AI_TOKEN }}
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: python yt.py

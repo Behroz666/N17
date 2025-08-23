@@ -24,7 +24,7 @@ YOUTUBE_API_KEY = config["Google"]
 # The ID of the YouTube channel you want to monitor
 YOUTUBE_CHANNEL_ID = "UCEg25rdRZXg32iwai6N6l0w"
 # Your Telegram Bot Token (get from BotFather)
-TELEGRAM_BOT_TOKEN = config["Bot Token"]
+TELEGRAM_BOT_TOKEN = os.environ.get('BOT_TOKEN')
 # The chat ID where the bot should post videos (can be a user ID or a group chat ID)
 TELEGRAM_CHAT_ID = config["Main Chat id"]
 # YouTube cookies string from GitHub Secrets

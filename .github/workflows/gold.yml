@@ -37,6 +37,7 @@ jobs:
       - name: Run gold.py
         env:
           AI_TOKEN: ${{ secrets.AI_TOKEN }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: python gold.py
 
       - name: Check for changes in seen_articles.json

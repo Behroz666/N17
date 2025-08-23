@@ -1,7 +1,10 @@
 import requests
+import os
+
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
 
 def send_message(config, text, chat_id):
-    url = f"https://api.telegram.org/bot{config['Bot Token']}/sendMessage"
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": chat_id,
         "text": text,
@@ -13,7 +16,7 @@ def send_message(config, text, chat_id):
     return response_json['result']['message_id']
 
 def send_image(config, text, link):
-    url = f"https://api.telegram.org/bot{config['Bot Token']}/sendPhoto"
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
     payload = {
         "chat_id": config["Main Chat id"],
         'photo': link,
@@ -25,7 +28,7 @@ def send_image(config, text, link):
     return response_json['result']['message_id']
 
 def send_gallery(config, text, links):
-    url = f"https://api.telegram.org/bot{config['Bot Token']}/sendMediaGroup"
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMediaGroup"
     
     media = []
     for i, link in enumerate(links):
@@ -49,7 +52,7 @@ def send_gallery(config, text, links):
 
 def pin_message(config, message_id):
     print(message_id)
-    url = f"https://api.telegram.org/bot{config['Bot Token']}/pinChatMessage"
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/pinChatMessage"
     payload = {
         "chat_id": config["Main Chat id"],
         'message_id': message_id,
@@ -58,7 +61,7 @@ def pin_message(config, message_id):
     print(requests.post(url, data=payload))
 
 def delete_message(config, message_id):
-    url = f"https://api.telegram.org/bot{config['Bot Token']}/deleteMessage"
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage"
     payload = {
         "chat_id": config["Main Chat id"],
         "message_id": message_id

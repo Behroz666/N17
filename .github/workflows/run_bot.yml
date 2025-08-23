@@ -37,6 +37,7 @@ jobs:
     - name: Run main.py
       env:
         AI_TOKEN: ${{ secrets.AI_TOKEN }}
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: python main.py
 
     - name: Check for changes in new_tweet_ids.json
