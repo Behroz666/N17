@@ -33,7 +33,7 @@ if __name__ == "__main__":
     tweets = get_rss_feed(config["page"][0])
     history = []
     for tweet in tweets:
-        if tweet[0] in tweet_ids["done"][:10]:
+        if tweet[0] in tweet_ids["done"][-10:]:
             history.append(tweet[1])
     print(history)
     for tweet in tweets:
