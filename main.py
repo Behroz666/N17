@@ -117,8 +117,7 @@ if __name__ == "__main__":
                 if len(tweet[1]) == 0 or tweet[1] == "Gif":
                     secondary_tweet_ids["done"].append(tweet[0])
                     continue
-                new_tweet = is_new(config, tweet[1], history)
-                if new_tweet:
+                if is_new(config, tweet[1], history):
                     if len(tweet[1]) < 5:
                         fa = tweet[1]
                     else:
