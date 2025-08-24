@@ -1,8 +1,38 @@
 import requests
 import json
 import os
+from openai import OpenAI
+from pydantic import BaseModel
 
 AI_TOKEN = os.environ.get('AI_TOKEN')
+
+def is_new(config, text, history):
+    class AI_Checker(BaseModel):
+                is_possible : bool
+                why : str
+                emoji : str
+
+    client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=AI_TOKEN,
+    )
+
+    completion = client.beta.chat.completions.parse(
+    model=config["Model Name"],
+    messages=[
+        {
+        "role": "user",
+        "content": text
+        },
+        {
+        "role": "system",
+        "content" : f"{config["agent system prompt"]}\n\n{history}"
+        }
+    ],
+    response_format=AI_Checker
+    )
+    check = completion.choices[0].message.parsed
+    return check.is_possible
 
 def article_summarize(config, text):
     response = requests.post(
