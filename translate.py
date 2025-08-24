@@ -23,7 +23,7 @@ def is_new(config, text, history):
             },
             {
             "role": "system",
-            "content": f"{config["agent system prompt"]}\n\n{history}\n\nJust Answer True or False"
+            "content": f"{config['agent system prompt']}\n\n{history}\n\nJust Answer True or False"
             }
         ],
         
