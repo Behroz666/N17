@@ -5,6 +5,7 @@ import random
 
 AI_TOKEN = os.environ.get('AI_TOKEN')
 AI_TOKEN = AI_TOKEN.split(",")
+print("len ai key list:" + len(AI_TOKEN))
 
 def is_new(config, text, history):
     tok = random.choice(AI_TOKEN)
