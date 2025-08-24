@@ -4,12 +4,10 @@ import os
 import random
 
 AI_TOKEN = os.environ.get('AI_TOKEN')
+AI_TOKEN = AI_TOKEN.split(",")
 
 def is_new(config, text, history):
-    print(AI_TOKEN)
-    print(type(AI_TOKEN))
     tok = random.choice(AI_TOKEN)
-    print(tok)
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
