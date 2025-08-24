@@ -31,6 +31,7 @@ def is_new(config, text, history):
     ],
     response_format=AI_Checker
     )
+    print(completion)
     check = completion.choices[0].message.parsed
     return check.is_possible
 
