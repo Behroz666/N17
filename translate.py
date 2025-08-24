@@ -7,10 +7,9 @@ from pydantic import BaseModel
 AI_TOKEN = os.environ.get('AI_TOKEN')
 
 def is_new(config, text, history):
+    print("1")
     class AI_Checker(BaseModel):
-                is_possible : bool
-                why : str
-                emoji : str
+                is_done : bool
 
     client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
