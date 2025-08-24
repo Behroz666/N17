@@ -36,18 +36,10 @@ jobs:
         echo "FFMPEG_HOME=$HOME/.ffmpeg" >> $GITHUB_ENV
         echo "$HOME/.ffmpeg" >> $GITHUB_PATH
 
-    - name: Cache pip dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install google-api-python-client requests yt-dlp
 
     - name: Run YouTube to Telegram script
       env:
