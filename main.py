@@ -183,6 +183,7 @@ if __name__ == "__main__":
                     time.sleep(20)
                 else:
                     secondary_tweet_ids["done"].append(tweet[0])
+                    time.sleep(20)
             except:
                 if tweet[0] in tweet_ids["done"]:
                     tweet_ids["done"].remove(tweet[0])

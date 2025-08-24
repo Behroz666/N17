@@ -32,7 +32,7 @@ def is_new(config, text, history):
     print(response.json())
     answer = response.json()['choices'][0]['message']['content']
 
-    if str(answer).lower().startswith("t"):
+    if str(answer).lower().startswith("f"):
         return True
     else:
         return False    
