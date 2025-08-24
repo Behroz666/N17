@@ -6,6 +6,8 @@ import random
 AI_TOKEN = os.environ.get('AI_TOKEN')
 
 def is_new(config, text, history):
+    print(AI_TOKEN)
+    print(type(AI_TOKEN))
     tok = random.choice(AI_TOKEN)
     print(tok)
     response = requests.post(
