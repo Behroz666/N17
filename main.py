@@ -118,6 +118,7 @@ if __name__ == "__main__":
                     secondary_tweet_ids["done"].append(tweet[0])
                     continue
                 if is_new(config, tweet[1], history):
+                    time.sleep(20)
                     if len(tweet[1]) < 5:
                         fa = tweet[1]
                     else:

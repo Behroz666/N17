@@ -5,6 +5,7 @@ import os
 AI_TOKEN = os.environ.get('AI_TOKEN')
 
 def is_new(config, text, history):
+    print("1")
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
@@ -28,6 +29,7 @@ def is_new(config, text, history):
     )
 
     answer = response.json()['choices'][0]['message']['content']
+    print(answer)
     if str(answer).lower().startswith("t"):
         return True
     else:
