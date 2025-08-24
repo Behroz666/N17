@@ -45,7 +45,7 @@ if __name__ == "__main__":
                     tweet_ids["done"].append(tweet[0])
                     continue
                 else:
-                    if len(tweet[1]) < 5:
+                    if len(tweet[1]) < 10:
                         fa = tweet[1]
                     else:
                         try:
@@ -121,7 +121,7 @@ if __name__ == "__main__":
                     continue
                 if is_new(config, tweet[1], history):
                     time.sleep(20)
-                    if len(tweet[1]) < 5:
+                    if len(tweet[1]) < 10:
                         fa = tweet[1]
                     else:
                         try:
