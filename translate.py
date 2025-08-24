@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import random
 
 AI_TOKEN = os.environ.get('AI_TOKEN')
 
@@ -9,7 +10,7 @@ def is_new(config, text, history):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
-        "Authorization": f"Bearer {AI_TOKEN}",
+        "Authorization": f"Bearer {random.choice(AI_TOKEN)}",
         "Content-Type": "application/json",
     },
     data=json.dumps({
@@ -27,9 +28,9 @@ def is_new(config, text, history):
         
     })
     )
-
+    print(response.json())
     answer = response.json()['choices'][0]['message']['content']
-    print(answer)
+
     if str(answer).lower().startswith("t"):
         return True
     else:
@@ -39,7 +40,7 @@ def article_summarize(config, text):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
-        "Authorization": f"Bearer {AI_TOKEN}",
+        "Authorization": f"Bearer {random.choice(AI_TOKEN)}",
         "Content-Type": "application/json",
     },
     data=json.dumps({
@@ -66,7 +67,7 @@ def summarize(config, text):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
-        "Authorization": f"Bearer {AI_TOKEN}",
+        "Authorization": f"Bearer {random.choice(AI_TOKEN)}",
         "Content-Type": "application/json",
     },
     data=json.dumps({
@@ -93,7 +94,7 @@ def translate(config, text):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
-        "Authorization": f"Bearer {AI_TOKEN}",
+        "Authorization": f"Bearer {random.choice(AI_TOKEN)}",
         "Content-Type": "application/json",
     },
     data=json.dumps({

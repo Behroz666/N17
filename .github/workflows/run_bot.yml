@@ -44,6 +44,11 @@ jobs:
       id: git-check
       run: |
         git diff --exit-code --quiet new_tweet_ids.json || echo "changed=true" >> $GITHUB_OUTPUT
+    
+    - name: Check for changes in tweet_ids.json
+      id: git-check-2
+      run: |
+        git diff --exit-code --quiet tweet_ids.json || echo "changed=true" >> $GITHUB_OUTPUT
 
     - name: Commit and push if changed
       if: steps.git-check.outputs.changed == 'true'
@@ -52,5 +57,15 @@ jobs:
         git config --local user.name "GitHub Action"
         git add new_tweet_ids.json
         git commit -m "Update new_tweet_ids.json"
+        git pull --no-rebase
+        git push
+      
+    - name: Commit and push if changed 2
+      if: steps.git-check-2.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add tweet_ids.json
+        git commit -m "Update tweet_ids.json"
         git pull --no-rebase
         git push
