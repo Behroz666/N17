@@ -31,11 +31,6 @@ if __name__ == "__main__":
         secondary_tweet_ids = json.load(file)
 
     tweets = get_rss_feed(config["page"][0])
-    history = []
-    for tweet in tweets:
-        if tweet[0] in tweet_ids["done"][-10:]:
-            history.append(tweet[1])
-    print(history)
     for tweet in tweets:
         if tweet[0] not in tweet_ids["done"]:
             try:
@@ -111,7 +106,11 @@ if __name__ == "__main__":
                 if tweet[0] in tweet_ids["done"]:
                     tweet_ids["done"].remove(tweet[0])
                 continue
-
+    history = []
+    for tweet in tweets:
+        if tweet[0] in tweet_ids["done"][-10:]:
+            history.append(tweet[1])
+    print(history)
     tweets = get_rss_feed(config["page"][1])
     for tweet in tweets:
         if tweet[0] not in secondary_tweet_ids["done"]:
