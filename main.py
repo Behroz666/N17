@@ -31,7 +31,7 @@ if __name__ == "__main__":
         secondary_tweet_ids = json.load(file)
 
     tweets = get_rss_feed(config["page"][0])
-    for tweet in tweets:
+    for tweet in reversed(tweets):
         if tweet[0] not in tweet_ids["done"]:
             try:
                 print(tweet[1])
@@ -112,7 +112,7 @@ if __name__ == "__main__":
             history.append(tweet[1])
     print(history)
     tweets = get_rss_feed(config["page"][1])
-    for tweet in tweets:
+    for tweet in reversed(tweets):
         if tweet[0] not in secondary_tweet_ids["done"]:
             try:
                 print(tweet[1])

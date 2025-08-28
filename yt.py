@@ -344,7 +344,7 @@ def main():
         return
 
     print(f"Found {len(new_videos)} new video(s) to process.")
-    for video in new_videos:
+    for video in reversed(new_videos):
         download_and_upload_video(video['id'], video['title'], TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, YOUTUBE_COOKIES)
 
 if __name__ == "__main__":
