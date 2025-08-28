@@ -34,6 +34,17 @@ YOUTUBE_COOKIES = os.environ.get('YOUTUBE_COOKIES')
 # Build the YouTube API client
 youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
 
+def download_thumbnail(video_id):
+    thumbnail_url = f'https://img.youtube.com/vi/{video_id}/maxresdefault.jpg'
+    response = requests.get(thumbnail_url)
+    
+    if response.status_code == 200:
+        with open('thumbnail.jpg', 'wb') as file:
+            file.write(response.content)
+        print("Thumbnail downloaded successfully.")
+    else:
+        print("Failed to download thumbnail.")
+
 def get_video_height(path: str) -> int:
     """
     Uses ffprobe to get the height of the video.
@@ -267,14 +278,22 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
                 os.rename(base_compressed, final_file)
 
             # 4. Upload final_file
-            with open(final_file, 'rb') as f:
-                requests.post(
-                    f"https://api.telegram.org/bot{telegram_bot_token}/sendVideo",
-                    files={'video': f},
-                    data={'chat_id': telegram_chat_id,
-                        'caption': f"{translate(config, video_title)}\n\n<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>",
-                        "parse_mode": "HTML"}
-                )
+
+            url = f'https://api.telegram.org/bot{telegram_bot_token}/sendVideo'
+
+            files = {
+                'video': open(final_file, 'rb'),
+                'thumb': open('thumbnail.jpg', 'rb')
+            }
+
+            data = {
+                'chat_id': telegram_chat_id,
+                'caption': f"{translate(config, video_title)}\n\n<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>",
+                'parse_mode': "HTML"
+            }
+
+            response = requests.post(url, data=data, files=files)
+            download_thumbnail(str(video_id))
 
             os.remove(final_file)
             if 'cookiefile' in ydl_opts and os.path.exists(ydl_opts['cookiefile']):
