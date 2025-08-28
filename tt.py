@@ -2,6 +2,8 @@ import subprocess
 import json
 import os
 import requests
+from translate import translate
+from telegram import send_image
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -39,14 +41,25 @@ def download_latest_tiktoks(username):
     downloaded_ids = load_history()
     new_ids = set()
     video_lines = result.stdout.strip().split("\n")
-    print(video_lines)
 
     count = 0
     for line in video_lines:
+        if count >= max_downloads:
+            print("breaking")
+            break
         print(count)
         video_info = json.loads(line)
         video_id = video_info.get("id")
+        title = video_info.get("title")
+        thumbnail_url = video_info["thumbnails"][0]["url"]
         video_url = f"https://www.tiktok.com/@{username}/video/{video_id}"
+
+        if "photomode" in thumbnail_url:
+            text = f"{translate(config, title)}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
+            send_image(config, text, thumbnail_url)
+            count += 1
+            continue
+
         
         if video_id in downloaded_ids:
             print(f"Skipping already downloaded: {video_url}")
@@ -90,7 +103,7 @@ def download_latest_tiktoks(username):
                     f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
                     files={'video': f},
                     data={'chat_id': target_chat_id,
-                        'caption': f"New video: \n{video_url}\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>",
+                        'caption': f"{translate(config, title)}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>",
                         "parse_mode": "HTML"}
                 )
                 response.raise_for_status()
@@ -98,10 +111,6 @@ def download_latest_tiktoks(username):
             os.remove(compressed_file)
         else:
             os.remove(raw_file)
-
-        if count >= max_downloads:
-            print("breaking")
-            break
 
     # Update history
     all_ids = downloaded_ids.union(new_ids)
