@@ -36,7 +36,7 @@ if __name__ == "__main__":
             try:
                 print(tweet[1])
 
-                if len(tweet[1]) == 0 or tweet[1] == "Gif":
+                if len(tweet[1]) == 0 or tweet[1] == "Gif" or str(tweet[1]).startswith("R to @spurssglobal: football.london/tottenham-ho…"):
                     tweet_ids["done"].append(tweet[0])
                     continue
                 else:
