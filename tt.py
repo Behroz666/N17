@@ -57,6 +57,7 @@ def download_latest_tiktoks(username):
         if "photomode" in thumbnail_url:
             text = f"{translate(config, title)}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
             send_image(config, text, thumbnail_url)
+            new_ids.add(video_id)
             count += 1
             continue
 
