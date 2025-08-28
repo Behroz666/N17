@@ -38,9 +38,11 @@ def download_latest_tiktoks(username, max_downloads=10):
     downloaded_ids = load_history()
     new_ids = set()
     video_lines = result.stdout.strip().split("\n")
+    print(video_lines)
 
     count = 0
     for line in video_lines:
+        print(count)
         video_info = json.loads(line)
         video_id = video_info.get("id")
         video_url = f"https://www.tiktok.com/@{username}/video/{video_id}"
