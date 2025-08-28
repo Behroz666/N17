@@ -53,17 +53,16 @@ def download_latest_tiktoks(username):
         title = video_info.get("title")
         thumbnail_url = video_info["thumbnails"][0]["url"]
         video_url = f"https://www.tiktok.com/@{username}/video/{video_id}"
+        
+        if video_id in downloaded_ids:
+            print(f"Skipping already downloaded: {video_url}")
+            count += 1
+            continue
 
         if "photomode" in thumbnail_url:
             text = f"{translate(config, title)}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
             send_image(config, text, thumbnail_url)
             new_ids.add(video_id)
-            count += 1
-            continue
-
-        
-        if video_id in downloaded_ids:
-            print(f"Skipping already downloaded: {video_url}")
             count += 1
             continue
 
