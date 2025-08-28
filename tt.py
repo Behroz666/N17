@@ -27,7 +27,8 @@ def get_video_id_from_url(url):
     # TikTok URLs look like: https://www.tiktok.com/@user/video/VIDEO_ID
     return url.rstrip("/").split("/")[-1]
 
-def download_latest_tiktoks(username, max_downloads=10):
+def download_latest_tiktoks(username):
+    max_downloads=10
     url = f"https://www.tiktok.com/@{username}"
     print(f"Checking TikToks from: {url}")
 
@@ -99,6 +100,7 @@ def download_latest_tiktoks(username, max_downloads=10):
             os.remove(raw_file)
 
         if count >= max_downloads:
+            print("breaking")
             break
 
     # Update history
