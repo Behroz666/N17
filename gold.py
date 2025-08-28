@@ -94,8 +94,8 @@ if __name__ == "__main__":
             print(f"Banner Image: {banner_url}")
         summary = article_summarize(config, article_text)
         print(summary)
-        text = text + f"<blockquote expandable>{summary}</blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
-        if len(summary + title) < 995 :
+        text = text + f"<blockquote expandable>{summary}</blockquote>\n\n✍️ By Alasdair Gold at {(pub_date + timedelta(hours=3, minutes=30)).strftime('%Y-%m-%d %I:%M:%S %p %z')}\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
+        if len(summary + title) < 972 :
             send_image(config, text, banner_url)
         else:
             send_image(config, "", banner_url)
