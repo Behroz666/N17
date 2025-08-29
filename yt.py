@@ -276,6 +276,8 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
             else:
                 # base_compressed is already under limit
                 os.rename(base_compressed, final_file)
+            #download thumbnail
+            download_thumbnail(str(video_id))
 
             # 4. Upload final_file
 
@@ -293,7 +295,6 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
             }
 
             response = requests.post(url, data=data, files=files)
-            download_thumbnail(str(video_id))
 
             os.remove(final_file)
             if 'cookiefile' in ydl_opts and os.path.exists(ydl_opts['cookiefile']):
