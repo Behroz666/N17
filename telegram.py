@@ -25,6 +25,7 @@ def send_image(config, text, link):
     }
     response = requests.post(url, data=payload)
     response_json = response.json()
+    print(response_json)
     return response_json['result']['message_id']
 
 def send_gallery(config, text, links):
