@@ -95,10 +95,13 @@ if __name__ == "__main__":
         summary = article_summarize(config, article_text)
         print(summary)
         text = text + f"<blockquote expandable>{summary}</blockquote>\n\n✍️ By Alasdair Gold at {(pub_date + timedelta(hours=3, minutes=30)).strftime('%Y.%m.%d %I:%M %p')}\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
-        if len(summary + title) < 940 :
-            send_image(config, text, banner_url)
-        else:
-            send_image(config, "", banner_url)
+        try:
+            if len(summary + title) < 940 :
+                send_image(config, text, banner_url)
+            else:
+                send_image(config, "", banner_url)
+                send_message(config, text, config["Main Chat id"])
+        except:
             send_message(config, text, config["Main Chat id"])
         time.sleep(5)
         new_seen.add(link)
