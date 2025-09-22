@@ -89,7 +89,7 @@ if __name__ == "__main__":
                         try:
                             fa = translate(config, normalize_stylized(tweet[1]))
                         except:
-                            time.sleep(60)
+                            time.sleep(40)
                             fa = translate(config, normalize_stylized(tweet[1]))
 
                 if len(fa) < (len(tweet[1])/2):
@@ -142,7 +142,7 @@ if __name__ == "__main__":
                 pin_message(config, message_id)
                 delete_message(config, message_id + 1)
                 tweet_ids["done"].append(tweet[0])
-                time.sleep(20)
+                time.sleep(15)
             except:
                 if tweet[0] in tweet_ids["done"]:
                     tweet_ids["done"].remove(tweet[0])
@@ -162,7 +162,6 @@ if __name__ == "__main__":
                     secondary_tweet_ids["done"].append(tweet[0])
                     continue
                 if is_new(config, tweet[1], history):
-                    time.sleep(20)
                     if len(tweet[1]) < 10:
                         fa = tweet[1]
                     elif str(tweet[1]).startswith("R to ") and len(tweet[1]) < 30:
@@ -171,7 +170,7 @@ if __name__ == "__main__":
                         try:
                             fa = translate(config, tweet[1])
                         except:
-                            time.sleep(60)
+                            time.sleep(40)
                             fa = translate(config, tweet[1])
 
                     if len(fa) < (len(tweet[1])/2):
@@ -224,10 +223,10 @@ if __name__ == "__main__":
                     pin_message(config, message_id)
                     delete_message(config, message_id + 1)
                     secondary_tweet_ids["done"].append(tweet[0])
-                    time.sleep(20)
+                    time.sleep(15)
                 else:
                     secondary_tweet_ids["done"].append(tweet[0])
-                    time.sleep(20)
+                    time.sleep(15)
             except:
                 if tweet[0] in tweet_ids["done"]:
                     tweet_ids["done"].remove(tweet[0])
