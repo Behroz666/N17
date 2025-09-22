@@ -8,6 +8,7 @@ from telegram import send_image, send_message
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
+import cloudscraper
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -145,8 +146,10 @@ def scrape_match_urls(date_str):
     target_url = f"{base_url}{date_str}/matches"
 
     try:
-        response = requests.get(target_url, headers=headers)
-        response.raise_for_status()
+        # response = requests.get(target_url, headers=headers)
+        # response.raise_for_status()
+        scraper = cloudscraper.create_scraper()  
+        response = scraper.get(target_url, headers=headers)
     except requests.RequestException as e:
         print(f"Error fetching {target_url}: {e}")
         return []
@@ -167,8 +170,10 @@ def scrape_match_urls(date_str):
 def scrape_match_info(match_url):
     """Scrape structured match info including opposition, competition, date, kick-off, venue, highlights, report, and goalscorers."""
     try:
-        response = requests.get(match_url, headers=headers)
-        response.raise_for_status()
+        # response = requests.get(match_url, headers=headers)
+        # response.raise_for_status()
+        scraper = cloudscraper.create_scraper()  
+        response = scraper.get(match_url, headers=headers)
     except requests.RequestException as e:
         print(f"Error fetching {match_url}: {e}")
         return {}
