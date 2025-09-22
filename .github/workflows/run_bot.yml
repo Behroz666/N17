@@ -30,6 +30,8 @@ jobs:
       env:
         AI_TOKEN: ${{ secrets.AI_TOKEN }}
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        RSS_URL: ${{ secrets.RSS_URL }}
+
       run: python main.py
 
     - name: Check for changes in new_tweet_ids.json

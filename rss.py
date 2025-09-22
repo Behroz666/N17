@@ -1,14 +1,17 @@
 import feedparser
 import re
 from datetime import datetime, timezone
+import os
 
 def extract_id(url):
     last_part = url.split('/')[-1]
     id_part = last_part.split('#')[0]
     return id_part
 
+RSS_URL = os.environ.get('RSS_URL')
+
 def get_rss_feed(page):
-    feed = feedparser.parse(f"https://xcancel.com/{page}/rss")
+    feed = feedparser.parse(f"https://{RSS_URL}/{page}/rss")
     response = []
     if feed.bozo:
         print("There was an error parsing the feed.")
