@@ -29,8 +29,9 @@ if __name__ == "__main__":
         time.sleep(10)
     print(last_day_news)
     news.append(summarize(config, last_day_news))
-    time.sleep(20)
-    news.append(summarize(config, last_hours_news))
+    # quick news for transfer window
+    # time.sleep(20)
+    # news.append(summarize(config, last_hours_news))
     for text in news:
         text = text.replace("**", "").replace("*   ", "")
         # pattern = re.compile(r"([\u2600-\u27BF\u1F300-\u1FAFF]\uFE0F?)\s*[^:\n]+:\s*")
