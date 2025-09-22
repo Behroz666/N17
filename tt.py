@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import re
 import cloudscraper
+from datetime import datetime, timedelta
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -271,7 +272,7 @@ def OTD():
         for k, v in match_data.items():
             print(f"{k}: {v}")
     
-    text = f"🗓️ On this day on {match_data["date"]}\n⏳at {match_data["kick_off"]}\n\n🔸{match_data["title"].split(' ')[0]} {match_data["opposition"]} at {match_data["venue"]} in {match_data["competition"]}"
+    text = f"🗓️ On this day on {match_data["date"]}\n⏳at {(datetime.strptime(match_data["kick_off"], "%H:%M") + timedelta(hours=2.5)).strftime("%H:%M")}\n\n🔸{match_data["title"].split(' ')[0]} {match_data["opposition"]} at {match_data["venue"]} in {match_data["competition"]}"
     if match_data["goalscorers"]:
         text = text + "\n\nGoalscorers :"
         for name in match_data["goalscorers"]:
