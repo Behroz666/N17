@@ -11,17 +11,33 @@ import unicodedata
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
 def download_twitter_video(url, output_path):
-    # Options for lowest quality download
-    ydl_opts = {
-        'format': 'worst',  # 'worst' selects the lowest quality available
-        'outtmpl': output_path,  # output file name
+    # First try 360p
+    ydl_opts_360p = {
+        'format': 'bestvideo[height<=360]+bestaudio/best[height<=360]',
+        'outtmpl': output_path,
     }
-    
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info_dict = ydl.extract_info(url, download=True)
-        filename = ydl.prepare_filename(info_dict)  # This gives the actual saved filename
-        return filename
 
+    with yt_dlp.YoutubeDL(ydl_opts_360p) as ydl:
+        info_dict = ydl.extract_info(url, download=True)
+        filename = ydl.prepare_filename(info_dict)
+
+    # Check file size (in MB)
+    file_size_mb = os.path.getsize(filename) / (1024 * 1024)
+
+    if file_size_mb > 10:
+        # Delete the large file and fallback to worst
+        os.remove(filename)
+
+        ydl_opts_worst = {
+            'format': 'worst',
+            'outtmpl': output_path,
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts_worst) as ydl:
+            info_dict = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info_dict)
+
+    return filename
 
 def normalize_stylized(text: str) -> str:
     normalized = []
