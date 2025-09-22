@@ -131,12 +131,21 @@ def download_latest_tiktoks(username):
     all_ids = downloaded_ids.union(new_ids)
     save_history(all_ids)
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/117.0.0.0 Safari/537.36",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Referer": "https://thfcdb.com/",
+}
+
 def scrape_match_urls(date_str):
     base_url = "https://thfcdb.com/dates/"
     target_url = f"{base_url}{date_str}/matches"
 
     try:
-        response = requests.get(target_url)
+        response = requests.get(target_url, headers=headers)
         response.raise_for_status()
     except requests.RequestException as e:
         print(f"Error fetching {target_url}: {e}")
@@ -158,7 +167,7 @@ def scrape_match_urls(date_str):
 def scrape_match_info(match_url):
     """Scrape structured match info including opposition, competition, date, kick-off, venue, highlights, report, and goalscorers."""
     try:
-        response = requests.get(match_url)
+        response = requests.get(match_url, headers=headers)
         response.raise_for_status()
     except requests.RequestException as e:
         print(f"Error fetching {match_url}: {e}")
