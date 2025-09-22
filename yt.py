@@ -66,7 +66,7 @@ def get_video_height(path: str) -> int:
         print(f"Error probing video height: {e}")
         return 0
 
-def compress_video(input_path: str, output_path: str, crf: int = 28, preset: str = 'slow', max_height: int = None):
+def compress_video(input_path: str, output_path: str, crf: int = 28, preset: str = 'faster', max_height: int = None):
     """
     Run one-pass FFmpeg re-encode at the given CRF & preset.
     Returns True if the process succeeds.
@@ -258,7 +258,7 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
             max_height = 640 if height > 640 else None
 
             # 2. Base recompress (everyone gets this)
-            compress_video(raw_file, base_compressed, crf=28, preset='slow', max_height=max_height)
+            compress_video(raw_file, base_compressed, crf=28, preset='faster', max_height=max_height)
             os.remove(raw_file)
 
             # 3. If still too big, loop tighter CRF

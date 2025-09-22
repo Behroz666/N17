@@ -92,7 +92,7 @@ def download_latest_tiktoks(username):
             ffmpeg_cmd = [
                 "ffmpeg", "-i", raw_file,
                 "-vf", "scale=360:-2",
-                "-c:v", "libx264", "-crf", "23", "-preset", "slow",
+                "-c:v", "libx264", "-crf", "23", "-preset", "faster",
                 "-c:a", "aac", "-b:a", "128k",
                 compressed_file
             ]
