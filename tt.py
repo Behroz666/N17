@@ -271,7 +271,7 @@ def OTD():
         for k, v in match_data.items():
             print(f"{k}: {v}")
     
-    text = f"🗓️ On this day on {match_data["date"]} at {match_data["kick_off"]}\n\n🔸{match_data["title"].split(' ')[0]} {match_data["opposition"]} at {match_data["venue"]} in {match_data["competition"]}"
+    text = f"🗓️ On this day on {match_data["date"]}\n⏳at {match_data["kick_off"]}\n\n🔸{match_data["title"].split(' ')[0]} {match_data["opposition"]} at {match_data["venue"]} in {match_data["competition"]}"
     if match_data["goalscorers"]:
         text = text + "\n\nGoalscorers :"
         for name in match_data["goalscorers"]:
