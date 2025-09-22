@@ -296,7 +296,7 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
             }
 
             response = requests.post(url, data=data, files=files)
-            print(response)
+            print(response.json())
             os.remove(final_file)
             if 'cookiefile' in ydl_opts and os.path.exists(ydl_opts['cookiefile']):
                 os.remove(ydl_opts['cookiefile'])
