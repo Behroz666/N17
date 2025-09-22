@@ -102,12 +102,17 @@ def download_latest_tiktoks(username):
             file_size_mb = os.path.getsize(compressed_file) / (1024 * 1024)
             target_chat_id = TELEGRAM_CHAT_ID if file_size_mb <= 7 else LARGE_FILE_CHAT_ID
 
+            if len(title)>10:
+                fa = translate(config, title)
+            else:
+                fa = title
+
             with open(compressed_file, "rb") as f:
                 response = requests.post(
                     f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
                     files={'video': f},
                     data={'chat_id': target_chat_id,
-                        'caption': f"{translate(config, title)}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
+                        'caption': f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
                         "parse_mode": "HTML"}
                 )
                 response.raise_for_status()
