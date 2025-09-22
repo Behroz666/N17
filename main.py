@@ -6,6 +6,7 @@ from telegram import send_image, send_message, send_gallery, pin_message, delete
 import yt_dlp
 import os
 import requests
+import unicodedata
 
 def download_twitter_video(url, output_path):
     # Options for lowest quality download
@@ -18,6 +19,28 @@ def download_twitter_video(url, output_path):
         info_dict = ydl.extract_info(url, download=True)
         filename = ydl.prepare_filename(info_dict)  # This gives the actual saved filename
         return filename
+
+
+def normalize_stylized(text: str) -> str:
+    normalized = []
+    for char in text:
+        try:
+            name = unicodedata.name(char)
+        except ValueError:
+            # Character might not have a name (e.g., emoji), keep as-is
+            normalized.append(char)
+            continue
+
+        # Handle stylized letters/numbers
+        if "MATHEMATICAL" in name:
+            # Extract the base letter/number from the name
+            parts = name.split()
+            base = parts[-1]
+            normalized.append(base)
+        else:
+            normalized.append(char)
+
+    return "".join(normalized)
 
 if __name__ == "__main__":
 
@@ -46,10 +69,10 @@ if __name__ == "__main__":
                         fa = tweet[1]
                     else:
                         try:
-                            fa = translate(config, tweet[1])
+                            fa = translate(config, normalize_stylized(tweet[1]))
                         except:
                             time.sleep(60)
-                            fa = translate(config, tweet[1])
+                            fa = translate(config, normalize_stylized(tweet[1]))
 
                 if len(fa) < (len(tweet[1])/2):
                     continue
