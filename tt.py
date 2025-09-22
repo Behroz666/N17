@@ -3,7 +3,13 @@ import json
 import os
 import requests
 from translate import translate
-from telegram import send_image
+from telegram import send_image, send_message
+
+from bs4 import BeautifulSoup
+from datetime import datetime
+import re
+
+hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -64,7 +70,7 @@ def download_latest_tiktoks(username):
                 fa = translate(config, title)
             else:
                 fa = title
-            text = f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
+            text = f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}"
             send_image(config, text, thumbnail_url)
             new_ids.add(video_id)
             count += 1
@@ -112,7 +118,7 @@ def download_latest_tiktoks(username):
                     f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
                     files={'video': f},
                     data={'chat_id': target_chat_id,
-                        'caption': f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
+                        'caption': f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
                         "parse_mode": "HTML"}
                 )
                 response.raise_for_status()
@@ -125,5 +131,145 @@ def download_latest_tiktoks(username):
     all_ids = downloaded_ids.union(new_ids)
     save_history(all_ids)
 
+def scrape_match_urls(date_str):
+    base_url = "https://thfcdb.com/dates/"
+    target_url = f"{base_url}{date_str}/matches"
+
+    try:
+        response = requests.get(target_url)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Error fetching {target_url}: {e}")
+        return []
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    links = []
+    for a_tag in soup.find_all("a", href=True):
+        href = a_tag["href"]
+        if "/matches/" in href:
+            if href.startswith("/"):
+                href = "https://thfcdb.com" + href
+            links.append(href)
+
+    return sorted(set(links), reverse=True)  # newest first
+
+
+def scrape_match_info(match_url):
+    """Scrape structured match info including opposition, competition, date, kick-off, venue, highlights, report, and goalscorers."""
+    try:
+        response = requests.get(match_url)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Error fetching {match_url}: {e}")
+        return {}
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    match_info = {"url": match_url}
+
+    # Title
+    header = soup.find("h1")
+    if header:
+        match_info["title"] = header.get_text(strip=True)
+
+    # Competition & Opposition
+    competition_select = soup.find("select", id="matchesToShow")
+    if competition_select:
+        options = competition_select.find_all("option")
+        if len(options) >= 2:
+            match_info["opposition"] = options[0].get_text(strip=True)
+            match_info["competition"] = options[1].get_text(strip=True)
+
+    # Date
+    date_tag = soup.find("dt", string=lambda t: t and "Date" in t)
+    if date_tag:
+        date_value = date_tag.find_next("p")
+        if date_value:
+            match_info["date"] = date_value.get_text(strip=True)
+
+    # Kick Off
+    kickoff_tag = soup.find("dt", string=lambda t: t and "Kick Off" in t)
+    if kickoff_tag:
+        kickoff_value = kickoff_tag.find_next("p")
+        if kickoff_value:
+            match_info["kick_off"] = kickoff_value.get_text(strip=True)
+
+    # Venue
+    venue_tag = soup.find("dt", string=lambda t: t and "Venue" in t)
+    if venue_tag:
+        venue_value = venue_tag.find_next("p")
+        if venue_value:
+            match_info["venue"] = venue_value.get_text(strip=True)
+
+    # Score
+    score = soup.find(class_="score")
+    if score:
+        match_info["score"] = score.get_text(strip=True)
+
+    # Extra details in tables
+    details = {}
+    for row in soup.select("table tr"):
+        cells = row.find_all("td")
+        if len(cells) == 2:
+            key = cells[0].get_text(strip=True)
+            val = cells[1].get_text(strip=True)
+            details[key] = val
+    if details:
+        match_info["details"] = details
+
+    # Highlights video (YouTube iframe)
+    iframe = soup.find("iframe", src=True)
+    if iframe and "youtube.com" in iframe["src"]:
+        match_info["highlight_video"] = iframe["src"]
+
+    # Match report
+    report_container = soup.find("article", class_="prose")
+    if report_container:
+        paragraphs = report_container.find_all("p")
+        report_text = '\n'.join(p.get_text(strip=True) for p in paragraphs)
+        match_info["report"] = re.sub(r'\s+', ' ', report_text).strip()
+
+    # Goalscorers
+    match_info["goalscorers"] = []
+    for li in soup.select("ul li.flex.items-center"):
+        player = li.find("a") or li.find("span", class_="font-bold")
+        minute = li.find("span", class_="text-sky-500")
+        if player and minute:
+            match_info["goalscorers"].append(f"{player.get_text(strip=True)} - {minute.get_text(strip=True)}")
+
+    return match_info
+
+def OTD():
+    today = datetime.now()
+    date_input = today.strftime("%d-%B").lower()
+
+    match_urls = scrape_match_urls(date_input)
+    print(f"Found {len(match_urls)} match URLs for {date_input}:")
+    for url in match_urls:
+        print(url)
+
+    if match_urls:
+        newest_match_url = match_urls[0]
+        print("\nScraping detailed info from:", newest_match_url)
+        match_data = scrape_match_info(newest_match_url)
+        print("\nStructured Match Info:")
+        for k, v in match_data.items():
+            print(f"{k}: {v}")
+    
+    text = f"On this day on {match_data["date"]} at {match_data["kick_off"]}\n\n{match_data["title"].split(' ')[0]} {match_data["opposition"]} at {match_data["venue"]} in {match_data["competition"]}"
+    if match_data["goalscorers"]:
+        text = text + "\n\nGoalscorers :"
+        for name in match_data["goalscorers"]:
+            text = text + "\n" + name
+    if match_data["report"]: 
+        fa = translate(config, match_data["report"])
+        text = text + f"\n\n<blockquote expandable>{fa[:3600]}</blockquote>"
+    if match_data["highlight_video"]:
+        text = text + f"\n\n<a href='{match_data["highlight_video"]}'>📽️ Highlight Video</a>"
+    print(text)
+    send_message(config, text + f"\n\n{hyperlink}", config["Main Chat id"])
+
 if __name__ == "__main__":
-    download_latest_tiktoks("spursofficial")  # Replace with actual username
+    download_latest_tiktoks("spursofficial")
+    OTD()
