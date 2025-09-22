@@ -64,7 +64,7 @@ def download_latest_tiktoks(username):
                 fa = translate(config, title)
             else:
                 fa = title
-            text = f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>"
+            text = f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
             send_image(config, text, thumbnail_url)
             new_ids.add(video_id)
             count += 1
@@ -107,7 +107,7 @@ def download_latest_tiktoks(username):
                     f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
                     files={'video': f},
                     data={'chat_id': target_chat_id,
-                        'caption': f"{translate(config, title)}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n<a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a>",
+                        'caption': f"{translate(config, title)}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
                         "parse_mode": "HTML"}
                 )
                 response.raise_for_status()
