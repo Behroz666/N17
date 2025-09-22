@@ -16,7 +16,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
 # --- Configuration Constants ---
 # Telegram Bot API file size limit in bytes (50 MB)
 TELEGRAM_API_LIMIT_BYTES = 50 * 1024 * 1024
-SIZE_LIMIT = 80 * 1024 * 1024
+SIZE_LIMIT = 65 * 1024 * 1024
 
 # --- Environment Variables (to be set in GitHub Secrets) ---
 # Your YouTube Data API v3 key
@@ -26,7 +26,7 @@ YOUTUBE_CHANNEL_ID = "UCEg25rdRZXg32iwai6N6l0w"
 # Your Telegram Bot Token (get from BotFather)
 TELEGRAM_BOT_TOKEN = os.environ.get('BOT_TOKEN')
 # The chat ID where the bot should post videos (can be a user ID or a group chat ID)
-TELEGRAM_CHAT_ID = config["Main Chat id"]
+TELEGRAM_CHAT_ID = config["Media Chat id"]
 # YouTube cookies string from GitHub Secrets
 YOUTUBE_COOKIES = os.environ.get('YOUTUBE_COOKIES')
 
