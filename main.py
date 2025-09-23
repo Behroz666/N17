@@ -20,7 +20,6 @@ def download_twitter_video(url, output_path):
     with yt_dlp.YoutubeDL(ydl_opts_360p) as ydl:
         info_dict = ydl.extract_info(url, download=True)
         filename = ydl.prepare_filename(info_dict)
-        afilename =filename + f".{info_dict.get('ext', 'mp4')}"
 
     # Check file size (in MB)
     file_size_mb = os.path.getsize(filename) / (1024 * 1024)
@@ -37,7 +36,6 @@ def download_twitter_video(url, output_path):
         with yt_dlp.YoutubeDL(ydl_opts_worst) as ydl:
             info_dict = ydl.extract_info(url, download=True)
             filename = ydl.prepare_filename(info_dict)
-            #filename += f".{info_dict.get('ext', 'mp4')}"
     return filename
 
 def normalize_stylized(text: str) -> str:
@@ -137,8 +135,6 @@ if __name__ == "__main__":
                                 os.remove(file_name)
                                 response_json = response.json()
                                 message_id = response_json['result']['message_id']
-                            except Exception as e:
-                                print("An error occurred:", e)
                             except:
                                 message_id = send_image(config, message, tweet[3][0])
                     else:
