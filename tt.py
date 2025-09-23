@@ -217,26 +217,12 @@ def scrape_match_info(match_url):
         if venue_value:
             match_info["venue"] = venue_value.get_text(strip=True)
 
-    # Score
-    score = soup.find(class_="score")
-    if score:
-        match_info["score"] = score.get_text(strip=True)
-
-    # Extra details in tables
-    details = {}
-    for row in soup.select("table tr"):
-        cells = row.find_all("td")
-        if len(cells) == 2:
-            key = cells[0].get_text(strip=True)
-            val = cells[1].get_text(strip=True)
-            details[key] = val
-    if details:
-        match_info["details"] = details
-
     # Highlights video (YouTube iframe)
     iframe = soup.find("iframe", src=True)
     if iframe and "youtube.com" in iframe["src"]:
         match_info["highlight_video"] = iframe["src"]
+    else: 
+        match_info["highlight_video"] = ""
 
     # Match report
     report_container = soup.find("article", class_="prose")
@@ -244,6 +230,8 @@ def scrape_match_info(match_url):
         paragraphs = report_container.find_all("p")
         report_text = '\n'.join(p.get_text(strip=True) for p in paragraphs)
         match_info["report"] = re.sub(r'\s+', ' ', report_text).strip()
+    else:
+        match_info["report"]=""
 
     # Goalscorers
     match_info["goalscorers"] = []
