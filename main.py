@@ -11,7 +11,6 @@ import unicodedata
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
 def download_twitter_video(url, output_path):
-    print("v dl started")
     # First try 360p
     ydl_opts_360p = {
         'format': 'best[height<=360]',
@@ -25,7 +24,6 @@ def download_twitter_video(url, output_path):
 
     # Check file size (in MB)
     file_size_mb = os.path.getsize(filename) / (1024 * 1024)
-    print(file_size_mb)
 
     if file_size_mb > 10:
         # Delete the large file and fallback to worst
@@ -40,7 +38,6 @@ def download_twitter_video(url, output_path):
             info_dict = ydl.extract_info(url, download=True)
             filename = ydl.prepare_filename(info_dict)
             filename += f".{info_dict.get('ext', 'mp4')}"
-    print(filename)
     return filename
 
 def normalize_stylized(text: str) -> str:
@@ -140,8 +137,6 @@ if __name__ == "__main__":
                                 os.remove(file_name)
                                 response_json = response.json()
                                 message_id = response_json['result']['message_id']
-                            except Exception as e:
-                                print("An error occurred:", e)
                             except:
                                 message_id = send_image(config, message, tweet[3][0])
                     else:
