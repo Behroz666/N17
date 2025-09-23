@@ -23,7 +23,7 @@ def download_twitter_video(url, output_path):
         afilename =filename + f".{info_dict.get('ext', 'mp4')}"
 
     # Check file size (in MB)
-    file_size_mb = os.path.getsize(afilename) / (1024 * 1024)
+    file_size_mb = os.path.getsize(filename) / (1024 * 1024)
 
     if file_size_mb > 10:
         # Delete the large file and fallback to worst
