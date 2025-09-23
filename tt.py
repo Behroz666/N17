@@ -234,14 +234,116 @@ def scrape_match_info(match_url):
         match_info["report"]=""
 
     # Goalscorers
-    match_info["goalscorers"] = []
-    for li in soup.select("ul li.flex.items-center"):
-        player = li.find("a") or li.find("span", class_="font-bold")
-        minute = li.find("span", class_="text-sky-500")
-        if player and minute:
-            match_info["goalscorers"].append(f"{player.get_text(strip=True)} - {minute.get_text(strip=True)}")
+    # Match info structure
+    match_info["teams"] = {}
+
+    # --- TEAM 1 (the first score block, e.g. Spurs) ---
+    team1_block = soup.select_one("p.text-3xl") or soup.select_one("p.text-3xl.md:text-5xl")
+    if team1_block:
+        # Find the parent container
+        container = team1_block.find_parent("div")
+
+        # Team name and score
+        team_name = container.find("span", class_="text-navy-400").get_text(strip=True)
+        team_score = container.find("span", class_="text-sky-500").get_text(strip=True)
+
+        match_info["teams"][team_name] = {"score": team_score, "goals": {}, "cards": {}}
+
+        # Loop through goals/cards
+        for li in container.select("ul li.flex.items-center"):
+            player = li.find("a") or li.find("span", class_="font-bold")
+            if not player:
+                continue
+            player_name = player.get_text(strip=True)
+
+            for div in li.select("div.inline-flex.items-center.gap-1"):
+                minute = div.find("span", class_="text-sky-500")
+                if not minute:
+                    continue
+                minute_text = minute.get_text(strip=True)
+
+                svg = div.find("svg")
+                svg_str = str(svg) if svg else ""
+                if "#b91c1c" in svg_str:  # red card
+                    match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
+                        {"type": "red", "minute": minute_text}
+                    )
+                elif "#eab147" in svg_str:  # yellow card
+                    match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
+                        {"type": "yellow", "minute": minute_text}
+                    )
+                else:  # goal
+                    match_info["teams"][team_name]["goals"].setdefault(player_name, []).append(minute_text)
+
+    # --- TEAM 2 (the flex gap-4 block, e.g. West Ham) ---
+    for block in soup.select("div.flex.gap-4"):
+        team_name_tag = block.select_one("p.text-navy-400")
+        score_tag = block.select_one("p.text-sky-500")
+        if not team_name_tag:
+            continue
+
+        team_name = team_name_tag.get_text(strip=True)
+        team_score = score_tag.get_text(strip=True) if score_tag else None
+
+        match_info["teams"][team_name] = {"score": team_score, "goals": {}, "cards": {}}
+
+        for li in block.select("ul li.flex.items-center"):
+            player = li.find("a") or li.find("span", class_="font-bold")
+            if not player:
+                continue
+            player_name = player.get_text(strip=True)
+
+            for div in li.select("div.inline-flex.items-center.gap-1"):
+                minute = div.find("span", class_="text-sky-500")
+                if not minute:
+                    continue
+                minute_text = minute.get_text(strip=True)
+
+                svg = div.find("svg")
+                svg_str = str(svg) if svg else ""
+                if "#b91c1c" in svg_str:  # red card
+                    match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
+                        {"type": "red", "minute": minute_text}
+                    )
+                elif "#eab147" in svg_str:  # yellow card
+                    match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
+                        {"type": "yellow", "minute": minute_text}
+                    )
+                else:  # goal
+                    match_info["teams"][team_name]["goals"].setdefault(player_name, []).append(minute_text)
+
 
     return match_info
+
+def format_match(teams: dict) -> str:
+    lines = []
+    for team, data in teams.items():
+        # Team header
+        score = data.get("score", "0")
+        lines.append(f"{team} - {score}:")
+        
+        # Goals
+        goals = data.get("goals", {})
+        for player, times in goals.items():
+            if len(times) > 1:
+                lines.append(f"⚽⚽ {player} - {', '.join(times)}")
+            else:
+                lines.append(f"⚽ {player} - {', '.join(times)}")
+        
+        # Cards
+        cards = data.get("cards", {})
+        for player, card_list in cards.items():
+            for card in card_list:
+                ctype = card.get("type", "").lower()
+                minute = card.get("minute", "")
+                if ctype == "red":
+                    lines.append(f"🔴 {player} - {minute}")
+                elif ctype == "yellow":
+                    lines.append(f"🟨 {player} - {minute}")
+        
+        lines.append("")  # blank line after each team
+    
+    return "\n".join(lines).strip()
 
 def OTD():
     today = datetime.now()
@@ -261,10 +363,8 @@ def OTD():
             print(f"{k}: {v}")
     
     text = f"🗓️ On this day on {match_data["date"]}\n⏳at {(datetime.strptime(match_data["kick_off"], "%H:%M") + timedelta(hours=2.5)).strftime("%H:%M")}\n\n🔸{match_data["title"].split(' ')[0]} {match_data["opposition"]} at {match_data["venue"]} in {match_data["competition"]}"
-    if match_data["goalscorers"]:
-        text = text + "\n\nGoalscorers :"
-        for name in match_data["goalscorers"]:
-            text = text + "\n⚽" + name
+    if match_data["teams"]:
+        text = text + "\n\n" + format_match(match_data["teams"])
     if match_data["report"]: 
         fa = translate(config, match_data["report"])
         text = text + f"\n\n<blockquote expandable>{fa[:3600]}</blockquote>"
