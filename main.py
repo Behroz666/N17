@@ -20,6 +20,7 @@ def download_twitter_video(url, output_path):
     with yt_dlp.YoutubeDL(ydl_opts_360p) as ydl:
         info_dict = ydl.extract_info(url, download=True)
         filename = ydl.prepare_filename(info_dict)
+        filename += f".{info_dict.get('ext', 'mp4')}"
 
     # Check file size (in MB)
     file_size_mb = os.path.getsize(filename) / (1024 * 1024)
