@@ -11,6 +11,7 @@ import unicodedata
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
 def download_twitter_video(url, output_path):
+    print("v dl started")
     # First try 360p
     ydl_opts_360p = {
         'format': 'bestvideo[height<=360]+bestaudio/best[height<=360]',
@@ -139,6 +140,8 @@ if __name__ == "__main__":
                                 os.remove(file_name)
                                 response_json = response.json()
                                 message_id = response_json['result']['message_id']
+                            except Exception as e:
+                                print("An error occurred:", e)
                             except:
                                 message_id = send_image(config, message, tweet[3][0])
                     else:
