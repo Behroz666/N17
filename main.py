@@ -14,7 +14,7 @@ def download_twitter_video(url, output_path):
     print("v dl started")
     # First try 360p
     ydl_opts_360p = {
-        'format': 'bestvideo[height<=360]+bestaudio/best[height<=360]',
+        'format': 'best[height<=360]',
         'outtmpl': output_path,
     }
 
