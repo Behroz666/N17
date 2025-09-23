@@ -24,6 +24,7 @@ def download_twitter_video(url, output_path):
 
     # Check file size (in MB)
     file_size_mb = os.path.getsize(filename) / (1024 * 1024)
+    print(file_size_mb)
 
     if file_size_mb > 10:
         # Delete the large file and fallback to worst
@@ -37,7 +38,8 @@ def download_twitter_video(url, output_path):
         with yt_dlp.YoutubeDL(ydl_opts_worst) as ydl:
             info_dict = ydl.extract_info(url, download=True)
             filename = ydl.prepare_filename(info_dict)
-
+            filename += f".{info_dict.get('ext', 'mp4')}"
+    print(filename)
     return filename
 
 def normalize_stylized(text: str) -> str:
@@ -125,6 +127,7 @@ if __name__ == "__main__":
                         else:
                             try:
                                 file_name = download_twitter_video(url, tweet[0])
+                                print("incode" + file_name)
                                 with open(file_name, 'rb') as f:
                                     response = requests.post(
                                         f"https://api.telegram.org/bot{os.environ.get('BOT_TOKEN')}/sendVideo",
