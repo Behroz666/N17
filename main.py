@@ -136,7 +136,8 @@ if __name__ == "__main__":
                                 response_json = response.json()
                                 message_id = response_json['result']['message_id']
                             except Exception as e:
-                                print("An error occurred:", e)
+                                send_message(config, f"{e}", 1140637004)
+                                message_id = send_image(config, message, tweet[3][0])
                             except:
                                 message_id = send_image(config, message, tweet[3][0])
                     else:
