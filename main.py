@@ -135,6 +135,8 @@ if __name__ == "__main__":
                                 os.remove(file_name)
                                 response_json = response.json()
                                 message_id = response_json['result']['message_id']
+                            except Exception as e:
+                                print("An error occurred:", e)
                             except:
                                 message_id = send_image(config, message, tweet[3][0])
                     else:
