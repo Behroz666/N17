@@ -118,6 +118,7 @@ if __name__ == "__main__":
                     message_id = send_message(config, message, config["Main Chat id"])
                 else:
                     if len(tweet[3]) == 1:
+                        print(tweet[3][0])
                         if "video_thumb" not in tweet[3][0]:
                             message_id = send_image(config, message, tweet[3][0])
                         else:
