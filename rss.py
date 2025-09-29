@@ -17,7 +17,6 @@ def get_rss_feed(page):
         print("There was an error parsing the feed.")
     else:
         for entry in feed.entries:
-            print(entry)
             img_urls = re.findall(r'<img src="(.*?)"', entry.summary)
             if img_urls:
                 response.append([extract_id(entry.link), entry.title, 1, img_urls, datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %Z').replace(tzinfo=timezone.utc)])
