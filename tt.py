@@ -347,7 +347,10 @@ def format_match(teams: dict) -> str:
 
 def OTD():
     today = datetime.now()
-    date_input = today.strftime("%d-%B").lower()
+    try:
+        date_input = today.strftime("%-d-%B").lower()  # works on Linux/Mac
+    except:
+        date_input = today.strftime("%#d-%B").lower()
 
     match_urls = scrape_match_urls(date_input)
     print(f"Found {len(match_urls)} match URLs for {date_input}:")
@@ -375,4 +378,8 @@ def OTD():
 
 if __name__ == "__main__":
     download_latest_tiktoks("spursofficial")
-    OTD()
+    try:
+        OTD()
+    except Exception as e:
+        print(e)
+        send_message(config, f"{e}", 1140637004)
