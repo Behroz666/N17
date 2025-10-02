@@ -357,7 +357,7 @@ def format_match(teams: dict) -> str:
                 elif ctype == "own goal":
                     lines.append(f"⚽🤦‍♂️ {player} - {minute}")
                 elif ctype == "missed pen":
-                    lines.append(f"🥅❌ {player} - {minute}")
+                    lines.append(f"\n🥅❌ {player} - {minute}")
         
         lines.append("")  # blank line after each team
     
