@@ -38,7 +38,7 @@ def is_new(config, text, history):
     else:
         return False    
 
-def article_summarize(config, text):
+def article_summarize(config, text, title):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
@@ -54,7 +54,7 @@ def article_summarize(config, text):
             },
             {
             "role": "system",
-            "content": config["Acticle System Prompt"]
+            "content": config["Acticle System Prompt"] + f"تو باید این عنوان را هم در نظر داشته باشی {title} و به سوال و موضوع اصلی مطرح شده در این عنوان بپردازی اگر نوشته جالب دیگری هم در متن وجود داشت و میتوانستی با در نظر گرفتن محدودیت طول متن خروجی آن را هم ذکر کنی آن را انجام بده. پس تو باید یک پاراگراف حذاب و خلاصه از متن داده شده با در نظر داشتن عنوان ارائه بدی"
             }
         ],
         
@@ -92,7 +92,7 @@ def summarize(config, text):
     print(response_json)
     return response_json['choices'][0]['message']['content']
 
-def translate(config, text):
+def translate(config, text, additional):
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
@@ -108,7 +108,7 @@ def translate(config, text):
             },
             {
             "role": "system",
-            "content": config["Translation System Prompt"]
+            "content": config["Translation System Prompt"] + additional
             }
         ],
         

@@ -80,7 +80,7 @@ if __name__ == "__main__":
         if pub_date < one_day_ago:
             continue  # Skip if older than 1 day
         
-        fa_title = translate(config, title)
+        fa_title = translate(config, title, additional = "")
         print(title + "\n\n turns into" + fa_title)
 
         if len(fa_title) < 2 * len(title):
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         print(f"\n--- {title} ({pub_date}) ---")
         if banner_url:
             print(f"Banner Image: {banner_url}")
-        summary = article_summarize(config, article_text)
+        summary = article_summarize(config, article_text, fa_title)
         print(summary)
         text = text + f"<blockquote expandable>{summary}</blockquote>\n\n✍️ By Alasdair Gold at {(pub_date + timedelta(hours=3, minutes=30)).strftime('%Y.%m.%d %I:%M %p')}\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
         try:

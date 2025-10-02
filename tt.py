@@ -69,7 +69,7 @@ def download_latest_tiktoks(username):
 
         if "photomode" in thumbnail_url:
             if len(title)>10:
-                fa = translate(config, title)
+                fa = translate(config, title, additional = "")
             else:
                 fa = title
             text = f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}"
@@ -111,7 +111,7 @@ def download_latest_tiktoks(username):
             target_chat_id = TELEGRAM_CHAT_ID if file_size_mb <= 7 else LARGE_FILE_CHAT_ID
 
             if len(title)>10:
-                fa = translate(config, title)
+                fa = translate(config, title, additional = "")
             else:
                 fa = title
 
@@ -232,7 +232,7 @@ def scrape_match_info(match_url):
         match_info["report"] = re.sub(r'\s+', ' ', report_text).strip()
     else:
         match_info["report"]=""
-        
+
     # Goalscorers
     # Match info structure
     match_info["teams"] = {}
@@ -387,7 +387,8 @@ def OTD():
     if match_data["teams"]:
         text = text + "\n\n" + format_match(match_data["teams"])
     if match_data["report"]: 
-        fa = translate(config, match_data["report"])
+        additional = "باید علاوه بر ترجمه دقیق اتفاقات بازی را خلاصه کنی. تو باید اتفاقات بازی را کامل و مفید و جذاب شرح دهی و صحبت های مربی را هم در ترجمه قرار دهی اما در کل نباید متن خروجی بیشتر از 4000 کاراکتر باشد. چیزی جز خلاصه بازی به زبان فارسی نگو و تنها وظایفت را انجام بده و متن خروجی را در قالب جند پاراگراف ارائه بده"
+        fa = translate(config, match_data["report"], additional)
         text = text + f"\n\n<blockquote expandable>{fa[:3600]}</blockquote>"
     if match_data["highlight_video"]:
         text = text + f"\n\n<a href='{match_data["highlight_video"]}'>📽️ Highlight Video</a>"
