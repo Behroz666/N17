@@ -232,7 +232,7 @@ def scrape_match_info(match_url):
         match_info["report"] = re.sub(r'\s+', ' ', report_text).strip()
     else:
         match_info["report"]=""
-
+        
     # Goalscorers
     # Match info structure
     match_info["teams"] = {}
@@ -272,6 +272,14 @@ def scrape_match_info(match_url):
                     match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
                         {"type": "yellow", "minute": minute_text}
                     )
+                elif "#ba0000" in svg_str:  # own goal
+                    match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
+                        {"type": "own goal", "minute": minute_text}
+                    )
+                elif "#7d7d7d" in svg_str:  # missed penalty
+                    match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
+                        {"type": "missed pen", "minute": minute_text}
+                    )
                 else:  # goal
                     match_info["teams"][team_name]["goals"].setdefault(player_name, []).append(minute_text)
 
@@ -309,6 +317,15 @@ def scrape_match_info(match_url):
                     match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
                         {"type": "yellow", "minute": minute_text}
                     )
+                elif "#ba0000" in svg_str:  # own goal
+                    match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
+                        {"type": "own goal", "minute": minute_text}
+                    )
+                elif "#7d7d7d" in svg_str:  # missed penalty
+                    match_info["teams"][team_name]["cards"].setdefault(player_name, []).append(
+                        {"type": "missed pen", "minute": minute_text}
+                    )
+
                 else:  # goal
                     match_info["teams"][team_name]["goals"].setdefault(player_name, []).append(minute_text)
 
@@ -325,10 +342,7 @@ def format_match(teams: dict) -> str:
         # Goals
         goals = data.get("goals", {})
         for player, times in goals.items():
-            if len(times) > 1:
-                lines.append(f"⚽⚽ {player} - {', '.join(times)}")
-            else:
-                lines.append(f"⚽ {player} - {', '.join(times)}")
+            lines.append(f"{"⚽" * len(times)} {player} - {', '.join(times)}")
         
         # Cards
         cards = data.get("cards", {})
@@ -340,6 +354,10 @@ def format_match(teams: dict) -> str:
                     lines.append(f"🔴 {player} - {minute}")
                 elif ctype == "yellow":
                     lines.append(f"🟨 {player} - {minute}")
+                elif ctype == "own goal":
+                    lines.append(f"⚽🤦‍♂️ {player} - {minute}")
+                elif ctype == "missed pen":
+                    lines.append(f"🥅❌ {player} - {minute}")
         
         lines.append("")  # blank line after each team
     
