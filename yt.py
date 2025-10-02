@@ -291,7 +291,7 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
 
             data = {
                 'chat_id': telegram_chat_id,
-                'caption': f"{translate(config, video_title)}\n\n<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n🔸 <a href='https://t.me/N17_Media'>N17 Goals & Media</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
+                'caption': f"{translate(config, video_title)}\n\n<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n🔸 <a href='https://t.me/N17_Media'>N17 TV</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
                 'parse_mode': "HTML"
             }
 
