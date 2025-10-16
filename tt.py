@@ -72,7 +72,7 @@ def download_latest_tiktoks(username):
                 fa = translate(config, title, additional = "")
             else:
                 fa = title
-            text = f"{fa.replace("قدوس","کودوس").replace("خاوی","ژاوی")}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}"
+            text = f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}"
             send_image(config, text, thumbnail_url)
             new_ids.add(video_id)
             count += 1
@@ -120,7 +120,7 @@ def download_latest_tiktoks(username):
                     f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
                     files={'video': f},
                     data={'chat_id': target_chat_id,
-                        'caption': f"{fa.replace("قدوس","کودوس").replace("خاوی","ژاوی")}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
+                        'caption': f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
                         "parse_mode": "HTML"}
                 )
                 response.raise_for_status()

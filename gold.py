@@ -94,7 +94,7 @@ if __name__ == "__main__":
             print(f"Banner Image: {banner_url}")
         summary = article_summarize(config, article_text, fa_title)
         print(summary)
-        text = text + f"<blockquote expandable>{summary.replace("قدوس","کودوس").replace("خاوی","ژاوی")}</blockquote>\n\n✍️ By Alasdair Gold at {(pub_date + timedelta(hours=3, minutes=30)).strftime('%Y.%m.%d %I:%M %p')}\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
+        text = text + f"<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ By Alasdair Gold at {(pub_date + timedelta(hours=3, minutes=30)).strftime('%Y.%m.%d %I:%M %p')}\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
         try:
             if len(summary + title) < 940 :
                 send_image(config, text, banner_url)

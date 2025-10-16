@@ -94,7 +94,7 @@ if __name__ == "__main__":
                 if len(fa) < (len(tweet[1])/2):
                     continue
 
-                fa = fa.replace("#","").replace("قدوس","کودوس").replace("خاوی","ژاوی")
+                fa = fa.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی')
                 url = f"https://x.com/{config["page"][0]}/status/{tweet[0]}#m"
                 if tweet[2] == 0:
                     limit = 4096
@@ -183,7 +183,7 @@ if __name__ == "__main__":
                     if len(fa) < (len(tweet[1])/2):
                         continue
 
-                    fa = fa.replace("#","").replace("قدوس","کودوس").replace("خاوی","ژاوی")
+                    fa = fa.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی')
                     url = f"https://x.com/{config["page"][1]}/status/{tweet[0]}#m"
                     if tweet[2] == 0:
                         limit = 4096
