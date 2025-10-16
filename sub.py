@@ -45,7 +45,7 @@ if __name__ == "__main__":
                 final = final + result + "\n\n"
         else: 
             final = text
-        message = "خلاصه اخبار امروز:\n\n" + final + "\n<a href='https://t.me/+QjvW46AcqcAwZjg8'>برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>" + "\n\n@N17_Tottenham"
+        message = "خلاصه اخبار امروز:\n\n" + final.replace("قدوس","کودوس").replace("خاوی","ژاوی") + "\n<a href='https://t.me/+QjvW46AcqcAwZjg8'>برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>" + "\n\n@N17_Tottenham"
         send_message(config, message, config["Summary Chat id"])
 
         for admin in config["admins"]:
