@@ -139,7 +139,7 @@ if __name__ == "__main__":
                             except Exception as e:
                                 print(e)
                                 send_message(config, f"{e}", 1140637004)
-                                if "HTTP Error 403" in e :
+                                if "HTTP Error 403" in str(e) :
                                     tweet_ids["done"].append(tweet[0])
                                 message_id = send_image(config, message, tweet[3][0])
                             except:
@@ -151,8 +151,8 @@ if __name__ == "__main__":
                 tweet_ids["done"].append(tweet[0])
                 time.sleep(15)
             except:
-                if tweet[0] in tweet_ids["done"]:
-                    tweet_ids["done"].remove(tweet[0])
+                # if tweet[0] in tweet_ids["done"]:
+                #     tweet_ids["done"].remove(tweet[0])
                 continue
     history = []
     for tweet in tweets:
