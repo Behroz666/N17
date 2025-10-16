@@ -139,6 +139,8 @@ if __name__ == "__main__":
                             except Exception as e:
                                 print(e)
                                 send_message(config, f"{e}", 1140637004)
+                                if "HTTP Error 403" in e :
+                                    tweet_ids["done"].append(tweet[0])
                                 message_id = send_image(config, message, tweet[3][0])
                             except:
                                 message_id = send_image(config, message, tweet[3][0])
