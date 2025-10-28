@@ -39,7 +39,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install google-api-python-client requests yt-dlp
+        pip install google-api-python-client requests yt-dlp packaging
 
     - name: Run YouTube to Telegram script
       env:
