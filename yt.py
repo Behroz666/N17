@@ -282,21 +282,42 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
 
             # 4. Upload final_file
 
-            url = f'https://api.telegram.org/bot{telegram_bot_token}/sendVideo'
-
+            url_send = f'https://api.telegram.org/bot{telegram_bot_token}/sendVideo'
             files = {
                 'video': open(final_file, 'rb'),
                 'thumb': open('thumbnail.jpg', 'rb')
             }
-
-            data = {
+            data_send = {
                 'chat_id': telegram_chat_id,
-                'caption': f"{translate(config, video_title, additional = "").replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n🔸 <a href='https://t.me/N17_Media'>N17 TV</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
+                'caption': f"<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n🔸 <a href='https://t.me/N17_Media'>N17 TV</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
                 'parse_mode': "HTML"
             }
+            response_send = requests.post(url_send, data=data_send, files=files)
 
-            response = requests.post(url, data=data, files=files)
-            print(response.json())
+            if response_send.ok:
+                # Parse the response to get the message_id
+                result = response_send.json()['result']
+                message_id = result['message_id']
+                
+                # Now translate the caption
+                translated_caption = translate(config, video_title)
+                
+                # Edit the message caption with the translated version
+                url_edit = f'https://api.telegram.org/bot{telegram_bot_token}/editMessageCaption'
+                data_edit = {
+                    'chat_id': telegram_chat_id,
+                    'message_id': message_id,
+                'caption': f"{translate(config, video_title, additional = "").replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n🔸 <a href='https://t.me/N17_Media'>N17 TV</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
+                    'parse_mode': "HTML"
+                }
+                response_edit = requests.post(url_edit, data=data_edit)
+                
+                # Optional: Check if edit was successful
+                if not response_edit.ok:
+                    print(f"Failed to edit caption: {response_edit.text}")
+            else:
+                print(f"Failed to send video: {response_send.text}")
+
             os.remove(final_file)
             if 'cookiefile' in ydl_opts and os.path.exists(ydl_opts['cookiefile']):
                 os.remove(ydl_opts['cookiefile'])
