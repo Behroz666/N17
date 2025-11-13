@@ -115,15 +115,37 @@ def download_latest_tiktoks(username):
             else:
                 fa = title
 
-            with open(compressed_file, "rb") as f:
-                response = requests.post(
-                    f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
-                    files={'video': f},
-                    data={'chat_id': target_chat_id,
-                        'caption': f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
-                        "parse_mode": "HTML"}
-                )
-                response.raise_for_status()
+            url_send = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo'
+            files = {
+                'video': open(compressed_file, 'rb'),
+            }
+            data_send = {
+                'chat_id': target_chat_id,
+                'caption': f"<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
+                'parse_mode': "HTML"
+            }
+            response_send = requests.post(url_send, data=data_send, files=files)
+
+            if response_send.ok:
+                # Parse the response to get the message_id
+                result = response_send.json()['result']
+                message_id = result['message_id']
+                
+                # Edit the message caption with the translated version
+                url_edit = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/editMessageCaption'
+                data_edit = {
+                    'chat_id': target_chat_id,
+                    'message_id': message_id,
+                    'caption': f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
+                    'parse_mode': "HTML"
+                }
+                response_edit = requests.post(url_edit, data=data_edit)
+                
+                # Optional: Check if edit was successful
+                if not response_edit.ok:
+                    print(f"Failed to edit caption: {response_edit.text}")
+            else:
+                print(f"Failed to send video: {response_send.text}")
             
             os.remove(compressed_file)
         else:
