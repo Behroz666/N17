@@ -110,11 +110,6 @@ def download_latest_tiktoks(username):
             file_size_mb = os.path.getsize(compressed_file) / (1024 * 1024)
             target_chat_id = TELEGRAM_CHAT_ID if file_size_mb <= 7 else LARGE_FILE_CHAT_ID
 
-            if len(title)>10:
-                fa = translate(config, title, additional = "")
-            else:
-                fa = title
-
             url_send = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo'
             files = {
                 'video': open(compressed_file, 'rb'),
@@ -126,7 +121,7 @@ def download_latest_tiktoks(username):
             }
             response_send = requests.post(url_send, data=data_send, files=files)
 
-            if response_send.ok:
+            if response_send.ok and len(title)>10:
                 # Parse the response to get the message_id
                 result = response_send.json()['result']
                 message_id = result['message_id']
@@ -136,7 +131,7 @@ def download_latest_tiktoks(username):
                 data_edit = {
                     'chat_id': target_chat_id,
                     'message_id': message_id,
-                    'caption': f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
+                    'caption': f"{translate(config, title, additional = "").replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
                     'parse_mode': "HTML"
                 }
                 response_edit = requests.post(url_edit, data=data_edit)

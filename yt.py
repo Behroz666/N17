@@ -294,7 +294,7 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
             }
             response_send = requests.post(url_send, data=data_send, files=files)
 
-            if response_send.ok:
+            if response_send.ok and len(video_title)>10:
                 # Parse the response to get the message_id
                 result = response_send.json()['result']
                 message_id = result['message_id']
