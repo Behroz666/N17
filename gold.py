@@ -79,8 +79,10 @@ if __name__ == "__main__":
 
         if pub_date < one_day_ago:
             continue  # Skip if older than 1 day
-        
-        fa_title = translate(config, title, additional = "")
+        try:
+            fa_title = translate(config, title, "0", additional = "")
+        except:
+            fa_title = translate(config, title, "1", additional = "")
         print(title + "\n\n turns into" + fa_title)
 
         if len(fa_title) < 2 * len(title):

@@ -298,13 +298,18 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
                 # Parse the response to get the message_id
                 result = response_send.json()['result']
                 message_id = result['message_id']
+
+                try:
+                    fa = translate(config, video_title, "0", additional = "")
+                except:
+                    fa = translate(config, video_title, "1", additional = "")
                 
                 # Edit the message caption with the translated version
                 url_edit = f'https://api.telegram.org/bot{telegram_bot_token}/editMessageCaption'
                 data_edit = {
                     'chat_id': telegram_chat_id,
                     'message_id': message_id,
-                'caption': f"{translate(config, video_title, additional = "").replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n🔸 <a href='https://t.me/N17_Media'>N17 TV</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
+                'caption': f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{video_title}</a></blockquote>\n\n🔸 <a href='https://t.me/N17_Media'>N17 TV</a> | <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>",
                     'parse_mode': "HTML"
                 }
                 response_edit = requests.post(url_edit, data=data_edit)

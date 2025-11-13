@@ -92,7 +92,11 @@ def summarize(config, text):
     print(response_json)
     return response_json['choices'][0]['message']['content']
 
-def translate(config, text, additional):
+def translate(config, text, fail, additional):
+    if fail == "1":
+        model = config["Fallback Model Name"]
+    else:
+        model = config["Model Name"]
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
@@ -100,7 +104,7 @@ def translate(config, text, additional):
         "Content-Type": "application/json",
     },
     data=json.dumps({
-        "model": config["Model Name"],
+        "model": model,
         "messages": [
             {
             "role": "user",
