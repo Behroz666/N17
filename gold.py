@@ -82,7 +82,7 @@ if __name__ == "__main__":
         try:
             fa_title = translate(config, title, "0", additional = "")
         except:
-            fa_title = translate(config, title, "1", additional = "")
+            fa_title = translate(config, title, "1", additional = "") + "`"
         print(title + "\n\n turns into" + fa_title)
 
         if len(fa_title) < 2 * len(title):

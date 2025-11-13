@@ -88,7 +88,7 @@ if __name__ == "__main__":
                         try:
                             fa = translate(config, normalize_stylized(tweet[1]), "0", additional = "")
                         except:
-                            fa = translate(config, normalize_stylized(tweet[1]), "1", additional = "")
+                            fa = translate(config, normalize_stylized(tweet[1]), "1", additional = "") + "`"
 
                 if len(fa) < (len(tweet[1])/2):
                     continue
@@ -176,7 +176,7 @@ if __name__ == "__main__":
                         try:
                             fa = translate(config, tweet[1], "0", additional = "")
                         except:
-                            fa = translate(config, tweet[1], "1", additional = "")
+                            fa = translate(config, tweet[1], "1", additional = "") + "`"
 
                     if len(fa) < (len(tweet[1])/2):
                         continue

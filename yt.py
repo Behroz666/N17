@@ -302,7 +302,7 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
                 try:
                     fa = translate(config, video_title, "0", additional = "")
                 except:
-                    fa = translate(config, video_title, "1", additional = "")
+                    fa = translate(config, video_title, "1", additional = "") + "`"
                 
                 # Edit the message caption with the translated version
                 url_edit = f'https://api.telegram.org/bot{telegram_bot_token}/editMessageCaption'

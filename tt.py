@@ -72,7 +72,7 @@ def download_latest_tiktoks(username):
                 try:
                     fa = translate(config, title, "0", additional = "")
                 except:
-                    fa = translate(config, title, "1", additional = "")
+                    fa = translate(config, title, "1", additional = "") + "`"
             else:
                 fa = title
             text = f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}"
@@ -132,7 +132,7 @@ def download_latest_tiktoks(username):
                 try:
                     fa = translate(config, title, "0", additional = "")
                 except:
-                    fa = translate(config, title, "1", additional = "")
+                    fa = translate(config, title, "1", additional = "") + "`"
                 
                 # Edit the message caption with the translated version
                 url_edit = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/editMessageCaption'
@@ -416,7 +416,7 @@ def OTD():
         try:
             fa = translate(config, match_data["report"], "0", additional)
         except:
-            fa = translate(config, match_data["report"], "1", additional)
+            fa = translate(config, match_data["report"], "1", additional) + "`"
         text = text + f"\n\n<blockquote expandable>{fa[:3600]}</blockquote>"
     if match_data["highlight_video"]:
         text = text + f"\n\n<a href='{match_data["highlight_video"]}'>📽️ Highlight Video</a>"
