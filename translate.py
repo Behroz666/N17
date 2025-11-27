@@ -8,11 +8,10 @@ AI_TOKEN = AI_TOKEN.split(",")
 print("len ai key list:" + str(len(AI_TOKEN)))
 
 def is_new(config, text, history):
-    tok = random.choice(AI_TOKEN)
     response = requests.post(
     url="https://openrouter.ai/api/v1/chat/completions",
     headers={
-        "Authorization": f"Bearer {tok}",
+        "Authorization": f"Bearer {random.choice(AI_TOKEN)}",
         "Content-Type": "application/json",
     },
     data=json.dumps({
