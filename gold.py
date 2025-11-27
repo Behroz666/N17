@@ -76,9 +76,10 @@ if __name__ == "__main__":
         article_text, pub_date, banner_url = scrape_article(link)
         if not article_text or not pub_date:
             continue
-
+        print(pub_date)
         if pub_date < one_day_ago:
             continue  # Skip if older than 1 day
+        print(title)
         try:
             fa_title = translate(config, title, "0", additional = "")
         except:
