@@ -37,7 +37,6 @@ def get_latest_articles(url: str):
 def scrape_article(url: str):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    print(soup)
 
     # Extract paragraphs
     paragraphs = soup.select("div.article-body p")
@@ -56,7 +55,7 @@ def scrape_article(url: str):
     og_image = soup.find("meta", property="og:image")
     if og_image and og_image.has_attr("content"):
         banner_url = og_image["content"]
-
+    print(text, pub_date, banner_url)
     return text, pub_date, banner_url
 
 if __name__ == "__main__":
