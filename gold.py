@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from translate import article_summarize, translate
 from telegram import send_image , send_message
 import time
+import json
 
 SEEN_FILE = "seen_articles.json"
 
@@ -37,19 +38,17 @@ def get_latest_articles(url: str):
 def scrape_article(url: str):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
+    ld_json = soup.find("script", type="application/ld+json")
+    data = json.loads(ld_json.string)
 
     # Extract paragraphs
-    paragraphs = soup.select("div.article-body p")
-    text = " ".join(p.get_text(strip=True) for p in paragraphs)
+    text = data.get("articleBody")
 
-    # Extract date (football.london uses <time> tag)
-    date_tag = soup.find("time")
+    # Extract date
     pub_date = None
-    if date_tag and date_tag.has_attr("datetime"):
-        try:
-            pub_date = datetime.fromisoformat(date_tag["datetime"].replace("Z", "+00:00"))
-        except Exception:
-            pass
+    date_str = data.get("datePublished")
+    if date_str:
+        pub_date = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
 
     banner_url = None
     og_image = soup.find("meta", property="og:image")
