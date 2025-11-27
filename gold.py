@@ -21,7 +21,6 @@ else:
 # Function to fetch latest articles from football.london
 def get_latest_articles(url: str):
     response = requests.get(url)
-    print(response)
     soup = BeautifulSoup(response.text, 'html.parser')
 
     articles = []
@@ -31,7 +30,7 @@ def get_latest_articles(url: str):
         if link.startswith("/"):
             link = "https://www.football.london" + link
         articles.append((title, link))
-
+    print(articles)
     return articles
 
 # Function to scrape full article text and date
