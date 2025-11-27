@@ -21,6 +21,7 @@ else:
 # Function to fetch latest articles from football.london
 def get_latest_articles(url: str):
     response = requests.get(url)
+    print(response)
     soup = BeautifulSoup(response.text, 'html.parser')
 
     articles = []
