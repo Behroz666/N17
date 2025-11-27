@@ -14,6 +14,7 @@ def get_rss_feed(page):
     feed = feedparser.parse(f"https://{RSS_URL}/{page}/rss")
     response = []
     if feed.bozo:
+        print(feed)
         print("There was an error parsing the feed.")
     else:
         for entry in feed.entries:
