@@ -37,6 +37,7 @@ def get_latest_articles(url: str):
 def scrape_article(url: str):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
+    print(soup)
 
     # Extract paragraphs
     paragraphs = soup.select("div.article-body p")
