@@ -69,10 +69,11 @@ def download_latest_tiktoks(username):
 
         if "photomode" in thumbnail_url:
             if len(title)>10:
-                try:
-                    fa = translate(config, title, "0", additional = "")
-                except:
-                    fa = translate(config, title, "1", additional = "") + "`"
+                # try:
+                #     fa = translate(config, title, "0", additional = "")
+                # except:
+                #     fa = translate(config, title, "1", additional = "") + "`"
+                fa = translate(config, title, "1", additional = "")
             else:
                 fa = title
             text = f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}"
@@ -129,10 +130,11 @@ def download_latest_tiktoks(username):
                 result = response_send.json()['result']
                 message_id = result['message_id']
 
-                try:
-                    fa = translate(config, title, "0", additional = "")
-                except:
-                    fa = translate(config, title, "1", additional = "") + "`"
+                # try:
+                #     fa = translate(config, title, "0", additional = "")
+                # except:
+                #     fa = translate(config, title, "1", additional = "") + "`"
+                fa = translate(config, title, "1", additional = "")
                 
                 # Edit the message caption with the translated version
                 url_edit = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/editMessageCaption'
@@ -413,10 +415,11 @@ def OTD():
         text = text + "\n\n" + format_match(match_data["teams"])
     if match_data["report"]: 
         additional = "باید علاوه بر ترجمه دقیق اتفاقات بازی را خلاصه کنی. تو باید اتفاقات بازی را کامل و مفید و جذاب شرح دهی و صحبت های مربی را هم در ترجمه قرار دهی اما در کل نباید متن خروجی بیشتر از 4000 کاراکتر باشد. چیزی جز خلاصه بازی به زبان فارسی نگو و تنها وظایفت را انجام بده و متن خروجی را در قالب جند پاراگراف ارائه بده"
-        try:
-            fa = translate(config, match_data["report"], "0", additional)
-        except:
-            fa = translate(config, match_data["report"], "1", additional) + "`"
+        # try:
+        #     fa = translate(config, match_data["report"], "0", additional)
+        # except:
+        #     fa = translate(config, match_data["report"], "1", additional) + "`"
+        fa = translate(config, match_data["report"], "1", additional)
         text = text + f"\n\n<blockquote expandable>{fa[:3600]}</blockquote>"
     if match_data["highlight_video"]:
         text = text + f"\n\n<a href='{match_data["highlight_video"]}'>📽️ Highlight Video</a>"
