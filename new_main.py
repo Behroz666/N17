@@ -47,7 +47,7 @@ if __name__ == "__main__":
         
         html_data = response.text
         print(html_data)
-        data = json.dumps(extract_posts_from_html(html_data))
+        data = extract_posts_from_html(html_data)
         print(data)
     except requests.exceptions.RequestException as e:
         print(f"Error fetching the URL: {e}")
