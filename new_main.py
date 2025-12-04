@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     for feed in data:
         try:
-            if feed["post_url"].replace(str("rss." + str(RSS_URL)), str(RSS_URL)) in seen_feed or feed["post_url"].replace(str(RSS_URL), str("rss." + str(RSS_URL))) in seen_feed:
+            if feed["post_url"].replace(str("rss." + str(RSS_URL)), "x.com") in seen_feed or feed["post_url"].replace(str(RSS_URL), "x.com") in seen_feed:
                 seen_feed.append(feed["post_url"])
                 continue
             if feed["post_url"] not in seen_feed:
