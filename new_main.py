@@ -61,61 +61,62 @@ if __name__ == "__main__":
         seen_feed = seen_feed_json["done"]
 
     for feed in data:
-        if feed["post_url"] not in seen_feed:
+        try:
+            if feed["post_url"] not in seen_feed:
 
-            if len(feed["text"]) == 0 or feed["text"] == "Gif" or str(feed["text"]).startswith("R to @spurssglobal: football.london/tottenham-ho…"):
-                seen_feed.append(feed["post_url"])
-                continue
-            else:
-                if len(feed["text"]) < 10:
-                    fa = feed["text"]
-                elif str(feed["text"]).startswith("R to ") and len(feed["text"]) < 30:
-                    fa = feed["text"]
+                if len(feed["text"]) == 0 or feed["text"] == "Gif" or str(feed["text"]).startswith("R to @spurssglobal: football.london/tottenham-ho…"):
+                    seen_feed.append(feed["post_url"])
+                    continue
                 else:
-                    try:
-                        fa = translate(config, normalize_stylized(feed["text"]), "1", additional = "")
-                    except:
+                    if len(feed["text"]) < 10:
+                        fa = feed["text"]
+                    elif str(feed["text"]).startswith("R to ") and len(feed["text"]) < 30:
+                        fa = feed["text"]
+                    else:
                         try:
                             fa = translate(config, normalize_stylized(feed["text"]), "1", additional = "")
                         except:
                             try:
-                                fa = translate(config, normalize_stylized(feed["text"]), "0", additional = "")
+                                fa = translate(config, normalize_stylized(feed["text"]), "1", additional = "")
                             except:
-                                continue
+                                fa = translate(config, normalize_stylized(feed["text"]), "0", additional = "")
 
-            if len(fa) < (len(feed["text"])/2):
-                continue
 
-            fa = fa.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی')
-            if str("rss." + str(RSS_URL)) in feed["post_url"]:
-                feed["post_url"].replace(str("rss." + str(RSS_URL)), "x.com")
+                if len(fa) < (len(feed["text"])/2):
+                    continue
 
-            if feed["image_url"] is None:
-                limit = 4096
-                if len(fa + feed["text"]) < (limit - 256):
-                    message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"]}</blockquote>\n\n{hyperlink}"
-                elif len(fa) < (limit - 456):
-                    message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"][:(limit - 256 -len(fa))]}</blockquote>\n\n{hyperlink}"
+                fa = fa.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی')
+                if str("rss." + str(RSS_URL)) in feed["post_url"]:
+                    feed["post_url"].replace(str("rss." + str(RSS_URL)), "x.com")
+
+                if feed["image_url"] is None:
+                    limit = 4096
+                    if len(fa + feed["text"]) < (limit - 256):
+                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"]}</blockquote>\n\n{hyperlink}"
+                    elif len(fa) < (limit - 456):
+                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"][:(limit - 256 -len(fa))]}</blockquote>\n\n{hyperlink}"
+                    else:
+                        message = f"{fa[:(limit - 196)]}\n\n{hyperlink}"
                 else:
-                    message = f"{fa[:(limit - 196)]}\n\n{hyperlink}"
-            else:
-                limit = 1024
-                if len(fa + feed["text"]) < (limit - 256):
-                    message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"]}</blockquote>\n\n{hyperlink}"
-                elif len(fa) < (limit - 456):
-                    message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"][:(limit - 256 -len(fa))]}</blockquote>\n\n{hyperlink}"
-                else:
-                    message = f"{fa[:(limit - 196)]}\n\n{hyperlink}"
+                    limit = 1024
+                    if len(fa + feed["text"]) < (limit - 256):
+                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"]}</blockquote>\n\n{hyperlink}"
+                    elif len(fa) < (limit - 456):
+                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"][:(limit - 256 -len(fa))]}</blockquote>\n\n{hyperlink}"
+                    else:
+                        message = f"{fa[:(limit - 196)]}\n\n{hyperlink}"
 
-            print(message)
-            if feed["image_url"] is None:
-                message_id = send_message(config, message, config["Main Chat id"])
-            else:
-                message_id = send_image(config, message, feed["image_url"])
-            pin_message(config, message_id)
-            delete_message(config, message_id + 1)
-            seen_feed.append(feed["post_url"])
-            time.sleep(15)
+                print(message)
+                if feed["image_url"] is None:
+                    message_id = send_message(config, message, config["Main Chat id"])
+                else:
+                    message_id = send_image(config, message, feed["image_url"])
+                pin_message(config, message_id)
+                delete_message(config, message_id + 1)
+                seen_feed.append(feed["post_url"])
+                time.sleep(15)
+        except:
+            continue
     
     seen_feed_json["done"] = seen_feed
     with open('seen_feed.json', 'w', encoding='utf-8') as file:

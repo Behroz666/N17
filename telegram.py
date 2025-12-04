@@ -26,7 +26,7 @@ def send_message(config, text, chat_id):
             if error_code == 429:
                 retry_after = response_json.get('parameters', {}).get('retry_after', 5)
                 print(f"send message: Rate limit exceeded (429). Retrying after {retry_after} seconds...")
-                time.sleep(retry_after)
+                time.sleep(retry_after + 1)
             else:
                 raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
 
@@ -51,7 +51,7 @@ def send_image(config, text, link):
             if error_code == 429:
                 retry_after = response_json.get('parameters', {}).get('retry_after', 5)
                 print(f"send image: Rate limit exceeded (429). Retrying after {retry_after} seconds...")
-                time.sleep(retry_after)
+                time.sleep(retry_after + 1)
             else:
                 raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
 
@@ -100,7 +100,7 @@ def pin_message(config, message_id):
             if error_code == 429:
                 retry_after = response_json.get('parameters', {}).get('retry_after', 5)
                 print(f"pin message : Rate limit exceeded (429). Retrying after {retry_after} seconds...")
-                time.sleep(retry_after)
+                time.sleep(retry_after + 1)
             else:
                 raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
 
@@ -124,6 +124,6 @@ def delete_message(config, message_id):
             if error_code == 429:
                 retry_after = response_json.get('parameters', {}).get('retry_after', 5)
                 print(f"delete message : Rate limit exceeded (429). Retrying after {retry_after} seconds...")
-                time.sleep(retry_after)
+                time.sleep(retry_after + 1)
             else:
                 raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
