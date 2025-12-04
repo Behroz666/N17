@@ -32,15 +32,28 @@ def send_message(config, text, chat_id):
 
 def send_image(config, text, link):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
+
+    try:
+        # Get the image content (bytes)
+        image_response = requests.get(link, timeout=15)
+        image_response.raise_for_status()
+        image_data = image_response.content
+    except Exception as e:
+        print(f"Failed to download image from source: {e}")
+        return None
+    
     payload = {
         "chat_id": config["Main Chat id"],
-        'photo': link,
         "caption": text,
         "parse_mode": "HTML"
     }
+
+    files = {
+        'photo': ('image.jpg', image_data)
+    }
     attempts = 0
     while attempts < max_attempts: 
-        response = requests.post(url, data=payload)
+        response = requests.post(url, data=payload, files=files)
         response_json = response.json()
         print(response_json)
         if response_json.get('ok') == True:
