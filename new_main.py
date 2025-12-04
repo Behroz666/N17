@@ -60,6 +60,8 @@ if __name__ == "__main__":
         seen_feed = seen_feed_json["done"]
 
     for feed in data:
+        print(feed)
+        print(type(feed))
         if feed["post_url"] not in seen_feed:
 
             if len(feed["text"]) == 0 or feed["text"] == "Gif" or str(feed["text"]).startswith("R to @spurssglobal: football.london/tottenham-ho…"):
