@@ -31,7 +31,6 @@ def normalize_stylized(text: str) -> str:
     return "".join(normalized)
 
 RSS_URL = os.environ.get('RSS_URL')
-print(RSS_URL)
 FEED_URL = os.environ.get('FEED_URL')
 
 if __name__ == "__main__":
@@ -57,6 +56,7 @@ if __name__ == "__main__":
 
     with open('config.json', 'r', encoding='utf-8') as file:
         config = json.load(file)
+    send_message(config, RSS_URL, 1140637004)
     with open('seen_feed.json', 'r', encoding='utf-8') as file:
         seen_feed_json = json.load(file)
         seen_feed = seen_feed_json["done"]
@@ -87,8 +87,9 @@ if __name__ == "__main__":
                     continue
 
                 fa = fa.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی').replace("*", "").replace("`","")
-                if str(fa).startswith("."):
-                    fa.replace(".", "")
+                unwanted_chars = (':', '.', ' ')
+                if fa.startswith(unwanted_chars):
+                    fa = fa[1:]
                 if str("rss." + str(RSS_URL)) in feed["post_url"]:
                     feed["post_url"].replace(str("rss." + str(RSS_URL)), "x.com")
 
