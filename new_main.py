@@ -60,6 +60,7 @@ if __name__ == "__main__":
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx, 5xx)
         
         html_data = response.text
+        print(html_data)
         data = extract_posts_from_html(html_data)
         print (len(data))
     except requests.exceptions.RequestException as e:
