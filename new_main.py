@@ -112,11 +112,12 @@ if __name__ == "__main__":
                 message_id = send_message(config, message, config["Main Chat id"])
             else:
                 message_id = send_image(config, message, feed["image_url"])
-            time.sleep(5)
+            time.sleep(2)
             pin_message(config, message_id)
+            time.sleep(1)
             delete_message(config, message_id + 1)
             seen_feed.append(feed["post_url"])
-            time.sleep(8)
+            time.sleep(15)
     
     seen_feed_json["done"] = seen_feed
     with open('seen_feed.json', 'w', encoding='utf-8') as file:
