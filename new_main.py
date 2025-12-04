@@ -89,7 +89,8 @@ if __name__ == "__main__":
                     continue
 
                 fa = fa.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی').replace("*", "").replace("`","")
-                unwanted_chars = (':', '.', ' ')
+
+                unwanted_chars = (':', '.', ' ', "\n")
                 if fa.startswith(unwanted_chars):
                     fa = fa[1:]
 
