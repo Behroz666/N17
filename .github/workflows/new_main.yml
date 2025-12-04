@@ -1,4 +1,4 @@
-name: Run Bot
+name: New main Bot
 
 on:
   schedule:
