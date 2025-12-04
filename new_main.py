@@ -56,10 +56,12 @@ if __name__ == "__main__":
         }
         
         response = requests.get(FEED_URL, headers=headers)
+        print(response)
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx, 5xx)
         
         html_data = response.text
         data = extract_posts_from_html(html_data)
+        print (len(data))
     except requests.exceptions.RequestException as e:
         print(f"Error fetching the URL: {e}")
     except Exception as e:
