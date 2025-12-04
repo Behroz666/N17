@@ -120,4 +120,15 @@ def translate(config, text, fail, additional):
 
     response_json = response.json()
     print(response_json)
-    return response_json['choices'][0]['message']['content']
+    result = response_json['choices'][0]['message']['content']
+
+    unwanted_chars = (':', '.', ' ', "\n")
+    while True:
+        if result.startswith(unwanted_chars):
+            result = result[1:]
+            continue
+        else:
+            break
+    
+    return result.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی').replace("*", "").replace("`","")
+        

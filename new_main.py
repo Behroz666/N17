@@ -101,8 +101,6 @@ if __name__ == "__main__":
                 if len(fa) < (len(feed["text"])/2):
                     continue
 
-                fa = fa.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی').replace("*", "").replace("`","")
-
                 unwanted_chars = (':', '.', ' ', "\n")
                 if fa.startswith(unwanted_chars):
                     fa = fa[1:]

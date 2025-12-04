@@ -76,7 +76,7 @@ def download_latest_tiktoks(username):
                 fa = translate(config, title, "1", additional = "")
             else:
                 fa = title
-            text = f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}"
+            text = f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}"
             send_image(config, text, thumbnail_url)
             new_ids.add(video_id)
             count += 1
@@ -141,7 +141,7 @@ def download_latest_tiktoks(username):
                 data_edit = {
                     'chat_id': target_chat_id,
                     'message_id': message_id,
-                    'caption': f"{fa.replace('قدوس','کودوس').replace('خاوی','ژاوی')}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
+                    'caption': f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}",
                     'parse_mode': "HTML"
                 }
                 response_edit = requests.post(url_edit, data=data_edit)
