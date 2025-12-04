@@ -31,6 +31,7 @@ def normalize_stylized(text: str) -> str:
     return "".join(normalized)
 
 RSS_URL = os.environ.get('RSS_URL')
+print(RSS_URL)
 FEED_URL = os.environ.get('FEED_URL')
 
 if __name__ == "__main__":
@@ -64,7 +65,7 @@ if __name__ == "__main__":
         try:
             if feed["post_url"] not in seen_feed:
 
-                if len(feed["text"]) == 0 or feed["text"] == "Gif" or str(feed["text"]).startswith("R to @spurssglobal: football.london/tottenham-ho…"):
+                if len(feed["text"]) == 0 or feed["text"] == "Gif" or str(feed["text"]).startswith("R to @spurssglobal: football.london/tottenham-ho…") or "LIVE" in str(feed["text"]):
                     seen_feed.append(feed["post_url"])
                     continue
                 else:
@@ -85,7 +86,9 @@ if __name__ == "__main__":
                 if len(fa) < (len(feed["text"])/2):
                     continue
 
-                fa = fa.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی')
+                fa = fa.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی').replace("*", "").replace("`","")
+                if str(fa).startswith("."):
+                    fa.replace(".", "")
                 if str("rss." + str(RSS_URL)) in feed["post_url"]:
                     feed["post_url"].replace(str("rss." + str(RSS_URL)), "x.com")
 
