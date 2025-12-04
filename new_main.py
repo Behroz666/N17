@@ -112,9 +112,7 @@ if __name__ == "__main__":
                 message_id = send_message(config, message, config["Main Chat id"])
             else:
                 message_id = send_image(config, message, feed["image_url"])
-            time.sleep(2)
             pin_message(config, message_id)
-            time.sleep(1)
             delete_message(config, message_id + 1)
             seen_feed.append(feed["post_url"])
             time.sleep(15)

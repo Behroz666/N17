@@ -1,7 +1,9 @@
 import requests
 import os
+import time
 
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
+max_attempts = 2
 
 def send_message(config, text, chat_id):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
@@ -11,9 +13,22 @@ def send_message(config, text, chat_id):
         "parse_mode": "HTML",
         "disable_web_page_preview":True
     }
-    response = requests.post(url, data=payload)
-    response_json = response.json()
-    return response_json['result']['message_id']
+    attempts = 0
+    while attempts < max_attempts: 
+        response = requests.post(url, data=payload)
+        response_json = response.json()
+        print(response_json)
+        if response_json.get('ok') == True:
+            return response_json['result']['message_id']
+        else:
+            attempts += 1
+            error_code = response_json.get('error_code')
+            if error_code == 429:
+                retry_after = response_json.get('parameters', {}).get('retry_after', 5)
+                print(f"send message: Rate limit exceeded (429). Retrying after {retry_after} seconds...")
+                time.sleep(retry_after)
+            else:
+                raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
 
 def send_image(config, text, link):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
@@ -23,10 +38,22 @@ def send_image(config, text, link):
         "caption": text,
         "parse_mode": "HTML"
     }
-    response = requests.post(url, data=payload)
-    response_json = response.json()
-    print(response_json)
-    return response_json['result']['message_id']
+    attempts = 0
+    while attempts < max_attempts: 
+        response = requests.post(url, data=payload)
+        response_json = response.json()
+        print(response_json)
+        if response_json.get('ok') == True:
+            return response_json['result']['message_id']
+        else:
+            attempts += 1
+            error_code = response_json.get('error_code')
+            if error_code == 429:
+                retry_after = response_json.get('parameters', {}).get('retry_after', 5)
+                print(f"send image: Rate limit exceeded (429). Retrying after {retry_after} seconds...")
+                time.sleep(retry_after)
+            else:
+                raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
 
 def send_gallery(config, text, links):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMediaGroup"
@@ -59,7 +86,23 @@ def pin_message(config, message_id):
         'message_id': message_id,
         "disable_notification": True
     }
-    print(requests.post(url, data=payload))
+    attempts = 0
+    while attempts < max_attempts: 
+        response = requests.post(url, data=payload)
+        response_json = response.json()
+        print(response_json)
+        if response_json.get('ok') == True:
+            print("message pinned")
+            return
+        else:
+            attempts += 1
+            error_code = response_json.get('error_code')
+            if error_code == 429:
+                retry_after = response_json.get('parameters', {}).get('retry_after', 5)
+                print(f"pin message : Rate limit exceeded (429). Retrying after {retry_after} seconds...")
+                time.sleep(retry_after)
+            else:
+                raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
 
 def delete_message(config, message_id):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage"
@@ -67,5 +110,20 @@ def delete_message(config, message_id):
         "chat_id": config["Main Chat id"],
         "message_id": message_id
     }
-    response = requests.post(url, data=payload)
-    return response.json()
+
+    attempts = 0
+    while attempts < max_attempts: 
+        response = requests.post(url, data=payload)
+        response_json = response.json()
+        print(response_json)
+        if response_json.get('ok') == True:
+            return response.json()
+        else:
+            attempts += 1
+            error_code = response_json.get('error_code')
+            if error_code == 429:
+                retry_after = response_json.get('parameters', {}).get('retry_after', 5)
+                print(f"delete message : Rate limit exceeded (429). Retrying after {retry_after} seconds...")
+                time.sleep(retry_after)
+            else:
+                raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
