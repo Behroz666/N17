@@ -5,6 +5,7 @@ import requests
 from telegram import send_image, send_message, pin_message, delete_message
 from translate import translate
 import unicodedata
+import time
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -46,9 +47,7 @@ if __name__ == "__main__":
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx, 5xx)
         
         html_data = response.text
-        print(html_data)
         data = extract_posts_from_html(html_data)
-        print(data)
     except requests.exceptions.RequestException as e:
         print(f"Error fetching the URL: {e}")
     except Exception as e:
@@ -62,8 +61,6 @@ if __name__ == "__main__":
         seen_feed = seen_feed_json["done"]
 
     for feed in data:
-        print(feed)
-        print(type(feed))
         if feed["post_url"] not in seen_feed:
 
             if len(feed["text"]) == 0 or feed["text"] == "Gif" or str(feed["text"]).startswith("R to @spurssglobal: football.london/tottenham-ho…"):
@@ -115,10 +112,12 @@ if __name__ == "__main__":
                 message_id = send_message(config, message, config["Main Chat id"])
             else:
                 message_id = send_image(config, message, feed["image_url"])
-
+            time.sleep(1)
             pin_message(config, message_id)
+            time.sleep(1)
             delete_message(config, message_id + 1)
             seen_feed.append(feed["post_url"])
+            time.sleep(1)
     
     seen_feed_json["done"] = seen_feed
     with open('seen_feed.json', 'w', encoding='utf-8') as file:
