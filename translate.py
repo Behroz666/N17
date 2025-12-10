@@ -130,5 +130,5 @@ def translate(config, text, fail, additional):
         else:
             break
     
-    return result.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی').replace("*", "").replace("`","")
+    return result.replace("#","").replace('قدوس','کودوس').replace('خاوی','ژاوی').replace('ماتیوس','ماتیس').replace("*", "").replace("`","")
         
