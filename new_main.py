@@ -202,8 +202,8 @@ if __name__ == "__main__":
                             print(e)
                             send_message(config, f"{e}", 1140637004)
                             if "HTTP Error 403" in str(e) :
-                                tweet_ids["done"].append(tweet[0])
-                            message_id = send_image(config, message, tweet[3][0])
+                                seen_feed.append(feed["post_url"])
+                            message_id =  send_image(config, message, feed["image_url"])
                 pin_message(config, message_id)
                 delete_message(config, message_id + 1)
                 seen_feed.append(feed["post_url"])
