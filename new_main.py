@@ -3,7 +3,7 @@ import os
 import json
 import requests
 from telegram import send_image, send_message, pin_message, delete_message
-from translate import translate
+from translate import translate, article_summarize
 import unicodedata
 import time
 import random
@@ -89,6 +89,8 @@ if __name__ == "__main__":
                         fa = feed["text"]
                     elif str(feed["text"]).startswith("R to ") and len(feed["text"]) < 30:
                         fa = feed["text"]
+                    elif len(feed["text"]) > 1000:
+                        fa = article_summarize(config, feed["text"], feed["post_url"])
                     else:
                         try:
                             fa = translate(config, normalize_stylized(feed["text"]), "1", additional = "")
