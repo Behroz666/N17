@@ -8,8 +8,37 @@ import unicodedata
 import time
 import random
 import re
+import yt_dlp
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
+
+def download_twitter_video(url, output_path):
+    # First try 360p
+    ydl_opts_360p = {
+        'format': 'best[height<=360]',
+        'outtmpl': output_path,
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts_360p) as ydl:
+        info_dict = ydl.extract_info(url, download=True)
+        filename = ydl.prepare_filename(info_dict)
+
+    # Check file size (in MB)
+    file_size_mb = os.path.getsize(filename) / (1024 * 1024)
+
+    if file_size_mb > 10:
+        # Delete the large file and fallback to worst
+        os.remove(filename)
+
+        ydl_opts_worst = {
+            'format': 'worst',
+            'outtmpl': output_path,
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts_worst) as ydl:
+            info_dict = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info_dict)
+    return filename
 
 def filter_en(text):
     persian_pattern = r'[\u0600-\u06FF]'   # Persian/Arabic script
@@ -151,7 +180,30 @@ if __name__ == "__main__":
                 if feed["image_url"] is None:
                     message_id = send_message(config, message, config["Main Chat id"])
                 else:
-                    message_id = send_image(config, message, feed["image_url"])
+                    if "video_thumb" not in feed["image_url"] or "x.com" not in feed["post_url"]:
+                            message_id = send_image(config, message, feed["image_url"])
+                    else:
+                        try:
+                            match = re.search(r"/status/(\d+)", feed["post_url"])
+                            file_name = download_twitter_video(feed["post_url"], match.group(1))
+                            print("incode" + file_name)
+                            with open(file_name, 'rb') as f:
+                                response = requests.post(
+                                    f"https://api.telegram.org/bot{os.environ.get('BOT_TOKEN')}/sendVideo",
+                                    files={'video': f},
+                                    data={'chat_id': config["Main Chat id"],
+                                        'caption': message,
+                                        "parse_mode": "HTML"}
+                                )
+                            os.remove(file_name)
+                            response_json = response.json()
+                            message_id = response_json['result']['message_id']
+                        except Exception as e:
+                            print(e)
+                            send_message(config, f"{e}", 1140637004)
+                            if "HTTP Error 403" in str(e) :
+                                tweet_ids["done"].append(tweet[0])
+                            message_id = send_image(config, message, tweet[3][0])
                 pin_message(config, message_id)
                 delete_message(config, message_id + 1)
                 seen_feed.append(feed["post_url"])
