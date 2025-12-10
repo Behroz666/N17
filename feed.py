@@ -28,7 +28,9 @@ def extract_posts_from_html(html_content):
         
         # 2. Extract Text
         title_div = article.find('div', class_='article_magazine_title')
-        entry['text'] = title_div.get_text(strip=True) if title_div else "No text found"
+        t = title_div.get_text(strip=True) if title_div else "No text found"
+        t = t.replace("#THFC", "Tottenham").replace("#Tottenham", "Tottenham").replace("#tottenham", "Tottenham").replace("#spurs", "Tottenham").replace("#Spurs", "Tottenham")
+        entry['text'] = re.sub(r"#\w+", "", t).strip()
 
         # 3. Extract Image URL
         # The image is hidden inside a style attribute: style="background-image:url('...')"
