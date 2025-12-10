@@ -11,6 +11,22 @@ import re
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
+def filter_en(text):
+    persian_pattern = r'[\u0600-\u06FF]'   # Persian/Arabic script
+    english_pattern = r'[A-Za-z]'          # English letters
+
+    lines = text.splitlines()
+
+    filtered = [
+        line for line in lines
+        if not (
+            re.search(english_pattern, line) and 
+            not re.search(persian_pattern, line)
+        )
+    ]
+
+    return "\n".join(filtered)
+
 def normalize_stylized(text: str) -> str:
     normalized = []
     for char in text:
@@ -100,8 +116,9 @@ if __name__ == "__main__":
                             except:
                                 fa = translate(config, normalize_stylized(feed["text"]), "0", additional = "")
 
+                fa = filter_en(fa)
 
-                if len(fa) < (len(feed["text"])/2):
+                if len(fa) < (len(feed["text"])/2) or len(fa) > (len(feed["text"])*2):
                     continue
 
                 unwanted_chars = (':', '.', ' ', "\n")
