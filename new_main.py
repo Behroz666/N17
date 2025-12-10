@@ -7,6 +7,7 @@ from translate import translate
 import unicodedata
 import time
 import random
+import re
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -80,7 +81,7 @@ if __name__ == "__main__":
                 continue
             if feed["post_url"] not in seen_feed:
 
-                if len(feed["text"]) == 0 or feed["text"] == "Gif" or str(feed["text"]).startswith("R to @spurssglobal: football.london/tottenham-ho…") or "LIVE" in str(feed["text"]):
+                if len(feed["text"]) == 0 or feed["text"] == "Gif" or str(feed["text"]).startswith("R to @spurssglobal: football.london/tottenham-ho…") or "LIVE" in str(feed["text"]) or  bool(re.search(r'[\uac00-\ud7a3]', feed["text"])):
                     seen_feed.append(feed["post_url"])
                     continue
                 else:
