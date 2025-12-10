@@ -86,7 +86,7 @@ if __name__ == "__main__":
         fa_title = translate(config, title, "1", additional = "")
         print(title + "\n\n turns into" + fa_title)
 
-        if len(fa_title) < 2 * len(title):
+        if len(fa_title) < 2 * len(title) and "ترجمه" not in fa_title:
             title = fa_title
 
         text = f"<a href='{link}'>{title}</a>\n\n"
