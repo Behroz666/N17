@@ -119,7 +119,7 @@ if __name__ == "__main__":
         seen_feed_json = json.load(file)
         seen_feed = seen_feed_json["done"]
 
-    for feed in data:
+    for feed in reversed(data):
         try:
             if feed["post_url"].replace(str("rss." + str(RSS_URL)), "x.com") in seen_feed or feed["post_url"].replace(str(RSS_URL), "x.com") in seen_feed:
                 seen_feed.append(feed["post_url"])
