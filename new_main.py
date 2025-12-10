@@ -114,17 +114,17 @@ if __name__ == "__main__":
                 if feed["image_url"] is None:
                     limit = 4096
                     if len(fa + feed["text"]) < (limit - 256):
-                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"]}</blockquote>\n\n{hyperlink}"
+                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>{feed["text"]}</a></blockquote>\n\n{hyperlink}"
                     elif len(fa) < (limit - 456):
-                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"][:(limit - 256 -len(fa))]}</blockquote>\n\n{hyperlink}"
+                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>{feed["text"][:(limit - 256 -len(fa))]}</a></blockquote>\n\n{hyperlink}"
                     else:
                         message = f"{fa[:(limit - 196)]}\n\n{hyperlink}"
                 else:
                     limit = 1024
                     if len(fa + feed["text"]) < (limit - 256):
-                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"]}</blockquote>\n\n{hyperlink}"
+                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>{feed["text"]}</a></blockquote>\n\n{hyperlink}"
                     elif len(fa) < (limit - 456):
-                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>🇬🇧</a>: {feed["text"][:(limit - 256 -len(fa))]}</blockquote>\n\n{hyperlink}"
+                        message = f"{fa}\n\n<blockquote expandable><a href='{feed["post_url"]}'>{feed["text"][:(limit - 256 -len(fa))]}</a></blockquote>\n\n{hyperlink}"
                     else:
                         message = f"{fa[:(limit - 196)]}\n\n{hyperlink}"
 
