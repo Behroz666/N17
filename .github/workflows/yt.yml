@@ -39,7 +39,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install google-api-python-client requests yt-dlp packaging
+        pip install google-api-python-client requests yt-dlp packaging google-genai
 
     - name: Run YouTube to Telegram script
       env:
@@ -47,4 +47,5 @@ jobs:
         AI_TOKEN: ${{ secrets.AI_TOKEN }}
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         GOOGLE: ${{ secrets.GOOGLE }}
+        GOOGLE_AI_TOKEN: ${{ secrets.GOOGLE_AI_TOKEN }}
       run: python yt.py
