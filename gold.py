@@ -8,6 +8,8 @@ from gemini import ask_gemini
 from telegram import send_image , send_message
 import time
 import json
+from zoneinfo import ZoneInfo
+import humanize
 
 SEEN_FILE = "seen_articles.json"
 
@@ -93,7 +95,10 @@ if __name__ == "__main__":
             print(f"Banner Image: {banner_url}")
         summary = ask_gemini(user_prompt=article_text, system_prompt=config["Acticle System Prompt"] + f"تو باید این عنوان را هم در نظر داشته باشی {fa_title} و به سوال و موضوع اصلی مطرح شده در این عنوان بپردازی اگر نوشته جالب دیگری هم در متن وجود داشت و میتوانستی با در نظر گرفتن محدودیت طول متن خروجی آن را هم ذکر کنی آن را انجام بده. پس تو باید یک پاراگراف حذاب و خلاصه از متن داده شده با در نظر داشتن عنوان ارائه بدی")
         print(summary)
-        text = text + f"<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ By Alasdair Gold at {(pub_date + timedelta(hours=3, minutes=30)).strftime('%Y.%m.%d %I:%M %p')}\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
+        pub_date_aware = pub_date.replace(tzinfo=ZoneInfo("Europe/London"))
+        now_utc = datetime.now(timezone.utc)
+        relative_time = humanize.naturaltime(now_utc - pub_date_aware)
+        text = text + f"<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ By Alasdair Gold at {(pub_date + timedelta(hours=3, minutes=30)).strftime('%Y.%m.%d %I:%M %p')} or {relative_time}\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
         try:
             if len(summary + title) < 940 :
                 send_image(config, text, banner_url)
