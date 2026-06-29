@@ -98,7 +98,7 @@ if __name__ == "__main__":
         pub_date_aware = pub_date.replace(tzinfo=ZoneInfo("Europe/London"))
         now_utc = datetime.now(timezone.utc)
         relative_time = humanize.naturaltime(now_utc - pub_date_aware)
-        text = text + f"<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ By Alasdair Gold at {(pub_date + timedelta(hours=3, minutes=30)).strftime('%Y.%m.%d %I:%M %p')} or {relative_time}\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
+        text = text + f"<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ {relative_time} By Alasdair Gold \n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
         try:
             if len(summary + title) < 940 :
                 send_image(config, text, banner_url)
