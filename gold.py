@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import json
 import os
 from datetime import datetime, timedelta, timezone
-from translate import article_summarize, translate
 from gemini import ask_gemini
 from telegram import send_image , send_message
 import time
