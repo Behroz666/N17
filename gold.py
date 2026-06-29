@@ -4,6 +4,7 @@ import json
 import os
 from datetime import datetime, timedelta, timezone
 from translate import article_summarize, translate
+from gemini import ask_gemini
 from telegram import send_image , send_message
 import time
 import json
@@ -78,12 +79,7 @@ if __name__ == "__main__":
         print(pub_date)
         if pub_date < one_day_ago:
             continue  # Skip if older than 1 day
-        print(title)
-        # try:
-        #     fa_title = translate(config, title, "0", additional = "")
-        # except:
-        #     fa_title = translate(config, title, "1", additional = "") + "`"
-        fa_title = translate(config, title, "1", additional = "")
+        fa_title = ask_gemini(user_prompt=title, system_prompt=config["Translation System Prompt"])
         print(title + "\n\n turns into" + fa_title)
 
         if len(fa_title) < 2 * len(title) and "ترجمه" not in fa_title:
@@ -95,7 +91,7 @@ if __name__ == "__main__":
         print(f"\n--- {title} ({pub_date}) ---")
         if banner_url:
             print(f"Banner Image: {banner_url}")
-        summary = article_summarize(config, article_text, fa_title)
+        summary = ask_gemini(user_prompt=article_text, system_prompt=config["Acticle System Prompt"] + f"تو باید این عنوان را هم در نظر داشته باشی {fa_title} و به سوال و موضوع اصلی مطرح شده در این عنوان بپردازی اگر نوشته جالب دیگری هم در متن وجود داشت و میتوانستی با در نظر گرفتن محدودیت طول متن خروجی آن را هم ذکر کنی آن را انجام بده. پس تو باید یک پاراگراف حذاب و خلاصه از متن داده شده با در نظر داشتن عنوان ارائه بدی")
         print(summary)
         text = text + f"<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ By Alasdair Gold at {(pub_date + timedelta(hours=3, minutes=30)).strftime('%Y.%m.%d %I:%M %p')}\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
         try:
