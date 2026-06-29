@@ -42,12 +42,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests yt-dlp bs4 cloudscraper
+        pip install requests yt-dlp bs4 cloudscraper google-genai
 
     - name: Run tiktok to Telegram script
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         AI_TOKEN: ${{ secrets.AI_TOKEN }}
+        GOOGLE_AI_TOKEN: ${{ secrets.GOOGLE_AI_TOKEN }}
       run: python tt.py
 
     - name: Check for changes in downloaded_tiktoks.json
