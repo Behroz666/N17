@@ -12,11 +12,11 @@ hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a hr
 
 def ask_gemini(user_prompt: str, system_prompt: str = None) -> str:
 
-    client = genai.Client(api_key='')
+    client = genai.Client(api_key=os.environ.get("GOOGLE_AI_TOKEN", ""))
     
     # Define your fallback chain in order of preference
     models_to_try = [
-        'gemini-2.5-flash',
+        'gemini-3.1-flash-lite',
         'gemini-2.5-flash-lite',
         'gemma-4-31b-it' 
     ]
