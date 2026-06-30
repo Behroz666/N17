@@ -69,7 +69,7 @@ def download_latest_tiktoks(username):
 
         if "photomode" in thumbnail_url:
             if len(title)>10:
-                ask_gemini(user_prompt=title, system_prompt=config["Translation System Prompt"])
+                fa = ask_gemini(user_prompt=title, system_prompt=config["Translation System Prompt"])
             else:
                 fa = title
             text = f"{fa}\n\n<blockquote expandable><a href='{video_url}'>{title}</a></blockquote>\n\n{hyperlink}"
@@ -126,7 +126,7 @@ def download_latest_tiktoks(username):
                 result = response_send.json()['result']
                 message_id = result['message_id']
 
-                ask_gemini(user_prompt=title, system_prompt=config["Translation System Prompt"])
+                fa = ask_gemini(user_prompt=title, system_prompt=config["Translation System Prompt"])
                 
                 # Edit the message caption with the translated version
                 url_edit = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/editMessageCaption'
