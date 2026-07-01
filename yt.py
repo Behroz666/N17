@@ -298,8 +298,10 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
                 # Parse the response to get the message_id
                 result = response_send.json()['result']
                 message_id = result['message_id']
-
-                fa = ask_gemini(user_prompt=video_title, system_prompt=config["Translation System Prompt"])
+                try:
+                    fa = ask_gemini(user_prompt=video_title, system_prompt=config["Translation System Prompt"])
+                except:
+                    fa = video_title
                 
                 # Edit the message caption with the translated version
                 url_edit = f'https://api.telegram.org/bot{telegram_bot_token}/editMessageCaption'
