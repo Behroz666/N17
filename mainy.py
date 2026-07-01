@@ -7,6 +7,7 @@ import time
 from gemini import ask_gemini, ask_gemini_structured
 from pydantic import BaseModel, Field
 import requests
+from datetime import datetime, timedelta, timezone
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -163,10 +164,23 @@ if posts_json:
                     message_id = send_message(config, message, config["Main Chat id"])
             pin_message(config, message_id)
 
-            generated_title = NEWS_response.persian_news_title
-            generated_summary = NEWS_response.persian_news_summary
-            news_post_id = f"https://t.me/c/1748646263/{message_id}"
-            
+            telegram_done["summary"].append({
+                "title": NEWS_response.persian_news_title,
+                "summary": NEWS_response.persian_news_summary,
+                "post id": f"https://t.me/c/1748646263/{message_id}"
+            })
+
+            stored_time_str = telegram_done.get("last channel post time")
+            last_post_time = datetime.fromisoformat(stored_time_str)
+            now = datetime.now(timezone.utc)
+
+            if len(telegram_done["summary"]) > 9:
+                # generated channel post
+                telegram_done["last channel post time"] = now.isoformat()
+            elif now - last_post_time > timedelta(hours=6) and (last_post_time.time() >= time(18, 30) or last_post_time.time() <= time(10, 30)) and len(telegram_done["summary"]) > 2 : 
+                # generated channel post
+                telegram_done["last channel post time"] = now.isoformat()
+                
             # delete_message(config, message_id + 1)
             done_posts["done"].append(url)
             time.sleep(15)
