@@ -27,6 +27,7 @@ jobs:
         # Installed google-genai based on your code imports
         pip install google-genai
         pip install yp-dl
+        pip install pydantic
 
     - name: Run mainy.py
       env:

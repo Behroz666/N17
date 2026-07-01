@@ -4,7 +4,8 @@ import os
 import tempfile
 from telegram import send_image, send_message, send_gallery, pin_message, delete_message
 import time
-from gemini import ask_gemini
+from gemini import ask_gemini, ask_gemini_structured
+from pydantic import BaseModel, Field
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -58,6 +59,20 @@ if posts_json:
             url = news['post_link']
             print(url)
             fa = ask_gemini(user_prompt=news['text'], system_prompt=config["Translation System Prompt"])
+            class NEWS(BaseModel):
+                persian_news_fulltext: str = Field(description="Full translation of the text based on the system prompt given")
+                persian_news_title: str = Field(description="a shot one liner title for the news given the title have to be in persian")
+                persian_news_summary: str = Field(description="very short summary of the news given the summary must be in persian")
+                news_emoji: str = Field(description="one emoji that fits the news the best")
+            
+            try:
+                NEWS_response = ask_gemini_structured(
+                    user_prompt=news['text'],
+                    response_schema=NEWS,
+                    system_prompt=config["Translation System Prompt"]
+                )
+            except:
+                send_message(config, "the structured output failed", 1140637004)
             if len(fa) < (len(news['text'])/2):
                 continue
             if news['images'] is None:
@@ -102,6 +117,12 @@ if posts_json:
                     message_id = send_gallery(config, hyperlink, news['images'])
                     message_id = send_message(config, message, config["Main Chat id"])
             pin_message(config, message_id)
+            try:
+                send_message(config, f"News text:\n\n{news['text']}\n\nNews Translation:\n\n{NEWS_response.persian_news_fulltext}\n\nNews Title: {NEWS_response.persian_news_title}\n\nNews summary: {NEWS_response.persian_news_summary}\n\nNews emoji: {NEWS_response.news_emoji}\n\nmessage id:{message_id}", 1140637004)
+            except:
+                send_message(config, f"News text:\n\n{news['text']}", 1140637004)
+                send_message(config, f"News Translation:\n\n{NEWS_response.persian_news_fulltext}", 1140637004)
+                send_message(config, f"News Title: {NEWS_response.persian_news_title}\n\nNews summary: {NEWS_response.persian_news_summary}\n\nNews emoji: {NEWS_response.news_emoji}\n\nmessage id: {message_id}", 1140637004)
             # delete_message(config, message_id + 1)
             done_posts["done"].append(url)
             time.sleep(15)
