@@ -85,10 +85,6 @@ while True:
             send_message(config, f"news text: {news_text}, news link: {news_link}", 1140637004)
             telegram_done["done"].append(message_obj.get("message_id"))
 
-    with open('telegram_updates.json', 'w', encoding='utf-8') as file:
-        json.dump(telegram_done, file)
-        print("saving done telegram")
-
     break
 
 channel = "https://www.youtube.com/@ChrisCowlin"
@@ -176,11 +172,25 @@ if posts_json:
 
             if len(telegram_done["summary"]) > 9:
                 # generated channel post
+                text = "🗞️اخبار :\n\n"
+                for post in telegram_done["summary"]:
+                    text = text + f"<a href='{post["post id"]}'>{post["title"]}</a>\n<blockquote expandable>{post["summary"]}</blockquote>\n\n"
+                text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
+                message_id = send_message(config, text, config["Channel id"])
+                telegram_done["done summary"] = telegram_done["done summary"].extend(telegram_done["summary"])
+                telegram_done["summary"] = []
                 telegram_done["last channel post time"] = now.isoformat()
             elif now - last_post_time > timedelta(hours=6) and (last_post_time.time() >= time(18, 30) or last_post_time.time() <= time(10, 30)) and len(telegram_done["summary"]) > 2 : 
                 # generated channel post
+                text = "🗞️اخبار :\n\n"
+                for post in telegram_done["summary"]:
+                    text = text + f"<a href='{post["post id"]}'>{post["title"]}</a>\n<blockquote expandable>{post["summary"]}</blockquote>\n\n"
+                text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
+                message_id = send_message(config, text, config["Channel id"])
+                telegram_done["done summary"] = telegram_done["done summary"].extend(telegram_done["summary"])
+                telegram_done["summary"] = []
                 telegram_done["last channel post time"] = now.isoformat()
-                
+
             # delete_message(config, message_id + 1)
             done_posts["done"].append(url)
             time.sleep(15)
@@ -188,3 +198,7 @@ if posts_json:
     with open('seen_feedy.json', 'w', encoding='utf-8') as file:
         json.dump(done_posts, file)
         print("saving done feedy")
+    
+    with open('telegram_updates.json', 'w', encoding='utf-8') as file:
+        json.dump(telegram_done, file)
+        print("saving done telegram")
