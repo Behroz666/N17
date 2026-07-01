@@ -3,6 +3,59 @@ from google.genai import types
 from google.genai.errors import ServerError
 import time
 import os
+from pydantic import BaseModel
+from typing import Type
+
+def ask_gemini_structured(
+    user_prompt: str, 
+    response_schema: Type[BaseModel], 
+    system_prompt: str = None
+) -> BaseModel:
+    """
+    Calls Gemini models with a fallback chain and returns a strongly-typed Pydantic object.
+    """
+    client = genai.Client(api_key=os.environ.get('GOOGLE_AI_TOKEN'))
+    
+    # Define your fallback chain in order of preference
+    models_to_try = [
+        'gemini-3.1-flash-lite',
+        'gemini-2.5-flash-lite',
+        'gemma-4-31b-it' 
+    ]
+    
+    # Configure the schema and instruct the model to return JSON matching it
+    config = types.GenerateContentConfig(
+        system_instruction=system_prompt,
+        response_mime_type="application/json",
+        response_schema=response_schema
+    )
+    
+    for model in models_to_try:
+        try:
+            print(f"Attempting to use model: {model}...")
+            response = client.models.generate_content(
+                model=model,
+                contents=user_prompt,
+                config=config
+            )
+            
+            # The SDK automatically parses the JSON text back into your Pydantic model
+            # if provided via response_schema on supported versions.
+            # If your SDK version returns raw text, use: response_schema.model_validate_json(response.text)
+            return response.parsed
+            
+        except ServerError as e:
+            if e.code == 503:
+                print(f"⚠️ {model} is facing high demand (503). Trying next fallback...")
+                time.sleep(1)
+                continue
+            else:
+                raise e
+        except Exception as e:
+            print(f"An unexpected error occurred with {model}: {e}")
+            raise e
+            
+    raise RuntimeError("All models in the fallback chain failed due to high demand.")
 
 def ask_gemini(user_prompt: str, system_prompt: str = None) -> str:
 
