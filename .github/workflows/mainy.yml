@@ -35,20 +35,22 @@ jobs:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         FEED_URL: ${{ secrets.FEED_URL }}
         RSS_URL: ${{ secrets.RSS_URL }}
+        BRIDGE_BOT_TOKEN: ${{ secrets.BRIDGE_BOT_TOKEN }}
       run: python mainy.py
 
-    - name: Check for changes in seen_feedy.json
+    - name: Check for changes in json files
       id: git-check
       run: |
-        # Updated filename to match 'seen_feedy.json' from your python script
-        git diff --exit-code --quiet seen_feedy.json || echo "changed=true" >> $GITHUB_OUTPUT
+        # Check both files for changes. If either has changed, set the output.
+        git diff --exit-code --quiet seen_feedy.json telegram_updates.json || echo "changed=true" >> $GITHUB_OUTPUT
 
     - name: Commit and push if changed
       if: steps.git-check.outputs.changed == 'true'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add seen_feedy.json
-        git commit -m "Update seen_feedy.json"
+        # Stage both files if they have modifications
+        git add seen_feedy.json telegram_updates.json
+        git commit -m "Update seen_feedy.json and telegram_updates.json"
         git pull --no-rebase
         git push

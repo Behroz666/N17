@@ -6,6 +6,7 @@ from telegram import send_image, send_message, send_gallery, pin_message, delete
 import time
 from gemini import ask_gemini, ask_gemini_structured
 from pydantic import BaseModel, Field
+import requests
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -46,6 +47,48 @@ with open('config.json', 'r', encoding='utf-8') as file:
 
 with open('seen_feedy.json', 'r', encoding='utf-8') as file:
     done_posts = json.load(file)
+
+TARGET_CHAT_ID = config["Summary Chat id"]
+
+with open("telegram_updates.json", 'r', encoding='utf-8') as file:
+    telegram_done = json.load(file)
+
+URL = f"https://api.telegram.org/bot{os.environ.get('BRIDGE_BOT_TOKEN')}/getUpdates"
+response = requests.get(URL)
+
+while True:
+    data = response.json()
+    if response.status_code != 200:
+        print(f"API Error ({response.status_code}): {response.text}")
+        break
+    if not data.get("ok"):
+        print(f"Telegram API Error: {data.get('description')}")
+        break
+
+    new_updates = data.get("result", [])
+    if not new_updates:
+        print("No new updates found since your last check.")
+        break
+
+    filtered_updates = []
+    for update in new_updates:
+
+        message_obj = (
+            update.get("message")
+            or update.get("edited_message")
+        )
+
+        if message_obj and message_obj.get("chat", {}).get("id") == TARGET_CHAT_ID and message_obj.get("from", {}).get("id") == 284403259 and message_obj.get("message_id") not in telegram_done["done"]:
+            news_text = message_obj.get("text")[:-68]
+            news_link = message_obj.get("text")[-68:].replace("rss.xcancel.com","x.com")
+            send_message(config, f"news text: {news_text}, news link: {news_link}", 1140637004)
+            telegram_done["done"].append(message_obj.get("message_id"))
+
+    with open('telegram_updates.json', 'w', encoding='utf-8') as file:
+        json.dump(telegram_done, file)
+        print("saving done telegram")
+
+    break
 
 channel = "https://www.youtube.com/@ChrisCowlin"
 posts_json = get_community_posts(channel)
@@ -129,4 +172,4 @@ if posts_json:
 
     with open('seen_feedy.json', 'w', encoding='utf-8') as file:
         json.dump(done_posts, file)
-        print("saving done")
+        print("saving done feedy")
