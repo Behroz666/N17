@@ -69,6 +69,7 @@ if __name__ == "__main__":
     for title, link in articles:
 
         if any(char in title for char in ["Tottenham team confirmed vs", "LIVE", "highlights", "player rating"]):
+            new_seen.add(link)
             continue
 
         if link in seen_articles:
@@ -79,6 +80,7 @@ if __name__ == "__main__":
             continue
         print(pub_date)
         if pub_date < one_day_ago:
+            new_seen.add(link)
             continue  # Skip if older than 1 day
         Broken_AI = False
         try:
