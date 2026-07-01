@@ -18,7 +18,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
 
 TELEGRAM_BOT_TOKEN = os.environ.get('BOT_TOKEN')
 TELEGRAM_CHAT_ID = config["Main Chat id"]
-LARGE_FILE_CHAT_ID = config["Summary Chat id"]
+LARGE_FILE_CHAT_ID = config["Media Chat id"]
 TELEGRAM_API_LIMIT_BYTES = 50 * 1024 * 1024
 
 HISTORY_FILE = "downloaded_tiktoks.json"
