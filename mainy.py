@@ -83,7 +83,7 @@ while True:
         if message_obj and message_obj.get("chat", {}).get("id") == TARGET_CHAT_ID and message_obj.get("from", {}).get("id") == 284403259 and message_obj.get("message_id") not in telegram_done["done"]:
             news_text = message_obj.get("text")[:-68]
             news_link = message_obj.get("text")[-68:].replace("rss.xcancel.com","x.com")
-            if len(news_text) == 0 or news_text == "Gif" or str(news_text).startswith("R to @spurssglobal: football.london/tottenham-ho…"):
+            if len(news_text) == 0 or news_text == "Gif" or str(news_text).startswith("R to @spurssglobal: football.london/tottenham-ho…") or str(news_text).startswith("R to @TheSpursExpress: "):
                 telegram_done["done"].append(message_obj.get("message_id"))
             else:
                 if len(news_text) < 10:
@@ -92,7 +92,7 @@ while True:
                     fa = news_text
                 else:
                     fa = ask_gemini(user_prompt=news_text, system_prompt=config["Translation System Prompt"])
-                message = f"{fa}\n\n<blockquote expandable><a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
+                message = f"<blockquote expandable>{fa}\n\n<a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
                 message_id = send_message(config, message, config["Main Chat id"], preview= True)
                 pin_message(config, message_id)
                 telegram_done["done"].append(message_obj.get("message_id"))
