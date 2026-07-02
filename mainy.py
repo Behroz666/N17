@@ -92,7 +92,7 @@ while True:
                     fa = news_text
                 else:
                     fa = ask_gemini(user_prompt=news_text, system_prompt=config["Translation System Prompt"])
-                message = f"<blockquote expandable>{fa}\n\n<a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
+                message = f"<blockquote expandable>{fa}\n\n<a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n{hyperlink}"
                 message_id = send_message(config, message, config["Main Chat id"], preview= True)
                 pin_message(config, message_id)
                 telegram_done["done"].append(message_obj.get("message_id"))
