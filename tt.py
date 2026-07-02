@@ -4,7 +4,6 @@ import os
 import requests
 from gemini import ask_gemini
 from telegram import send_image, send_message
-import sys
 
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -24,23 +23,6 @@ TELEGRAM_API_LIMIT_BYTES = 50 * 1024 * 1024
 
 HISTORY_FILE = "downloaded_tiktoks.json"
 
-class ErrorInterceptor:
-    def __init__(self, original_stderr):
-        self.original_stderr = original_stderr
-
-    def write(self, message):
-        # Always write to the original stderr so you don't lose normal console output
-        self.original_stderr.write(message)
-        
-        # If the message isn't empty/just whitespace, send it
-        if message.strip():
-            send_message(config, f"error in tt.py:\n\n<pre><code class='log'>{message}</code></pre>", 1140637004)
-
-    def flush(self):
-        self.original_stderr.flush()
-
-# Redirect standard error to our interceptor
-sys.stderr = ErrorInterceptor(sys.stderr)
 
 def load_history():
     if os.path.exists(HISTORY_FILE):

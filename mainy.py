@@ -8,7 +8,6 @@ from gemini import ask_gemini, ask_gemini_structured
 from pydantic import BaseModel, Field
 import requests
 from datetime import datetime, timedelta, timezone, time as dt_time
-import sys
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -58,23 +57,6 @@ with open("telegram_updates.json", 'r', encoding='utf-8') as file:
 URL = f"https://api.telegram.org/bot{os.environ.get('BRIDGE_BOT_TOKEN')}/getUpdates"
 response = requests.get(URL)
 
-class ErrorInterceptor:
-    def __init__(self, original_stderr):
-        self.original_stderr = original_stderr
-
-    def write(self, message):
-        # Always write to the original stderr so you don't lose normal console output
-        self.original_stderr.write(message)
-        
-        # If the message isn't empty/just whitespace, send it
-        if message.strip():
-            send_message(config, f"error in mainy.py:\n\n<pre><code class='log'>{message}</code></pre>", 1140637004)
-
-    def flush(self):
-        self.original_stderr.flush()
-
-# Redirect standard error to our interceptor
-sys.stderr = ErrorInterceptor(sys.stderr)
 
 while True:
     data = response.json()

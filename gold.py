@@ -9,30 +9,12 @@ import time
 import json
 from zoneinfo import ZoneInfo
 import humanize
-import sys
 
 SEEN_FILE = "seen_articles.json"
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
 
-class ErrorInterceptor:
-    def __init__(self, original_stderr):
-        self.original_stderr = original_stderr
-
-    def write(self, message):
-        # Always write to the original stderr so you don't lose normal console output
-        self.original_stderr.write(message)
-        
-        # If the message isn't empty/just whitespace, send it
-        if message.strip():
-            send_message(config, f"error in gold.py:\n\n<pre><code class='log'>{message}</code></pre>", 1140637004)
-
-    def flush(self):
-        self.original_stderr.flush()
-
-# Redirect standard error to our interceptor
-sys.stderr = ErrorInterceptor(sys.stderr)
 
 if os.path.exists(SEEN_FILE):
     with open(SEEN_FILE, "r") as f:
