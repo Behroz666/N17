@@ -99,9 +99,9 @@ while True:
         )
 
         if message_obj and message_obj.get("chat", {}).get("id") == TARGET_CHAT_ID and message_obj.get("from", {}).get("id") == 284403259 and message_obj.get("message_id") not in telegram_done["done"]:
-            news_text = message_obj.get("text")[:-70]
+            news_text = message_obj.get("text")[:-68]
             news_link = message_obj.get("text")[-68:].replace("rss.xcancel.com","x.com")
-            send_message(config, f"news text: {news_text}, news link: {news_link}", 1140637004)
+            send_message(config, f"news text: {news_text}\nnews link: {news_link}", 1140637004)
             telegram_done["done"].append(message_obj.get("message_id"))
 
     break
@@ -212,7 +212,7 @@ if posts_json:
                     text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
                 text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
                 message_id = send_message(config, text, config["Channel id"])
-                telegram_done["done summary"] = telegram_done["done summary"].extend(telegram_done["summary"])
+                telegram_done["summary done"] = telegram_done["summary done"].extend(telegram_done["summary"])
                 telegram_done["summary"] = []
                 telegram_done["last channel post time"] = now.isoformat()
 
