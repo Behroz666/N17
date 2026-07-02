@@ -227,17 +227,15 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
         # 1. Download at 360p
         #'format': 'bv*[width<=640]+ba/best',
         ydl_opts = {
-            # 'best' is a fallback if the separate video + audio streams are blocked/missing
-            'format': 'bv+ba/b/best',
-            
-            # This tells yt-dlp: "Try to get 360p, but if you can't, give me the closest thing below it"
-            'format_sort': ['res:360', 'ext:mp4:m4a'],
-            
-            'merge_output_format': 'mp4',
-            'outtmpl': f"{video_id}_raw.%(ext)s",
-            'quiet': True, 
-            'no_warnings': True,
-            'listformats': True
+            'format': 'bestvideo[height=360]+bestaudio/best[height=360]/bestvideo[height>360]+bestaudio/best[height>360]',
+            'merge_output_format': 'mp4',  # <-- This line forces proper .mp4 container
+            'outtmpl': f"{video_id}_raw.%(ext)s",  # Let yt-dlp choose correct extension
+            'quiet': True, 'no_warnings': True, 'listformats': True,
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['ios', 'android', 'web_embedded']
+                }
+            }
         }
         if youtube_cookies_str:
             with tempfile.NamedTemporaryFile('w', delete=False) as ck:
