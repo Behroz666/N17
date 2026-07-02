@@ -12,7 +12,9 @@ def send_message(config, text, chat_id, preview = False, preview_url=None):
             "chat_id": chat_id,
             "text": text,
             "parse_mode": "HTML",
-            "disable_web_page_preview":True
+            "link_preview_options": {
+                "is_disabled": True
+            }
         }
     else:
         payload = {
@@ -23,11 +25,11 @@ def send_message(config, text, chat_id, preview = False, preview_url=None):
                 "url": preview_url,
                 "show_above_text": True,
                 "prefer_large_media": True
-                }
+            }
         }
     attempts = 0
     while attempts < max_attempts: 
-        response = requests.post(url, data=payload)
+        response = requests.post(url, json=payload)
         response_json = response.json()
         print(response_json)
         if response_json.get('ok') == True:
