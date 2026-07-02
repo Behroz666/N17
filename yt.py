@@ -210,12 +210,12 @@ def get_video_info_and_size(video_url, quality_format, cookies_file_path=None):
     except yt_dlp.utils.DownloadError as e:
         a = f"yt-dlp error getting info for {video_url} with {quality_format}: {e}"
         print(a)
-        send_message(config, f"{a}", 1140637004, preview= False)
+        send_message(config, f"{a}", 1140637004)
         return None, None
     except Exception as e:
         a = f"General error getting video info for {video_url} with {quality_format}: {e}"
         print(a)
-        send_message(config, f"{a}", 1140637004, preview= False)
+        send_message(config, f"{a}", 1140637004)
         return None, None
 
 def download_and_upload_video(video_id, video_title, telegram_bot_token,
@@ -330,11 +330,11 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
         a = f"yt-dlp error downloading {video_title} ({video_id}): {e}"
         print(a)
         if "This video is available in Korea, Republic of." not in a:
-            send_message(config, f"{a}", 1140637004, preview= False)
+            send_message(config, f"{a}", 1140637004)
     except Exception as e:
         a = f"An unexpected error occurred during download or upload for {video_title} ({video_id}): {e}"
         print(a)
-        send_message(config, f"{a}", 1140637004, preview= False)
+        send_message(config, f"{a}", 1140637004)
 
 def main():
     """
