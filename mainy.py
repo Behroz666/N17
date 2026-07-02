@@ -193,13 +193,13 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if len(post_summary) > 15:
+            if len(post_summary) < 15 or (len(telegram_done["summary"]) > 15 and len(post_summary) > 40)or (len(telegram_done["summary"]) > 15 and len(post_summary) < 15):
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
         text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
         message_id = send_message(config, text, config["Channel id"])
-        telegram_done["done summary"].extend(telegram_done["summary"])
+        telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
     elif now - last_post_time > timedelta(hours=6) and (last_post_time.time() >= dt_time(18, 30) or last_post_time.time() <= dt_time(10, 30)) and len(telegram_done["summary"]) > 2 : 
@@ -209,7 +209,7 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if len(post_summary) > 15:
+            if len(post_summary) < 15:
                 text = text + f"<a href='{post_id}'>{post_title}\n\n"
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
