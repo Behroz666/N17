@@ -83,7 +83,8 @@ while True:
         if message_obj and message_obj.get("chat", {}).get("id") == TARGET_CHAT_ID and message_obj.get("from", {}).get("id") == 284403259 and message_obj.get("message_id") not in telegram_done["done"]:
             news_text = message_obj.get("text")[:-68]
             news_link = message_obj.get("text")[-68:].replace("rss.xcancel.com","x.com")
-            send_message(config, f"news text: {news_text}\nnews link: {news_link}", 1140637004)
+            fa = ask_gemini(user_prompt=news_text, system_prompt=config["Translation System Prompt"])
+            send_message(config, f"news text: {news_text}\nnews link: {news_link}", 1140637004, preview= False)
             telegram_done["done"].append(message_obj.get("message_id"))
 
     break
@@ -112,7 +113,7 @@ if posts_json:
                     system_prompt=config["Translation System Prompt"]
                 )
             except:
-                send_message(config, "the structured output failed", 1140637004)
+                send_message(config, "the structured output failed", 1140637004, preview= False)
             
             fa = NEWS_response.persian_news_fulltext
 
@@ -146,19 +147,19 @@ if posts_json:
                         message = f"{fa[:(limit - 196)]}\n\n{hyperlink}"
                 
             if news['images'] is None:
-                message_id = send_message(config, message, config["Main Chat id"])
+                message_id = send_message(config, message, config["Main Chat id"], preview= False)
             elif len(news['images']) == 1:
                 if not text_is_too_long_needs_splitting:
                     message_id = send_image(config, message, news['images'][0])
                 else:
                     message_id = send_image(config, hyperlink, news['images'][0])
-                    message_id = send_message(config, message, config["Main Chat id"])
+                    message_id = send_message(config, message, config["Main Chat id"], preview= False)
             elif len(news['images']) > 1:
                 if not text_is_too_long_needs_splitting:
                     message_id = send_gallery(config, message, news['images'])
                 else:
                     message_id = send_gallery(config, hyperlink, news['images'])
-                    message_id = send_message(config, message, config["Main Chat id"])
+                    message_id = send_message(config, message, config["Main Chat id"], preview= False)
             pin_message(config, message_id)
 
             telegram_done["summary"].append({
@@ -187,7 +188,7 @@ if posts_json:
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
         text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
-        message_id = send_message(config, text, config["Channel id"])
+        message_id = send_message(config, text, config["Channel id"], preview= False)
         telegram_done["done summary"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
@@ -203,7 +204,7 @@ if posts_json:
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
         text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
-        message_id = send_message(config, text, config["Channel id"])
+        message_id = send_message(config, text, config["Channel id"], preview= False)
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()

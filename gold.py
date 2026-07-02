@@ -112,15 +112,15 @@ if __name__ == "__main__":
                     send_image(config, text, banner_url)
                 else:
                     send_image(config, "", banner_url)
-                    send_message(config, text, config["Main Chat id"])
+                    send_message(config, text, config["Main Chat id"], preview= False)
             except:
-                send_message(config, text, config["Main Chat id"])
+                send_message(config, text, config["Main Chat id"], preview= False)
         else:
             text = text + "\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
             try:
                 send_image(config, text, banner_url)
             except:
-                send_message(config, text, config["Main Chat id"])
+                send_message(config, text, config["Main Chat id"], preview= False)
         time.sleep(5)
         new_seen.add(link)
 

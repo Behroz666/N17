@@ -5,14 +5,21 @@ import time
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 max_attempts = 2
 
-def send_message(config, text, chat_id):
+def send_message(config, text, chat_id, preview):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": chat_id,
-        "text": text,
-        "parse_mode": "HTML",
-        "disable_web_page_preview":True
-    }
+    if not preview:
+        payload = {
+            "chat_id": chat_id,
+            "text": text,
+            "parse_mode": "HTML",
+            "disable_web_page_preview":True
+        }
+    else:
+        payload = {
+            "chat_id": chat_id,
+            "text": text,
+            "parse_mode": "HTML"
+        }
     attempts = 0
     while attempts < max_attempts: 
         response = requests.post(url, data=payload)
