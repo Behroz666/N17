@@ -24,7 +24,7 @@ class ErrorInterceptor:
         
         # If the message isn't empty/just whitespace, send it
         if message.strip():
-            send_message(config, f"error in yt.py:\n\n{message}", 1140637004)
+            send_message(config, f"error in yt.py:\n\n<pre><code class='log'>{message}</code></pre>", 1140637004)
 
     def flush(self):
         self.original_stderr.flush()
