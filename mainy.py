@@ -7,7 +7,7 @@ import time
 from gemini import ask_gemini, ask_gemini_structured
 from pydantic import BaseModel, Field
 import requests
-from datetime import datetime, timedelta, timezone, time
+from datetime import datetime, timedelta, timezone, time as dt_time
 import sys
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
@@ -99,7 +99,7 @@ while True:
         )
 
         if message_obj and message_obj.get("chat", {}).get("id") == TARGET_CHAT_ID and message_obj.get("from", {}).get("id") == 284403259 and message_obj.get("message_id") not in telegram_done["done"]:
-            news_text = message_obj.get("text")[:-68]
+            news_text = message_obj.get("text")[:-70]
             news_link = message_obj.get("text")[-68:].replace("rss.xcancel.com","x.com")
             send_message(config, f"news text: {news_text}, news link: {news_link}", 1140637004)
             telegram_done["done"].append(message_obj.get("message_id"))
@@ -202,7 +202,7 @@ if posts_json:
                 telegram_done["done summary"] = telegram_done["done summary"].extend(telegram_done["summary"])
                 telegram_done["summary"] = []
                 telegram_done["last channel post time"] = now.isoformat()
-            elif now - last_post_time > timedelta(hours=6) and (last_post_time.time() >= time(18, 30) or last_post_time.time() <= time(10, 30)) and len(telegram_done["summary"]) > 2 : 
+            elif now - last_post_time > timedelta(hours=6) and (last_post_time.time() >= dt_time(18, 30) or last_post_time.time() <= dt_time(10, 30)) and len(telegram_done["summary"]) > 2 : 
                 # generated channel post
                 text = "🗞️اخبار :\n\n"
                 for post in telegram_done["summary"]:
