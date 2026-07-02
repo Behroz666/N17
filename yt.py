@@ -227,10 +227,13 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
         # 1. Download at 360p
         #'format': 'bv*[width<=640]+ba/best',
         ydl_opts = {
-            'format': 'bestvideo[height=360]+bestaudio/best[height=360]/bestvideo[height>360]+bestaudio/best[height>360]',
-            'merge_output_format': 'mp4',  # <-- This line forces proper .mp4 container
-            'outtmpl': f"{video_id}_raw.%(ext)s",  # Let yt-dlp choose correct extension
-            'quiet': True, 'no_warnings': True
+            # This safely targets 360p or lower for horizontal videos, 
+            # while falling back to the best available small format for Shorts.
+            'format': 'bestvideo[height<=360]+bestaudio/best[height<=360]/best',
+            'merge_output_format': 'mp4',
+            'outtmpl': f"{video_id}_raw.%(ext)s",
+            'quiet': True, 
+            'no_warnings': True
         }
         if youtube_cookies_str:
             with tempfile.NamedTemporaryFile('w', delete=False) as ck:
