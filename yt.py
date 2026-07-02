@@ -227,9 +227,9 @@ def download_and_upload_video(video_id, video_title, telegram_bot_token,
         # 1. Download at 360p
         #'format': 'bv*[width<=640]+ba/best',
         ydl_opts = {
-            # This safely targets 360p or lower for horizontal videos, 
-            # while falling back to the best available small format for Shorts.
-            'format': 'bestvideo[height<=360]+bestaudio/best[height<=360]/best',
+            # Prefer best video and best audio, but sort resolutions starting from 360p down
+            'format': 'bv+ba/b',
+            'format_sort': ['res:360', 'ext:mp4:m4a'],
             'merge_output_format': 'mp4',
             'outtmpl': f"{video_id}_raw.%(ext)s",
             'quiet': True, 
