@@ -182,16 +182,15 @@ def get_video_info_and_size(video_url, quality_format, cookies_file_path=None):
     Returns (estimated_size_bytes, filename) or (None, None) on failure.
     """
     ydl_opts = {
-        'format': quality_format, # yt-dlp will select the best matching format
-        'simulate': True,  # Only simulate, don't download
-        'force_generic_extractor': True, # Important for consistent info extraction
-        'quiet': True,     # Suppress console output
-        'no_warnings': True, # Suppress warnings
-        'skip_download': True, # Ensure no download occurs
-        # 'print_json': True, # Not strictly necessary when using as library, extract_info returns dict
+        # Fallback to 'best' if the requested quality_format isn't available
+        'format': f"{quality_format}/best", 
+        'simulate': True,  
+        'quiet': True,     
+        'no_warnings': True, 
+        'skip_download': True, 
     }
     if cookies_file_path:
-        ydl_opts['cookiefile'] = cookies_file_path # Pass the cookie file path
+        ydl_opts['cookiefile'] = cookies_file_path
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
