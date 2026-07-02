@@ -17,7 +17,8 @@ with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
 
 TELEGRAM_BOT_TOKEN = os.environ.get('BOT_TOKEN')
-TELEGRAM_CHAT_ID = config["Main Chat id"]
+# TELEGRAM_CHAT_ID = config["Main Chat id"]
+TELEGRAM_CHAT_ID = config["Media Chat id"]
 LARGE_FILE_CHAT_ID = config["Media Chat id"]
 TELEGRAM_API_LIMIT_BYTES = 50 * 1024 * 1024
 
