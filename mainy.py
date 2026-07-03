@@ -83,7 +83,7 @@ while True:
         if message_obj and message_obj.get("chat", {}).get("id") == TARGET_CHAT_ID and message_obj.get("from", {}).get("id") == 284403259 and message_obj.get("message_id") not in telegram_done["done"]:
             idx = message_obj.get("text").rfind('https://')
             news_text = message_obj.get("text")[:idx].rstrip()
-            news_link = message_obj.get("text")[idx:].replace("rss.xcancel.com","x.com").strip()
+            news_link = message_obj.get("text")[idx:].replace("rss.xcancel.com","x.com").replace("xcancel.com","x.com").strip()
             if len(news_text) == 0 or news_text == "Gif" or str(news_text).startswith("R to @spurssglobal:") or str(news_text).startswith("R to @TheSpursExpress: "):
                 telegram_done["done"].append(message_obj.get("message_id"))
             else:
