@@ -84,7 +84,7 @@ while True:
             idx = message_obj.get("text").rfind('https://')
             news_text = message_obj.get("text")[:idx].rstrip()
             news_link = message_obj.get("text")[idx:].replace("rss.xcancel.com","x.com").strip()
-            if len(news_text) == 0 or news_text == "Gif" or str(news_text).startswith("R to @spurssglobal: football.london/tottenham-ho…") or str(news_text).startswith("R to @TheSpursExpress: "):
+            if len(news_text) == 0 or news_text == "Gif" or str(news_text).startswith("R to @spurssglobal:") or str(news_text).startswith("R to @TheSpursExpress: "):
                 telegram_done["done"].append(message_obj.get("message_id"))
             else:
                 if len(news_text) < 10:
