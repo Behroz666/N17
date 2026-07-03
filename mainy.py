@@ -193,7 +193,7 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if len(post_summary) < 15 or (len(telegram_done["summary"]) > 15 and len(post_summary) > 150) or (len(telegram_done["summary"]) > 15 and len(post_summary) < 50):
+            if len(post_summary) < 15 or (len(telegram_done["summary"]) > 15 and len(post_summary) > 150) or (len(telegram_done["summary"]) > 15 and len(post_summary) < 50) or (len(post_summary) < (len(post_title)*1.1)):
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
@@ -209,7 +209,7 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if len(post_summary) < 15:
+            if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)):
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
