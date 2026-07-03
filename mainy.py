@@ -93,9 +93,14 @@ while True:
                 else:
                     fa = ask_gemini(user_prompt=news_text, system_prompt=config["Translation System Prompt"])
                 message = f"<blockquote expandable>{fa}\n\n<a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n{hyperlink}"
-                message_id = send_message(config, message, config["Main Chat id"], preview= True, preview_url=news_link)
-                pin_message(config, message_id)
-                telegram_done["done"].append(message_obj.get("message_id"))
+                try:
+                    message_id = send_message(config, message, config["Main Chat id"], preview= True, preview_url=news_link.strip())
+                    pin_message(config, message_id)
+                    telegram_done["done"].append(message_obj.get("message_id"))
+                except Exception as e:
+                    a = f"error with this url {news_link.strip()}: {e}"
+                    print(a)
+                    send_message(config, f"{a}", 1140637004)
 
     break
 
