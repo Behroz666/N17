@@ -123,42 +123,54 @@ def ask_gemini_youtube(
         "The summary must be informative, high-quality, and strictly less than 3500 characters."
     )
 
-    for model in models_to_try:
-        try:
-            print(f"Attempting to use model: {model}...")
-            
-            response = client.models.generate_content(
-                model=model, # Fix: Used the loop variable instead of a hardcoded string
-                contents=[
-                    # Fix: For YouTube URLs, use types.FileData instead of from_uri
-                    types.Part(
-                        file_data=types.FileData(
-                            file_uri=video_url,
-                            mime_type="video/mp4"
-                        )
-                    ),
-                    types.Part(text=prompt)
-                ],
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=YouTubeVideoAnalysis,
-                    temperature=0.3
-                )
-            )
+    max_retries_per_model = 2  # retry same model this many times before moving on
 
-            return response.parsed
-            
-        except APIError as e:
-            # The new SDK groups codes under e.code
-            if e.code == 503:
-                print(f"⚠️ {model} is facing high demand (503). Trying next fallback...")
-                time.sleep(2)
-                continue
-            else:
-                print(f"API Error occurred with {model}: {e}")
+    for model in models_to_try:
+        attempts = 0
+        while attempts <= max_retries_per_model:
+            attempts += 1
+            try:
+                print(f"Attempting to use model: {model} (attempt {attempts}) for {video_url}...")
+
+                response = client.models.generate_content(
+                    model=model,
+                    contents=[
+                        # Fix: no mime_type for YouTube URLs — Gemini auto-detects.
+                        # Forcing "video/mp4" on a youtube.com/watch URL is what
+                        # was triggering the 400 INVALID_ARGUMENT.
+                        types.Part(
+                            file_data=types.FileData(
+                                file_uri=video_url
+                            )
+                        ),
+                        types.Part(text=prompt)
+                    ],
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=YouTubeVideoAnalysis,
+                        temperature=0.3
+                    )
+                )
+
+                return response.parsed
+
+            except APIError as e:
+                # 503 = model overloaded, 400 = sometimes a genuinely transient
+                # Gemini-side hiccup on YouTube video ingestion (confirmed in
+                # Google's own dev forum) — both are worth a short retry.
+                if e.code in (503, 400):
+                    print(f"⚠️ {model} returned {e.code} on {video_url} (attempt {attempts}): {e}")
+                    if attempts <= max_retries_per_model:
+                        time.sleep(2)
+                        continue
+                    else:
+                        print(f"⚠️ {model} exhausted retries for {video_url}, moving to next fallback model...")
+                        break
+                else:
+                    print(f"API Error occurred with {model} on {video_url}: {e}")
+                    raise e
+            except Exception as e:
+                print(f"An unexpected error occurred with {model} on {video_url}: {e}")
                 raise e
-        except Exception as e:
-            print(f"An unexpected error occurred with {model}: {e}")
-            raise e
-            
-    raise RuntimeError("All models in the fallback chain failed due to high demand.")
+
+    raise RuntimeError(f"All models in the fallback chain failed for {video_url}.")
