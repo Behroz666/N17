@@ -85,44 +85,6 @@ if __name__ == "__main__":
         if pub_date < one_day_ago:
             new_seen.add(link)
             continue  # Skip if older than 1 day
-        Broken_AI = False
-        try:
-            fa_title = ask_gemini(user_prompt=title, system_prompt=config["Translation System Prompt"])
-        except:
-            Broken_AI = True
-            fa_title = title
-        print(title + "\n\n turns into" + fa_title)
-
-        if len(fa_title) < 2 * len(title) and "ترجمه" not in fa_title:
-            title = fa_title
-
-        text = f"<a href='{link}'>{title}</a>\n\n"
-        time.sleep(5)
-
-        print(f"\n--- {title} ({pub_date}) ---")
-        if banner_url:
-            print(f"Banner Image: {banner_url}")
-        if not Broken_AI:
-            summary = ask_gemini(user_prompt=article_text, system_prompt=config["Acticle System Prompt"] + f"تو باید این عنوان را هم در نظر داشته باشی {fa_title} و به سوال و موضوع اصلی مطرح شده در این عنوان بپردازی اگر نوشته جالب دیگری هم در متن وجود داشت و میتوانستی با در نظر گرفتن محدودیت طول متن خروجی آن را هم ذکر کنی آن را انجام بده. پس تو باید یک پاراگراف حذاب و خلاصه از متن داده شده با در نظر داشتن عنوان ارائه بدی")
-            print(summary)
-            pub_date_aware = pub_date.replace(tzinfo=ZoneInfo("Europe/London"))
-            now_utc = datetime.now(timezone.utc)
-            relative_time = humanize.naturaltime(now_utc - pub_date_aware)
-            text = text + f"<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ {relative_time} by Alasdair Gold \n\n{hyperlink}"
-            try:
-                if len(summary + title) < 940 :
-                    send_image(config, text, banner_url)
-                else:
-                    send_image(config, "", banner_url)
-                    send_message(config, text, config["Main Chat id"])
-            except:
-                send_message(config, text, config["Main Chat id"])
-        else:
-            text+=hyperlink
-            try:
-                send_image(config, text, banner_url)
-            except:
-                send_message(config, text, config["Main Chat id"])
         class ArticleProcessor(BaseModel):
             fa_title: str = Field(description="ترجمه دقیق و رسمی عنوان بدون هیچ کلمه اضافی")
             summary: str = Field(description="خلاصه ۲۰۰۰ کاراکتری جذاب از متن مقاله با در نظر داشتن عنوان")
