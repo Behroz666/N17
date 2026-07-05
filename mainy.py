@@ -288,8 +288,11 @@ if posts_json:
     stored_time_str = telegram_done.get("last channel post time")
     last_post_time = datetime.fromisoformat(stored_time_str)
     now = datetime.now(timezone.utc)
+    time_passed = now - last_post_time
+    print(f"last post:{last_post_time}\ntime passed: {time_passed}\nnews count: {len(telegram_done["summary"])}")
 
     if len(telegram_done["summary"]) > 9:
+        print("went on the ton of messages")
         # generated channel post
         text = "🗞️ اخبار :\n\n"
         for post in telegram_done["summary"]:
@@ -310,7 +313,8 @@ if posts_json:
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
 
-    elif now - last_post_time > timedelta(hours=6) and (last_post_time.time() >= dt_time(19, 30) or last_post_time.time() <= dt_time(10, 30)) and len(telegram_done["summary"]) > 3 : 
+    elif time_passed > timedelta(hours=6) and (last_post_time.time() >= dt_time(19, 30) or last_post_time.time() <= dt_time(10, 30)) and len(telegram_done["summary"]) > 3 : 
+        print("went on day time post")
         # generated channel post
         text = "🗞️ اخبار :\n\n"
         for post in telegram_done["summary"]:
@@ -332,6 +336,7 @@ if posts_json:
         telegram_done["last channel post time"] = now.isoformat()
 
     elif last_post_time.time() >= dt_time(16, 30) and last_post_time.time() <= dt_time(19, 30) and len(telegram_done["summary"]) > 1:
+        print("went on nightly post")
         # generated channel post
         text = "🗞️ اخبار :\n\n"
         for post in telegram_done["summary"]:
