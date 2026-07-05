@@ -136,6 +136,7 @@ for channel in YOUTUBE_CHANNEL_IDS:
                         fa = ask_gemini(user_prompt=video['title'], system_prompt=config["Translation System Prompt"])
                         message = f"<a href='{video_link}'>{fa}</a>\n\n{hyperlink} | <a href='https://t.me/N17_Media'>N17 TV</a>"
                         message_id = send_image(config, message, thumbnail_url, chat_id=config["Media Chat id"])
+                        time.sleep(3)
                     else:
                         class YouTubeVideoAnalysis(BaseModel):
                             translated_title: str = Field(
@@ -155,6 +156,7 @@ for channel in YOUTUBE_CHANNEL_IDS:
 
                         message_id = send_image(config, "", thumbnail_url, chat_id=config["Media Chat id"])
                         message_id = send_message(config, message, config["Media Chat id"])
+                        time.sleep(3)
 
                     seen_ids.add(video['id'])
 
