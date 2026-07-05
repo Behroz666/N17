@@ -112,7 +112,7 @@ if __name__ == "__main__":
             pub_date_aware = pub_date.replace(tzinfo=ZoneInfo("Europe/London"))
             now_utc = datetime.now(timezone.utc)
             relative_time = humanize.naturaltime(now_utc - pub_date_aware)
-            text = f"experimental:\n\n<a href='{link}'>{title}</a>\n\n<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ {relative_time} by Alasdair Gold \n\n{hyperlink}"
+            text = f"<a href='{link}'>{title}</a>\n\n<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ {relative_time} by Alasdair Gold \n\n{hyperlink}"
             try:
                 if len(summary + title) < 940 :
                     send_image(config, text, banner_url)
@@ -122,7 +122,7 @@ if __name__ == "__main__":
             except:
                 send_message(config, text, config["Main Chat id"])
         except:
-            text = f"experimental failed\n\n<a href='{link}'>{title}</a>\n\n{hyperlink}"
+            text = f"<a href='{link}'>{title}</a>\n\n{hyperlink}"
             try:
                 send_image(config, text, banner_url)
             except:
