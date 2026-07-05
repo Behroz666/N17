@@ -28,8 +28,8 @@ TELEGRAM_CHAT_ID = config["Media Chat id"]
 # automatically pick a public, no-auth, YouTube-capable instance from the
 # community instance tracker (https://instances.cobalt.best) each run. Set
 # COBALT_API_URL if you switch to a self-hosted or dedicated instance later.
-# COBALT_API_URL = os.environ.get('COBALT_API_URL', '').rstrip('/')
-# COBALT_API_KEY = os.environ.get('COBALT_API_KEY')  # optional, "Api-Key <key>" auth
+COBALT_API_URL = os.environ.get('COBALT_API_URL', '').rstrip('/')
+COBALT_API_KEY = os.environ.get('COBALT_API_KEY')  # optional, "Api-Key <key>" auth
 COBALT_USER_AGENT = "yt-telegram-uploader/1.0 (+https://github.com/)"
 
 _public_instance_cache = None  # populated lazily, once per run

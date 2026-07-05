@@ -54,8 +54,8 @@ jobs:
         GOOGLE_AI_TOKEN: ${{ secrets.GOOGLE_AI_TOKEN }}
         # Both optional: leave unset to auto-pick a public, no-auth cobalt
         # instance each run. Set these if you later move to a dedicated one.
-        # COBALT_API_URL: ${{ secrets.COBALT_API_URL }}
-        # COBALT_API_KEY: ${{ secrets.COBALT_API_KEY }}
+        COBALT_API_URL: ${{ secrets.COBALT_API_URL }}
+        COBALT_API_KEY: ${{ secrets.COBALT_API_KEY }}
       run: python new_yt.py
 
     - name: Persist seen_videos.json
