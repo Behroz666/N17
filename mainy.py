@@ -121,7 +121,8 @@ if posts_json:
             class NEWS(BaseModel):
                 persian_news_fulltext: str = Field(description="Full translation of the text based on the system prompt given")
                 persian_news_title: str = Field(description="a shot one liner title for the news given the title have to be in persian")
-                persian_news_summary: str = Field(description="very short summary of the news given the summary must be in persian")
+                persian_news_summary: str = Field(description="very short summary of the news that is given. the summary must be in persian. summary must add value to the title")
+                similar_title_and_summary: bool = Field(description="if the summary is not needed and is too similar to the title this should be returned as True. if the summary add value to tilte and is descriptive this should be False")
             
             try:
                 NEWS_response = ask_gemini_structured(
@@ -182,6 +183,7 @@ if posts_json:
             telegram_done["summary"].append({
                 "title": NEWS_response.persian_news_title,
                 "summary": NEWS_response.persian_news_summary,
+                "is similar": NEWS_response.similar_title_and_summary,
                 "post id": f"https://t.me/c/1748646263/{message_id}"
             })
 
@@ -200,7 +202,11 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if len(post_summary) < 15 or (len(telegram_done["summary"]) > 15 and len(post_summary) > 150) or (len(telegram_done["summary"]) > 15 and len(post_summary) < 50) or (len(post_summary) < (len(post_title)*1.1)):
+            if post["is similar"]:
+                is_similar = post["is similar"]
+            else:
+                is_similar = False
+            if len(post_summary) < 15 or (len(telegram_done["summary"]) > 15 and len(post_summary) > 150) or (len(telegram_done["summary"]) > 15 and len(post_summary) < 50) or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
@@ -217,7 +223,11 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)):
+            if post["is similar"]:
+                is_similar = post["is similar"]
+            else:
+                is_similar = False
+            if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
@@ -234,7 +244,11 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)):
+            if post["is similar"]:
+                is_similar = post["is similar"]
+            else:
+                is_similar = False
+            if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
