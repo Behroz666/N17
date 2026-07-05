@@ -174,7 +174,7 @@ for channel in YOUTUBE_CHANNEL_IDS:
                         )
 
                         data = (
-                            f"Video title: '{video["title"]}'\n\n"
+                            f"Video title: «{video['title']}»\n\n"
                             f"Transcript:\n{transcript_text}\n\n"
                         )
 
