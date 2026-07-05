@@ -1,6 +1,7 @@
 from google import genai
 from google.genai import types
 from google.genai.errors import ServerError
+from google.genai.errors import APIError
 import time
 import os
 from pydantic import BaseModel
@@ -106,31 +107,37 @@ def ask_gemini_youtube(
     video_title: str = "Extract the video title yourself"
 ) -> BaseModel:
     
+    # The new SDK automatically picks up GEMINI_API_KEY from os.environ, 
+    # but passing it explicitly via GOOGLE_AI_TOKEN works perfectly fine.
     client = genai.Client(api_key=os.environ.get('GOOGLE_AI_TOKEN'))
 
     models_to_try = [
         'gemini-3.1-flash-lite',
-        'gemini-2.5-flash-lite',
-        'gemma-4-31b-it' 
+        'gemini-2.5-flash-lite'
     ]
 
     prompt = (
         "Analyze the provided YouTube video. "
-        f"1. this is the video titel {video_title} translate it accurately into Persian. "
+        f"1. This is the video title: '{video_title}'. Translate it accurately into Persian. "
         "2. Provide a detailed summary of the video content strictly in Persian. "
         "The summary must be informative, high-quality, and strictly less than 3500 characters."
     )
+
     for model in models_to_try:
         try:
             print(f"Attempting to use model: {model}...")
+            
             response = client.models.generate_content(
-                model='gemini-3.1-flash-lite',
+                model=model, # Fix: Used the loop variable instead of a hardcoded string
                 contents=[
-                    types.Part.from_uri(
-                        file_uri=video_url,
-                        mime_type="video/mp4"
+                    # Fix: For YouTube URLs, use types.FileData instead of from_uri
+                    types.Part(
+                        file_data=types.FileData(
+                            file_uri=video_url,
+                            mime_type="video/mp4"
+                        )
                     ),
-                    prompt
+                    types.Part(text=prompt)
                 ],
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json",
@@ -138,17 +145,20 @@ def ask_gemini_youtube(
                     temperature=0.3
                 )
             )
-        except ServerError as e:
+
+            return response.parsed
+            
+        except APIError as e:
+            # The new SDK groups codes under e.code
             if e.code == 503:
                 print(f"⚠️ {model} is facing high demand (503). Trying next fallback...")
-                time.sleep(1)
+                time.sleep(2)
                 continue
             else:
+                print(f"API Error occurred with {model}: {e}")
                 raise e
         except Exception as e:
             print(f"An unexpected error occurred with {model}: {e}")
             raise e
             
     raise RuntimeError("All models in the fallback chain failed due to high demand.")
-
-    return response.parsed
