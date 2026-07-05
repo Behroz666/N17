@@ -155,7 +155,7 @@ for channel in YOUTUBE_CHANNEL_IDS:
 
                         message_id = send_image(config, "", thumbnail_url, chat_id=config["Media Chat id"])
                         message_id = send_message(config, message, config["Media Chat id"])
-                        
+
                     seen_ids.add(video['id'])
 
 with open(SEEN_VIDEOS_FILE, 'w', encoding='utf-8') as f:
@@ -311,7 +311,7 @@ if posts_json:
     last_post_time = datetime.fromisoformat(stored_time_str)
     now = datetime.now(timezone.utc)
     time_passed = now - last_post_time
-    print(f"last post:{last_post_time}\ntime passed: {time_passed}\nnews count: {len(telegram_done["summary"])}")
+    print(f"last post:{last_post_time}\ntime passed: {time_passed}\nnews count: {len(telegram_done['summary'])}")
 
     if len(telegram_done["summary"]) > 9:
         print("went on the ton of messages")
