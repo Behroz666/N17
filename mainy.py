@@ -4,7 +4,7 @@ import os
 import tempfile
 from telegram import send_image, send_message, send_gallery, pin_message, delete_message
 import time
-from gemini import ask_gemini, ask_gemini_structured
+from gemini import ask_gemini, ask_gemini_structured, ask_gemini_youtube
 from pydantic import BaseModel, Field
 import requests
 from datetime import datetime, timedelta, timezone, time as dt_time
@@ -49,8 +49,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
 
 SEEN_VIDEOS_FILE = "seen_videos.json"
 YOUTUBE_API_KEY = os.environ.get('GOOGLE')
-YOUTUBE_CHANNEL_ID = "UCEg25rdRZXg32iwai6N6l0w"
-MAX_RECENT_VIDEOS_TO_CHECK = 50
+YOUTUBE_CHANNEL_IDS = [{"channel id": "UCUz_XIKFQOrliSqPZWJBq2g", "summarize": True, "max videos" : 5}, {"channel id": "UCEg25rdRZXg32iwai6N6l0w", "summarize": False, "max videos": 50}]
 
 youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
 
@@ -112,29 +111,52 @@ def get_recent_videos(youtube_service, playlist_id, max_videos):
             break
 
     return videos
+for channel in YOUTUBE_CHANNEL_IDS:
+    YOUTUBE_CHANNEL_ID = channel["channel id"]
+    MAX_RECENT_VIDEOS_TO_CHECK = channel["max videos"]
+    uploads_playlist_id = get_channel_uploads_playlist_id(youtube, YOUTUBE_CHANNEL_ID)
 
-uploads_playlist_id = get_channel_uploads_playlist_id(youtube, YOUTUBE_CHANNEL_ID)
-
-if not uploads_playlist_id:
-    print("Could not retrieve uploads playlist ID. Exiting.")
-else:
-    recent_videos = get_recent_videos(youtube, uploads_playlist_id, MAX_RECENT_VIDEOS_TO_CHECK)
-    if not recent_videos:
-        print("No videos found on the channel.")
+    if not uploads_playlist_id:
+        print("Could not retrieve uploads playlist ID. Exiting.")
     else:
-        new_videos = [v for v in recent_videos if v['id'] not in seen_ids]
-        if not new_videos:
-            print("No new videos found.")
+        recent_videos = get_recent_videos(youtube, uploads_playlist_id, MAX_RECENT_VIDEOS_TO_CHECK)
+        if not recent_videos:
+            print("No videos found on the channel.")
         else:
-            new_videos.sort(key=lambda v: v['published_at'])
-            print(f"Found {len(new_videos)} new video(s) to process.")
-            for video in new_videos:
-                video_link = f"https://www.youtube.com/watch?v={video['id']}"
-                thumbnail_url = f"https://img.youtube.com/vi/{video['id']}/maxresdefault.jpg"
-                fa = ask_gemini(user_prompt=video['title'], system_prompt=config["Translation System Prompt"])
-                message = f"<a href='{video_link}'>{fa}</a>\n\n{hyperlink} | <a href='https://t.me/N17_Media'>N17 TV</a>"
-                message_id = send_image(config, message, thumbnail_url, chat_id=config["Media Chat id"])
-                seen_ids.add(video['id'])
+            new_videos = [v for v in recent_videos if v['id'] not in seen_ids]
+            if not new_videos:
+                print("No new videos found.")
+            else:
+                new_videos.sort(key=lambda v: v['published_at'])
+                print(f"Found {len(new_videos)} new video(s) to process.")
+                for video in new_videos:
+                    video_link = f"https://www.youtube.com/watch?v={video['id']}"
+                    thumbnail_url = f"https://img.youtube.com/vi/{video['id']}/maxresdefault.jpg"
+                    if not channel["summarize"]:
+                        fa = ask_gemini(user_prompt=video['title'], system_prompt=config["Translation System Prompt"])
+                        message = f"<a href='{video_link}'>{fa}</a>\n\n{hyperlink} | <a href='https://t.me/N17_Media'>N17 TV</a>"
+                        message_id = send_image(config, message, thumbnail_url, chat_id=config["Media Chat id"])
+                    else:
+                        class YouTubeVideoAnalysis(BaseModel):
+                            translated_title: str = Field(
+                                description="The Persian translation of the YouTube video title."
+                            )
+                            summary: str = Field(
+                                description="A comprehensive summary of the video content in Persian. Must be strictly less than 3500 characters."
+                            )
+                        
+                        youtube_response = ask_gemini_youtube(
+                            video_url=video_link,
+                            YouTubeVideoAnalysis= YouTubeVideoAnalysis,
+                            video_title=video["title"]
+                        )
+
+                        message = f"<a href='{video_link}'>{youtube_response.translated_title}</a>\n\n<blockquote expandable>{youtube_response.summary}</blockquote>\n\n{hyperlink} | <a href='https://t.me/N17_Media'>N17 TV</a>"
+
+                        message_id = send_image(config, "", thumbnail_url, chat_id=config["Media Chat id"])
+                        message_id = send_message(config, message, config["Media Chat id"])
+                        
+                    seen_ids.add(video['id'])
 
 with open(SEEN_VIDEOS_FILE, 'w', encoding='utf-8') as f:
     json.dump({'video_ids': sorted(seen_ids)}, f, indent=2)
