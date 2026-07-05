@@ -504,3 +504,72 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# name: Daily YouTube to Telegram Video Uploader
+
+# on:
+#   schedule:
+#     - cron: '0 19 * * *'
+#   workflow_dispatch:
+
+# permissions:
+#   contents: write   # needed to commit the updated seen_videos.json back to the repo
+
+# jobs:
+#   run_video_uploader:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v4
+
+#     - name: Set up Python
+#       uses: actions/setup-python@v5
+#       with:
+#         python-version: '3.x'
+
+#     - name: Cache FFmpeg
+#       uses: actions/cache@v3
+#       with:
+#         path: ~/.ffmpeg
+#         key: ${{ runner.os }}-ffmpeg
+#         restore-keys: |
+#           ${{ runner.os }}-ffmpeg
+
+#     - name: Install FFmpeg (if not cached)
+#       # Only used as a rare fallback when cobalt returns a "local-processing"
+#       # response that needs to be muxed locally (stream copy only, no re-encoding).
+#       run: |
+#         if [ ! -f ~/.ffmpeg/ffmpeg ]; then
+#           mkdir -p ~/.ffmpeg
+#           curl -L https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -o /tmp/ffmpeg.tar.xz
+#           tar -xJf /tmp/ffmpeg.tar.xz -C ~/.ffmpeg --strip-components=1
+#         fi
+#         echo "FFMPEG_HOME=$HOME/.ffmpeg" >> $GITHUB_ENV
+#         echo "$HOME/.ffmpeg" >> $GITHUB_PATH
+
+#     - name: Install dependencies
+#       run: |
+#         python -m pip install --upgrade pip
+#         pip install google-api-python-client requests packaging google-genai pydantic
+
+#     - name: Run YouTube to Telegram script
+#       env:
+#         AI_TOKEN: ${{ secrets.AI_TOKEN }}
+#         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+#         GOOGLE: ${{ secrets.GOOGLE }}
+#         GOOGLE_AI_TOKEN: ${{ secrets.GOOGLE_AI_TOKEN }}
+#         # Both optional: leave unset to auto-pick a public, no-auth cobalt
+#         # instance each run. Set these if you later move to a dedicated one.
+#         COBALT_API_URL: ${{ secrets.COBALT_API_URL }}
+#         COBALT_API_KEY: ${{ secrets.COBALT_API_KEY }}
+#       run: python yt.py
+
+#     - name: Persist seen_videos.json
+#       if: always()
+#       run: |
+#         git config user.name "github-actions[bot]"
+#         git config user.email "github-actions[bot]@users.noreply.github.com"
+#         git add seen_videos.json
+#         git diff --quiet --cached || git commit -m "Update seen videos list [skip ci]"
+#         git push
