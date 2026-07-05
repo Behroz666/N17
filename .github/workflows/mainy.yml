@@ -35,7 +35,6 @@ jobs:
         GOOGLE: ${{ secrets.GOOGLE }}
         GOOGLE_AI_TOKEN: ${{ secrets.GOOGLE_AI_TOKEN }}
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        FEED_URL: ${{ secrets.FEED_URL }}
         RSS_URL: ${{ secrets.RSS_URL }}
         BRIDGE_BOT_TOKEN: ${{ secrets.BRIDGE_BOT_TOKEN }}
       run: python mainy.py

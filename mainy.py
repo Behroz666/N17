@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone, time as dt_time
 from googleapiclient.discovery import build
 
 
-FEED_URL = os.environ.get('FEED_URL')
+RSS_URL = os.environ.get('RSS_URL')
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -216,7 +216,7 @@ while True:
         if message_obj and message_obj.get("chat", {}).get("id") == TARGET_CHAT_ID and message_obj.get("from", {}).get("id") == 284403259 and message_obj.get("message_id") not in telegram_done["done"]:
             idx = message_obj.get("text").rfind('https://')
             news_text = message_obj.get("text")[:idx].rstrip()
-            news_link = message_obj.get("text")[idx:].replace(f"rss.{FEED_URL}","x.com").replace(FEED_URL,"x.com").strip()
+            news_link = message_obj.get("text")[idx:].replace(f"rss.{RSS_URL}","x.com").replace(RSS_URL,"x.com").strip()
             if len(news_text) == 0 or news_text == "Gif" or str(news_text).startswith("R to @spurssglobal:") or str(news_text).startswith("R to @TheSpursExpress: "):
                 telegram_done["done"].append(message_obj.get("message_id"))
             else:
