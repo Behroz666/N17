@@ -130,7 +130,7 @@ else:
             print(f"Found {len(new_videos)} new video(s) to process.")
             for video in new_videos:
                 video_link = f"https://www.youtube.com/watch?v={video['id']}"
-                thumbnail_url = f'https://img.youtube.com/vi/{video['id']}/maxresdefault.jpg'
+                thumbnail_url = f"https://img.youtube.com/vi/{video['id']}/maxresdefault.jpg"
                 fa = ask_gemini(user_prompt=video['title'], system_prompt=config["Translation System Prompt"])
                 message = f"<a href='{video_link}'>{fa}</a>\n\n{hyperlink} | <a href='https://t.me/N17_Media'>N17 TV</a>"
                 message_id = send_image(config, message, thumbnail_url, chat_id=config["Media Chat id"])
