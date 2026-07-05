@@ -209,7 +209,8 @@ if posts_json:
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
-    elif now - last_post_time > timedelta(hours=6) and (last_post_time.time() >= dt_time(18, 30) or last_post_time.time() <= dt_time(10, 30)) and len(telegram_done["summary"]) > 2 : 
+
+    elif now - last_post_time > timedelta(hours=6) and (last_post_time.time() >= dt_time(19, 30) or last_post_time.time() <= dt_time(10, 30)) and len(telegram_done["summary"]) > 3 : 
         # generated channel post
         text = "🗞️ اخبار :\n\n"
         for post in telegram_done["summary"]:
@@ -226,7 +227,22 @@ if posts_json:
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
 
-
+    elif last_post_time.time() >= dt_time(16, 30) and last_post_time.time() <= dt_time(19, 30) and len(telegram_done["summary"]) > 1:
+        # generated channel post
+        text = "🗞️ اخبار :\n\n"
+        for post in telegram_done["summary"]:
+            post_id = post["post id"]
+            post_title = post["title"]
+            post_summary = post["summary"]
+            if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)):
+                text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
+            else:
+                text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
+        text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
+        message_id = send_message(config, text, config["Channel id"])
+        telegram_done["summary done"].extend(telegram_done["summary"])
+        telegram_done["summary"] = []
+        telegram_done["last channel post time"] = now.isoformat()
 
     with open('seen_feedy.json', 'w', encoding='utf-8') as file:
         json.dump(done_posts, file)

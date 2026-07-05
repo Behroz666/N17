@@ -2,3 +2,4 @@ yt-dlp.exe
 __pycache__/
 test.py
 keys.txt
+count.py
