@@ -10,21 +10,25 @@ import requests
 from datetime import datetime, timedelta, timezone, time as dt_time
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
+from youtube_transcript_api.proxies import WebshareProxyConfig
 
 FEED_URL = os.environ.get('FEED_URL')
 
 def get_transcript_text(video_id: str) -> str:
-    ytt_api = YouTubeTranscriptApi()
+    ytt_api = YouTubeTranscriptApi(
+        proxy_config=WebshareProxyConfig(
+            proxy_username=os.environ["WEBSHARE_USER"],
+            proxy_password=os.environ["WEBSHARE_PASS"],
+        )
+    )
     try:
         fetched = ytt_api.fetch(video_id, languages=["en", "fa"])
     except (TranscriptsDisabled, NoTranscriptFound):
-        # fall back to whatever language track exists
         transcript_list = ytt_api.list(video_id)
         transcript = transcript_list.find_transcript(
             [t.language_code for t in transcript_list]
         )
         fetched = transcript.fetch()
-
     return " ".join(snippet.text for snippet in fetched)
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
