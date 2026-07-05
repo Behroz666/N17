@@ -130,9 +130,10 @@ else:
             print(f"Found {len(new_videos)} new video(s) to process.")
             for video in new_videos:
                 video_link = f"https://www.youtube.com/watch?v={video['id']}"
+                thumbnail_url = f'https://img.youtube.com/vi/{video['id']}/maxresdefault.jpg'
                 fa = ask_gemini(user_prompt=video['title'], system_prompt=config["Translation System Prompt"])
                 message = f"<a href='{video_link}'>{fa}</a>\n\n{hyperlink} | <a href='https://t.me/N17_Media'>N17 TV</a>"
-                message_id = send_message(config, message, config["Media Chat id"], preview= True, preview_url=video_link)
+                message_id = send_image(config, message, thumbnail_url, chat_id=config["Media Chat id"])
                 seen_ids.add(video['id'])
 
 with open(SEEN_VIDEOS_FILE, 'w', encoding='utf-8') as f:
@@ -295,9 +296,9 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if post["is similar"]:
+            try:
                 is_similar = post["is similar"]
-            else:
+            except:
                 is_similar = False
             if len(post_summary) < 15 or (len(telegram_done["summary"]) > 15 and len(post_summary) > 150) or (len(telegram_done["summary"]) > 15 and len(post_summary) < 50) or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
@@ -316,9 +317,9 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if post["is similar"]:
+            try:
                 is_similar = post["is similar"]
-            else:
+            except:
                 is_similar = False
             if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
@@ -337,9 +338,9 @@ if posts_json:
             post_id = post["post id"]
             post_title = post["title"]
             post_summary = post["summary"]
-            if post["is similar"]:
+            try:
                 is_similar = post["is similar"]
-            else:
+            except:
                 is_similar = False
             if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"

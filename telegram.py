@@ -44,9 +44,10 @@ def send_message(config, text, chat_id, preview = False, preview_url=None):
             else:
                 raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
 
-def send_image(config, text, link):
+def send_image(config, text, link, chat_id = 1):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
-
+    if chat_id == 1:
+        chat_id = config["Main Chat id"]
     try:
         # Get the image content (bytes)
         image_response = requests.get(link, timeout=15)
@@ -57,7 +58,7 @@ def send_image(config, text, link):
         return None
     
     payload = {
-        "chat_id": config["Main Chat id"],
+        "chat_id": chat_id,
         "caption": text,
         "parse_mode": "HTML"
     }
