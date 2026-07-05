@@ -29,7 +29,6 @@ jobs:
         pip install yp-dl
         pip install pydantic
         pip install google-api-python-client
-        pip install youtube-transcript-api
 
     - name: Run mainy.py
       env:
@@ -39,8 +38,6 @@ jobs:
         FEED_URL: ${{ secrets.FEED_URL }}
         RSS_URL: ${{ secrets.RSS_URL }}
         BRIDGE_BOT_TOKEN: ${{ secrets.BRIDGE_BOT_TOKEN }}
-        WEBSHARE_PASS: ${{ secrets.WEBSHARE_PASS }}
-        WEBSHARE_USER: ${{ secrets.WEBSHARE_USER }}
       run: python mainy.py
 
     - name: Check for changes in json files
