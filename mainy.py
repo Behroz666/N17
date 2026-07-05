@@ -8,6 +8,7 @@ from gemini import ask_gemini, ask_gemini_structured
 from pydantic import BaseModel, Field
 import requests
 from datetime import datetime, timedelta, timezone, time as dt_time
+from googleapiclient.discovery import build
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -45,6 +46,98 @@ def get_community_posts(channel_url):
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
+
+SEEN_VIDEOS_FILE = "seen_videos.json"
+YOUTUBE_API_KEY = os.environ.get('GOOGLE')
+YOUTUBE_CHANNEL_ID = "UCEg25rdRZXg32iwai6N6l0w"
+MAX_RECENT_VIDEOS_TO_CHECK = 50
+
+youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
+
+with open(SEEN_VIDEOS_FILE, 'r', encoding='utf-8') as f:
+    data = json.load(f)
+seen_ids = set(data.get('video_ids', []))
+
+def get_channel_uploads_playlist_id(youtube_service, channel_id):
+    """Fetches the uploads playlist ID for a given YouTube channel ID."""
+    try:
+        request = youtube_service.channels().list(
+            part='contentDetails',
+            id=channel_id
+        )
+        response = request.execute()
+
+        if response and response.get('items'):
+            playlist_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+            print(f"Found uploads playlist ID: {playlist_id}")
+            return playlist_id
+        else:
+            print(f"Could not find uploads playlist for channel ID: {channel_id}")
+            return None
+    except Exception as e:
+        print(f"Error fetching uploads playlist ID: {e}")
+        return None
+
+
+def get_recent_videos(youtube_service, playlist_id, max_videos):
+    """
+    Fetches up to max_videos of the most recent items from a playlist,
+    newest first, regardless of publish date.
+    """
+    videos = []
+    next_page_token = None
+
+    while len(videos) < max_videos:
+        try:
+            request = youtube_service.playlistItems().list(
+                part='snippet,contentDetails',
+                playlistId=playlist_id,
+                maxResults=min(50, max_videos - len(videos)),
+                pageToken=next_page_token
+            )
+            response = request.execute()
+
+            for item in response.get('items', []):
+                videos.append({
+                    'id': item['contentDetails']['videoId'],
+                    'title': item['snippet']['title'],
+                    'published_at': item['snippet']['publishedAt'],
+                })
+
+            next_page_token = response.get('nextPageToken')
+            if not next_page_token:
+                break
+        except Exception as e:
+            print(f"Error fetching recent videos: {e}")
+            break
+
+    return videos
+
+uploads_playlist_id = get_channel_uploads_playlist_id(youtube, YOUTUBE_CHANNEL_ID)
+
+if not uploads_playlist_id:
+    print("Could not retrieve uploads playlist ID. Exiting.")
+else:
+    recent_videos = get_recent_videos(youtube, uploads_playlist_id, MAX_RECENT_VIDEOS_TO_CHECK)
+    if not recent_videos:
+        print("No videos found on the channel.")
+    else:
+        new_videos = [v for v in recent_videos if v['id'] not in seen_ids]
+        if not new_videos:
+            print("No new videos found.")
+        else:
+            new_videos.sort(key=lambda v: v['published_at'])
+            print(f"Found {len(new_videos)} new video(s) to process.")
+            for video in new_videos:
+                video_link = f"https://www.youtube.com/watch?v={video['id']}"
+                fa = ask_gemini(user_prompt=video['title'], system_prompt=config["Translation System Prompt"])
+                message = f"<a href='{video_link}'>{fa}</a>\n\n{hyperlink} | <a href='https://t.me/N17_Media'>N17 TV</a>"
+                message_id = send_message(config, message, config["Media Chat id"], preview= True, preview_url=video_link)
+                seen_ids.add(video['id'])
+
+with open(SEEN_VIDEOS_FILE, 'w', encoding='utf-8') as f:
+    json.dump({'video_ids': sorted(seen_ids)}, f, indent=2)
+
 
 with open('seen_feedy.json', 'r', encoding='utf-8') as file:
     done_posts = json.load(file)

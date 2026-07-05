@@ -28,9 +28,11 @@ jobs:
         pip install google-genai
         pip install yp-dl
         pip install pydantic
+        pip install google-api-python-client
 
     - name: Run mainy.py
       env:
+        GOOGLE: ${{ secrets.GOOGLE }}
         GOOGLE_AI_TOKEN: ${{ secrets.GOOGLE_AI_TOKEN }}
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         FEED_URL: ${{ secrets.FEED_URL }}
@@ -42,7 +44,7 @@ jobs:
       id: git-check
       run: |
         # Check both files for changes. If either has changed, set the output.
-        git diff --exit-code --quiet seen_feedy.json telegram_updates.json || echo "changed=true" >> $GITHUB_OUTPUT
+        git diff --exit-code --quiet seen_feedy.json telegram_updates.json seen_videos.json || echo "changed=true" >> $GITHUB_OUTPUT
 
     - name: Commit and push if changed
       if: steps.git-check.outputs.changed == 'true'
@@ -50,7 +52,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         # Stage both files if they have modifications
-        git add seen_feedy.json telegram_updates.json
-        git commit -m "Update seen_feedy.json and telegram_updates.json"
+        git add seen_feedy.json telegram_updates.json seen_videos.json
+        git commit -m "Update seen_feedy.json and telegram_updates.json and seen_videos.json"
         git pull --no-rebase
         git push
