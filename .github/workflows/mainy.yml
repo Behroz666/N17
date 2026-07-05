@@ -29,6 +29,7 @@ jobs:
         pip install yp-dl
         pip install pydantic
         pip install google-api-python-client
+        pip install youtube-transcript-api
 
     - name: Run mainy.py
       env:

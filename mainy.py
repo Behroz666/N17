@@ -4,11 +4,26 @@ import os
 import tempfile
 from telegram import send_image, send_message, send_gallery, pin_message, delete_message
 import time
-from gemini import ask_gemini, ask_gemini_structured, ask_gemini_youtube
+from gemini import ask_gemini, ask_gemini_structured
 from pydantic import BaseModel, Field
 import requests
 from datetime import datetime, timedelta, timezone, time as dt_time
 from googleapiclient.discovery import build
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
+
+def get_transcript_text(video_id: str) -> str:
+    ytt_api = YouTubeTranscriptApi()
+    try:
+        fetched = ytt_api.fetch(video_id, languages=["en", "fa"])
+    except (TranscriptsDisabled, NoTranscriptFound):
+        # fall back to whatever language track exists
+        transcript_list = ytt_api.list(video_id)
+        transcript = transcript_list.find_transcript(
+            [t.language_code for t in transcript_list]
+        )
+        fetched = transcript.fetch()
+
+    return " ".join(snippet.text for snippet in fetched)
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
@@ -146,10 +161,27 @@ for channel in YOUTUBE_CHANNEL_IDS:
                                 description="A comprehensive summary of the video content in Persian. Must be strictly less than 3500 characters."
                             )
                         
-                        youtube_response = ask_gemini_youtube(
-                            video_url=video_link,
-                            YouTubeVideoAnalysis= YouTubeVideoAnalysis,
-                            video_title=video["title"]
+                        transcript_text = get_transcript_text(video['id'])
+                        max_chars = 200_000
+                        if len(transcript_text) > max_chars:
+                            transcript_text = transcript_text[:max_chars]
+
+                        prompt = (
+                            "Below is the transcript of a YouTube video.\n\n"
+                            "1. Translate the video title accurately into Persian.\n"
+                            "2. Provide a detailed summary of the video content strictly in Persian. "
+                            "The summary must be informative, high-quality, and strictly less than 3500 characters."
+                        )
+
+                        data = (
+                            f"Video title: '{video["title"]}'\n\n"
+                            f"Transcript:\n{transcript_text}\n\n"
+                        )
+
+                        youtube_response = ask_gemini_structured(
+                            user_prompt=data,
+                            response_schema=YouTubeVideoAnalysis,
+                            system_prompt=prompt
                         )
 
                         message = f"<a href='{video_link}'>{youtube_response.translated_title}</a>\n\n<blockquote expandable>{youtube_response.summary}</blockquote>\n\n{hyperlink} | <a href='https://t.me/N17_Media'>N17 TV</a>"
