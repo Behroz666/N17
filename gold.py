@@ -3,14 +3,16 @@ from bs4 import BeautifulSoup
 import json
 import os
 from datetime import datetime, timedelta, timezone
-from gemini import ask_gemini
+from gemini import ask_gemini, ask_gemini_structured
 from telegram import send_image , send_message
 import time
 import json
 from zoneinfo import ZoneInfo
 import humanize
+from pydantic import BaseModel, Field
 
 SEEN_FILE = "seen_articles.json"
+hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -106,7 +108,7 @@ if __name__ == "__main__":
             pub_date_aware = pub_date.replace(tzinfo=ZoneInfo("Europe/London"))
             now_utc = datetime.now(timezone.utc)
             relative_time = humanize.naturaltime(now_utc - pub_date_aware)
-            text = text + f"<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ {relative_time} By Alasdair Gold \n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
+            text = text + f"<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ {relative_time} by Alasdair Gold \n\n{hyperlink}"
             try:
                 if len(summary + title) < 940 :
                     send_image(config, text, banner_url)
@@ -116,11 +118,54 @@ if __name__ == "__main__":
             except:
                 send_message(config, text, config["Main Chat id"])
         else:
-            text = text + "\n\n🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
+            text+=hyperlink
             try:
                 send_image(config, text, banner_url)
             except:
                 send_message(config, text, config["Main Chat id"])
+        class ArticleProcessor(BaseModel):
+            fa_title: str = Field(description="ترجمه دقیق و رسمی عنوان بدون هیچ کلمه اضافی")
+            summary: str = Field(description="خلاصه ۲۰۰۰ کاراکتری جذاب از متن مقاله با در نظر داشتن عنوان")
+        
+        system_prompt = config["Translation System Prompt"] + config["Acticle System Prompt"] + f"تو باید این عنوان را هم در نظر داشته باشی {title} و به سوال و موضوع اصلی مطرح شده در این عنوان بپردازی اگر نوشته جالب دیگری هم در متن وجود داشت و میتوانستی با در نظر گرفتن محدودیت طول متن خروجی آن را هم ذکر کنی آن را انجام بده. پس تو باید یک پاراگراف حذاب و خلاصه از متن داده شده با در نظر داشتن عنوان ارائه بدی"
+        user_prompt = f"""
+        [TITLE]
+        {title}
+
+        [ARTICLE_TEXT]
+        {article_text}
+        """
+
+        try:
+            result = ask_gemini_structured(
+                user_prompt=user_prompt,
+                response_schema=ArticleProcessor,
+                system_prompt=system_prompt
+            )
+            fa_title = result.fa_title
+            summary = result.summary
+
+            if len(fa_title) < 2 * len(title) and "ترجمه" not in fa_title:
+                title = fa_title
+            pub_date_aware = pub_date.replace(tzinfo=ZoneInfo("Europe/London"))
+            now_utc = datetime.now(timezone.utc)
+            relative_time = humanize.naturaltime(now_utc - pub_date_aware)
+            text = f"experimental:\n\n<a href='{link}'>{title}</a>\n\n<blockquote expandable>{summary.replace('قدوس','کودوس').replace('خاوی','ژاوی')}</blockquote>\n\n✍️ {relative_time} by Alasdair Gold \n\n{hyperlink}"
+            try:
+                if len(summary + title) < 940 :
+                    send_image(config, text, banner_url)
+                else:
+                    send_image(config, "", banner_url)
+                    send_message(config, text, config["Main Chat id"])
+            except:
+                send_message(config, text, config["Main Chat id"])
+        except:
+            text = f"experimental failed\n\n<a href='{link}'>{title}</a>\n\n{hyperlink}"
+            try:
+                send_image(config, text, banner_url)
+            except:
+                send_message(config, text, config["Main Chat id"])    
+
         time.sleep(5)
         new_seen.add(link)
 
