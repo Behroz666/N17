@@ -52,7 +52,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
 
 SEEN_VIDEOS_FILE = "seen_videos.json"
 YOUTUBE_API_KEY = os.environ.get('GOOGLE')
-YOUTUBE_CHANNEL_IDS = [{"channel id": "UCUz_XIKFQOrliSqPZWJBq2g", "summarize": True, "max videos" : 5}, {"channel id": "UCEg25rdRZXg32iwai6N6l0w", "summarize": False, "max videos": 50}]
+YOUTUBE_CHANNEL_IDS = [{"channel id": "UCUz_XIKFQOrliSqPZWJBq2g", "summarize": False, "max videos" : 5}, {"channel id": "UCEg25rdRZXg32iwai6N6l0w", "summarize": False, "max videos": 50}, {"channel id": "UC-HSLEEHVlnqlgTB7UptLeg", "summarize": False, "max videos" : 1}]
 
 youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
 
