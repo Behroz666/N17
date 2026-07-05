@@ -131,43 +131,85 @@ def get_recent_videos(youtube_service, playlist_id, max_videos):
 def get_public_cobalt_instances():
     """
     Fetches and caches a list of public cobalt API base URLs from the
-    community instance tracker, keeping only instances that are online,
-    don't require auth/turnstile, and support YouTube. Sorted best-first.
+    community instance tracker, keeping only instances that are online and
+    support YouTube. Sorted best-first. Retries a few times since GitHub
+    Actions runners occasionally have transient DNS blips, and falls back
+    to a small hardcoded list if the tracker is unreachable entirely.
     """
     global _public_instance_cache
     if _public_instance_cache is not None:
         return _public_instance_cache
 
+    # Last-resort fallback if instances.cobalt.best can't be reached at all.
+    # These are community instances and may go offline/change over time -
+    # this is only used when the dynamic lookup fails completely.
+    FALLBACK_INSTANCES = [
+        "https://co.wuk.sh",
+        "https://cobalt-api.hyper.lol",
+        "https://capi.oak.li",
+    ]
+
     instances = []
-    try:
-        resp = requests.get(
-            "https://instances.cobalt.best/api",
-            headers={"User-Agent": COBALT_USER_AGENT},
-            timeout=15,
-        )
-        resp.raise_for_status()
-        data = resp.json()
+    data = None
+    for attempt in range(1, 4):
+        try:
+            resp = requests.get(
+                "https://instances.cobalt.best/api",
+                headers={"User-Agent": COBALT_USER_AGENT},
+                timeout=15,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            break
+        except Exception as e:
+            print(f"Attempt {attempt} to fetch public cobalt instance list failed: {e}")
+            if attempt < 3:
+                time.sleep(5 * attempt)
 
-        scored = []
-        for inst in data:
-            if not inst.get("online"):
-                continue
-            info = inst.get("info", {})
-            if info.get("auth"):
-                continue  # needs an api key or turnstile solve we don't have
-            services = inst.get("services", {})
-            if services.get("youtube") is not True:
-                continue
-            api_host = inst.get("api")
-            if not api_host:
-                continue
-            scored.append((inst.get("score", 0), f"https://{api_host}"))
+    if data is not None:
+        # The tracker's schema has changed over time, so parse defensively
+        # rather than assuming one exact shape.
+        # Some historical shapes seen: {"api": "...", "online": true, "info": {"auth": false}, "services": {"youtube": true}}
+        #                               {"api": "...", "online": {"api": true}, "trust": 1, "services": {"youtube": true}}
+        try:
+            scored = []
+            for inst in data:
+                if not isinstance(inst, dict):
+                    continue
 
-        scored.sort(key=lambda x: x[0], reverse=True)
-        instances = [url for _, url in scored]
+                online = inst.get("online")
+                is_online = online is True or (isinstance(online, dict) and online.get("api"))
+                if not is_online:
+                    continue
+
+                info = inst.get("info", {}) or {}
+                requires_auth = info.get("auth") is True
+                if requires_auth:
+                    continue
+
+                services = inst.get("services", {}) or {}
+                youtube_ok = services.get("youtube") is True or services.get("youtube_shorts") is True
+                if not youtube_ok:
+                    continue
+
+                api_host = inst.get("api")
+                if not api_host:
+                    continue
+                if not str(api_host).startswith("http"):
+                    api_host = f"https://{api_host}"
+
+                scored.append((inst.get("score", 0) or 0, api_host))
+
+            scored.sort(key=lambda x: x[0], reverse=True)
+            instances = [url for _, url in scored]
+        except Exception as e:
+            print(f"Error parsing public cobalt instance list: {e}")
+
+    if instances:
         print(f"Found {len(instances)} usable public cobalt instance(s).")
-    except Exception as e:
-        print(f"Could not fetch public cobalt instance list: {e}")
+    else:
+        print("Falling back to a small hardcoded list of community cobalt instances.")
+        instances = FALLBACK_INSTANCES
 
     _public_instance_cache = instances
     return instances
