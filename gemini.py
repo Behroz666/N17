@@ -39,11 +39,14 @@ def ask_gemini_structured(
                 contents=user_prompt,
                 config=config
             )
-            
+            parsed_obj = response.parsed
             # The SDK automatically parses the JSON text back into your Pydantic model
             # if provided via response_schema on supported versions.
             # If your SDK version returns raw text, use: response_schema.model_validate_json(response.text)
-            return response.parsed
+            #return response.parsed
+            json_str = parsed_obj.model_dump_json() 
+            fixed_json_str = json_str.replace("قدوس", "کودوس")
+            return response_schema.model_validate_json(fixed_json_str)
             
         except ServerError as e:
             if e.code == 503:
@@ -82,6 +85,7 @@ def ask_gemini(user_prompt: str, system_prompt: str = None) -> str:
                 config=config
             )
             text_result = response.candidates[0].content.parts[0].text
+            text_result = text_result.replace("قدوس", "کودوس")
             return(text_result)
             
         except ServerError as e:
