@@ -61,6 +61,7 @@ def download_latest_tiktoks(username):
         video_info = json.loads(line)
         video_id = video_info.get("id")
         title = video_info.get("title")
+        title = re.sub(r'#\w+\s*', '', title).strip() #to remove hashtags
         thumbnail_url = video_info["thumbnails"][0]["url"]
         video_url = f"https://www.tiktok.com/@{username}/video/{video_id}"
         

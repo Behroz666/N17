@@ -2,7 +2,7 @@ name: Daily tiktok to Telegram Video Uploader
 
 on:
   schedule:
-    - cron: '0 7 * * *'
+    - cron: '0 7,19 * * *'
   workflow_dispatch:
 
 permissions:
