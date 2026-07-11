@@ -83,8 +83,13 @@ def send_image(config, text, link, chat_id = 1):
             else:
                 raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
 
-def send_gallery(config, text, links):
+def send_gallery(config, text, links, id = 0):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMediaGroup"
+
+    if id == 0 :
+        chat_id = config["Main Chat id"]
+    else: 
+        chat_id = id
     
     media = []
     for i, link in enumerate(links):
@@ -98,7 +103,7 @@ def send_gallery(config, text, links):
         media.append(media_item)
     
     payload = {
-        "chat_id": config["Main Chat id"],
+        "chat_id": chat_id,
         "media": media 
     }
     response = requests.post(url, json=payload)

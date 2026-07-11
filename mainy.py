@@ -317,7 +317,8 @@ if posts_json:
                 "title": NEWS_response.persian_news_title,
                 "summary": NEWS_response.persian_news_summary,
                 "is similar": NEWS_response.similar_title_and_summary,
-                "post id": f"https://t.me/c/1748646263/{message_id}"
+                "post id": f"https://t.me/c/1748646263/{message_id}",
+                "image": news['images']
             })
 
             # delete_message(config, message_id + 1)
@@ -329,6 +330,13 @@ if posts_json:
     now = datetime.now(timezone.utc)
     time_passed = now - last_post_time
     print(f"last post:{last_post_time}\ntime passed: {time_passed}\nnews count: {len(telegram_done['summary'])}")
+
+    image_urls = []
+    for news in telegram_done["summary"]:
+        try:
+            image_urls.append(news["image"][0])
+        except:
+            image_urls = image_urls
 
     if len(telegram_done["summary"]) > 9:
         print("went on the ton of messages")
@@ -347,7 +355,10 @@ if posts_json:
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
         text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
-        message_id = send_message(config, text, config["Channel id"])
+        if len(text) < 1024 and len(image_urls) > 0:
+            message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+        else: 
+            message_id = send_message(config, text, config["Channel id"])
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
@@ -369,7 +380,10 @@ if posts_json:
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
         text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
-        message_id = send_message(config, text, config["Channel id"])
+        if len(text) < 1024 and len(image_urls) > 0:
+            message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+        else: 
+            message_id = send_message(config, text, config["Channel id"])
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
@@ -391,7 +405,10 @@ if posts_json:
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
         text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
-        message_id = send_message(config, text, config["Channel id"])
+        if len(text) < 1024 and len(image_urls) > 0:
+            message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+        else: 
+            message_id = send_message(config, text, config["Channel id"])
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
