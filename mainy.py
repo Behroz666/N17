@@ -417,12 +417,12 @@ if posts_json:
             except:
                 print("failed to send gallery")
                 message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
-                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                text = f"<a href='https://N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
                 message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
         else: 
             try:
                 message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
-                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                text = f"<a href='https://N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
                 message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
             except:
                 print("failed to send to the media channel")
@@ -456,12 +456,12 @@ if posts_json:
             except:
                 print("failed to send gallery")
                 message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
-                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                text = f"<a href='https://N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
                 message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
         else: 
             try:
                 message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
-                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                text = f"<a href='https://N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
                 message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
             except:
                 print("failed to send to the media channel")
@@ -496,12 +496,12 @@ if posts_json:
             except:
                 print("failed to send gallery")
                 message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
-                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                text = f"<a href='https://N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
                 message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
         else: 
             try:
                 message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
-                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                text = f"<a href='https://N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
                 message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
             except:
                 print("failed to send to the media channel")
