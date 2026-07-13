@@ -9,11 +9,40 @@ from pydantic import BaseModel, Field
 import requests
 from datetime import datetime, timedelta, timezone, time as dt_time
 from googleapiclient.discovery import build
-
+from bs4 import BeautifulSoup
 
 RSS_URL = os.environ.get('RSS_URL')
 
 hyperlink = "🔹 <a href='https://t.me/N17_Tottenham'>N17 Tottenham</a> | <a href='https://t.me/+2TG8ZxphObwzN2Q0'>VivaSpurs</a>"
+
+def get_twitter_preview_url(twitter_url):
+    # Normalize URL and use a crawler User-Agent to get static HTML meta tags
+    url = twitter_url.replace("x.com", "twitter.com")
+    headers = {"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"}
+    
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        print(response)
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+        image_tag = (
+            soup.find("meta", property="twitter:image") or 
+            soup.find("meta", property="og:image") or
+            soup.find("meta", attrs={"name": "twitter:image"})
+        )
+        
+        if image_tag and image_tag.get("content"):
+            image_url = image_tag["content"]
+            # Append modifier to fetch the highest available resolution
+            if "twimg.com" in image_url and "name=" not in image_url:
+                image_url += "?name=large"
+            return image_url
+            
+    except requests.RequestException:
+        pass
+        
+    return None
 
 def get_community_posts(channel_url):
     # Create a temporary directory so we don't clutter your main folders
@@ -228,8 +257,16 @@ while True:
                     fa = ask_gemini(user_prompt=news_text, system_prompt=config["Translation System Prompt"])
                     time.sleep(3)
                 message = f"<blockquote expandable>{fa}\n\n<a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n{hyperlink}"
+                img_message = f"{fa}\n\n<blockquote expandable><a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n{hyperlink}"
                 try:
-                    message_id = send_message(config, message, config["Main Chat id"], preview= True, preview_url=news_link)
+                    if len(message) > 1024:
+                        message_id = send_message(config, message, config["Main Chat id"], preview= True, preview_url=news_link)
+                    else:
+                        try:
+                            message_id = send_image(config, img_message, get_twitter_preview_url(news_link))
+                        except:
+                            print("sending/fetching the image failed")
+                            message_id = send_message(config, message, config["Main Chat id"], preview= True, preview_url=news_link)
                     pin_message(config, message_id)
                     telegram_done["done"].append(message_obj.get("message_id"))
                 except Exception as e:
