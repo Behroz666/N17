@@ -256,8 +256,8 @@ while True:
                 else:
                     fa = ask_gemini(user_prompt=news_text, system_prompt=config["Translation System Prompt"])
                     time.sleep(3)
-                message = f"<blockquote expandable>{fa}\n\n<a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n{hyperlink}"
-                img_message = f"{fa}\n\n<blockquote expandable><a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n{hyperlink}"
+                message = f"<blockquote expandable>{fa}\n\n<a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
+                img_message = f"{fa}\n\n<blockquote expandable><a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
                 try:
                     if len(message) > 1024:
                         message_id = send_message(config, message, config["Main Chat id"], preview= True, preview_url=news_link)
