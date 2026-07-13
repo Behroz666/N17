@@ -332,16 +332,33 @@ if posts_json:
     print(f"last post:{last_post_time}\ntime passed: {time_passed}\nnews count: {len(telegram_done['summary'])}")
 
     image_urls = []
+    MAX_ALBUM_SIZE = 10
+
+    # Collect per-post image lists (skip posts with no images)
+    post_image_lists = []
     for news in telegram_done["summary"]:
-        try:
-            image_urls.append(news["image"][0])
-        except:
-            image_urls = image_urls
+        imgs = news.get("image")
+        if imgs and len(image_urls) < MAX_ALBUM_SIZE:  # not None and not empty
+            post_image_lists.append(imgs)
+
+    # Round-robin: take index 0 from every post, then index 1, then index 2, etc.
+    round_idx = 0
+    while len(image_urls) < MAX_ALBUM_SIZE:
+        added_any = False
+        for imgs in post_image_lists:
+            if round_idx < len(imgs):
+                image_urls.append(imgs[round_idx])
+                added_any = True
+                if len(image_urls) >= MAX_ALBUM_SIZE:
+                    break
+        if not added_any:
+            break  # no post had an image at this round_idx, we've exhausted everything
+        round_idx += 1
 
     if len(telegram_done["summary"]) > 9:
         print("went on the ton of messages")
-        # generated channel post
-        text = "🗞️ اخبار :\n\n"
+        # generated channel post\        
+        text = ""
         for post in telegram_done["summary"]:
             post_id = post["post id"]
             post_title = post["title"]
@@ -355,10 +372,25 @@ if posts_json:
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
         text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
-        if len(text) < 1024 and len(image_urls) > 0:
-            message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+        print(f"text len: {len(text)}, image_urls: {image_urls}")
+        if len(text) < (1024 - 12 + 88*len(telegram_done["summary"]) + 47 + 86 - 40) and len(image_urls) > 0:
+            try:
+                text = "🗞️ اخبار :\n\n" + text
+                message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+            except:
+                print("failed to send gallery")
+                message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
+                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
         else: 
-            message_id = send_message(config, text, config["Channel id"])
+            try:
+                message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
+                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
+            except:
+                print("failed to send to the media channel")
+                text = "🗞️ اخبار :\n\n" + text
+                message_id = send_message(config, text, config["Channel id"])
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
@@ -366,7 +398,7 @@ if posts_json:
     elif time_passed > timedelta(hours=7.5) and (now.time() >= dt_time(19, 30) or now.time() <= dt_time(10, 30)) and len(telegram_done["summary"]) > 3 : 
         print("went on day time post")
         # generated channel post
-        text = "🗞️ اخبار :\n\n"
+        text = ""
         for post in telegram_done["summary"]:
             post_id = post["post id"]
             post_title = post["title"]
@@ -379,11 +411,25 @@ if posts_json:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
-        text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
-        if len(text) < 1024 and len(image_urls) > 0:
-            message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+        print(f"text len: {len(text)}, image_urls: {image_urls}")
+        if len(text) < (1024 - 12 + 88*len(telegram_done["summary"]) + 47 + 86 - 40) and len(image_urls) > 0:
+            try:
+                text = "🗞️ اخبار :\n\n" + text
+                message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+            except:
+                print("failed to send gallery")
+                message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
+                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
         else: 
-            message_id = send_message(config, text, config["Channel id"])
+            try:
+                message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
+                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
+            except:
+                print("failed to send to the media channel")
+                text = "🗞️ اخبار :\n\n" + text
+                message_id = send_message(config, text, config["Channel id"])
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
@@ -391,7 +437,7 @@ if posts_json:
     elif now.time() >= dt_time(16, 30) and now.time() <= dt_time(19, 30) and len(telegram_done["summary"]) > 1 and time_passed > timedelta(hours=3):
         print("went on nightly post")
         # generated channel post
-        text = "🗞️ اخبار :\n\n"
+        text = ""
         for post in telegram_done["summary"]:
             post_id = post["post id"]
             post_title = post["title"]
@@ -405,10 +451,25 @@ if posts_json:
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
         text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
-        if len(text) < 1024 and len(image_urls) > 0:
-            message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+        print(f"text len: {len(text)}, image_urls: {image_urls}")
+        if len(text) < (1024 - 12 + 88*len(telegram_done["summary"] - 40) + 47 + 86) and len(image_urls) > 0:
+            try:
+                text = "🗞️ اخبار :\n\n" + text
+                message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+            except:
+                print("failed to send gallery")
+                message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
+                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
         else: 
-            message_id = send_message(config, text, config["Channel id"])
+            try:
+                message_id = send_gallery(config, hyperlink, image_urls, id = config["Media Chat id"])
+                text = f"<a href='{message_id}'>🗞️</a> اخبار :\n\n" + text
+                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=news_link)
+            except:
+                print("failed to send to the media channel")
+                text = "🗞️ اخبار :\n\n" + text
+                message_id = send_message(config, text, config["Channel id"])
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
