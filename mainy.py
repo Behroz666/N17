@@ -283,7 +283,7 @@ if posts_json:
     # 'posts_json' is now a native Python variable (list or dict)
     print(f"Successfully retrieved {len(posts_json)} posts!")
     for news in reversed(posts_json):
-        if news['post_link'] not in done_posts["done"] and "youtu.be" not in news['text']:
+        if news['post_link'] not in done_posts["done"] and "youtu.be" not in news['text'] and "youtube.com" not in news['text']:
             news['text'] = news['text'].replace("#COYS #THFC","")
             url = news['post_link']
             print(url)
