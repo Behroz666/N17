@@ -292,7 +292,7 @@ if posts_json:
                 persian_news_fulltext: str = Field(description="Full translation of the text based on the system prompt given")
                 persian_news_title: str = Field(description="a shot one liner title for the news given the title have to be in persian")
                 persian_news_summary: str = Field(description="very short summary of the news that is given. the summary must be in persian. summary must add value to the title")
-                similar_title_and_summary: bool = Field(description="if the summary is not needed and is too similar to the title this should be returned as True. if the summary add value to tilte and is descriptive this should be False")
+                similar_title_and_summary: bool = Field(description="if the summary is not needed and is too similar to the title this should be returned as True. if the summary add value to tilte and is descriptive this should be False. around 10-15 precent of the times this should be true for the short titles and news")
             
             try:
                 NEWS_response = ask_gemini_structured(
@@ -448,6 +448,7 @@ if posts_json:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n\n"
             else:
                 text = text + f"<a href='{post_id}'>{post_title}</a>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
+        text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
         print(f"text len: {len(text)}, image_urls: {image_urls}")
         if len(text) < (1024 - 12 + 88*len(telegram_done["summary"]) + 47 + 86 - 40) and len(image_urls) > 0:
             try:
