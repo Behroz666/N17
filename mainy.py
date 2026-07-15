@@ -412,22 +412,20 @@ if posts_json:
         print(f"text len: {len(text)}, image_urls: {image_urls}")
         if len(text) < (1024 - 12 + 88*len(telegram_done["summary"]) + 47 + 86 - 40) and len(image_urls) > 0:
             try:
-                text = "🗞️ اخبار :\n\n" + text
-                message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+                message_id = send_gallery(config, "🗞️ اخبار :\n\n" + text , image_urls, id = config["Channel id"])
             except:
                 print("failed to send gallery")
                 message_id = send_gallery(config, "", image_urls, id = config["Media Chat id"])
-                text = f"<a href='https://t.me/N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
-                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=message_id)
+                gallery_link = f"https://t.me/N17_Media/{message_id}"
+                message_id = send_message(config, f"<a href='{gallery_link}'>🗞️</a> اخبار :\n\n" + text , config["Channel id"], preview= True, preview_url=gallery_link)
         else: 
             try:
                 message_id = send_gallery(config, "", image_urls, id = config["Media Chat id"])
-                text = f"<a href='https://t.me/N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
-                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=message_id)
+                gallery_link = f"https://t.me/N17_Media/{message_id}"
+                message_id = send_message(config, f"<a href='{gallery_link}'>🗞️</a> اخبار :\n\n" + text , config["Channel id"], preview= True, preview_url=gallery_link)
             except:
                 print("failed to send to the media channel")
-                text = "🗞️ اخبار :\n\n" + text
-                message_id = send_message(config, text, config["Channel id"])
+                message_id = send_message(config, "🗞️ اخبار :\n\n" + text , config["Channel id"])
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
@@ -452,22 +450,20 @@ if posts_json:
         print(f"text len: {len(text)}, image_urls: {image_urls}")
         if len(text) < (1024 - 12 + 88*len(telegram_done["summary"]) + 47 + 86 - 40) and len(image_urls) > 0:
             try:
-                text = "🗞️ اخبار :\n\n" + text
-                message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+                message_id = send_gallery(config, "🗞️ اخبار :\n\n" + text , image_urls, id = config["Channel id"])
             except:
                 print("failed to send gallery")
                 message_id = send_gallery(config, "", image_urls, id = config["Media Chat id"])
-                text = f"<a href='https://t.me/N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
-                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=message_id)
+                gallery_link = f"https://t.me/N17_Media/{message_id}"
+                message_id = send_message(config, f"<a href='{gallery_link}'>🗞️</a> اخبار :\n\n" + text , config["Channel id"], preview= True, preview_url=gallery_link)
         else: 
             try:
                 message_id = send_gallery(config, "", image_urls, id = config["Media Chat id"])
-                text = f"<a href='https://t.me/N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
-                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=message_id)
+                gallery_link = f"https://t.me/N17_Media/{message_id}"
+                message_id = send_message(config, f"<a href='{gallery_link}'>🗞️</a> اخبار :\n\n" + text , config["Channel id"], preview= True, preview_url=gallery_link)
             except:
                 print("failed to send to the media channel")
-                text = "🗞️ اخبار :\n\n" + text
-                message_id = send_message(config, text, config["Channel id"])
+                message_id = send_message(config, "🗞️ اخبار :\n\n" + text , config["Channel id"])
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
@@ -492,22 +488,20 @@ if posts_json:
         print(f"text len: {len(text)}, image_urls: {image_urls}")
         if len(text) < (1024 - 12 + 88*len(telegram_done["summary"]) + 47 + 86 - 40) and len(image_urls) > 0:
             try:
-                text = "🗞️ اخبار :\n\n" + text
-                message_id = send_gallery(config, text, image_urls, id = config["Channel id"])
+                message_id = send_gallery(config, "🗞️ اخبار :\n\n" + text , image_urls, id = config["Channel id"])
             except:
                 print("failed to send gallery")
                 message_id = send_gallery(config, "", image_urls, id = config["Media Chat id"])
-                text = f"<a href='https://t.me/N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
-                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=message_id)
+                gallery_link = f"https://t.me/N17_Media/{message_id}"
+                message_id = send_message(config, f"<a href='{gallery_link}'>🗞️</a> اخبار :\n\n" + text , config["Channel id"], preview= True, preview_url=gallery_link)
         else: 
             try:
                 message_id = send_gallery(config, "", image_urls, id = config["Media Chat id"])
-                text = f"<a href='https://t.me/N17_Media/{message_id}'>🗞️</a> اخبار :\n\n" + text
-                message_id = send_message(config, text, config["Channel id"], preview= True, preview_url=message_id)
+                gallery_link = f"https://t.me/N17_Media/{message_id}"
+                message_id = send_message(config, f"<a href='{gallery_link}'>🗞️</a> اخبار :\n\n" + text , config["Channel id"], preview= True, preview_url=gallery_link)
             except:
                 print("failed to send to the media channel")
-                text = "🗞️ اخبار :\n\n" + text
-                message_id = send_message(config, text, config["Channel id"])
+                message_id = send_message(config, "🗞️ اخبار :\n\n" + text , config["Channel id"])
         telegram_done["summary done"].extend(telegram_done["summary"])
         telegram_done["summary"] = []
         telegram_done["last channel post time"] = now.isoformat()
