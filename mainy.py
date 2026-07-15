@@ -290,15 +290,15 @@ if posts_json:
             # fa = ask_gemini(user_prompt=news['text'], system_prompt=config["Translation System Prompt"])
             class NEWS(BaseModel):
                 persian_news_fulltext: str = Field(description="Full translation of the text based on the system prompt given")
-                persian_news_title: str = Field(description="a shot one liner title for the news given the title have to be in persian")
-                persian_news_summary: str = Field(description="very short summary of the news that is given. the summary must be in persian. summary must add value to the title")
+                persian_news_title: str = Field(description="a shot one liner title for the news given the title have to be in persian also if the title and summary are too similar make it so that the title is more descriptive and return the 'similar title and summary' as true")
+                persian_news_summary: str = Field(description="very short summary of the news that is given. the summary must be in persian. summary must add value to the title if its hard to do so make the title more descriptive and return the 'similar title and summary' as True")
                 similar_title_and_summary: bool = Field(description="if the summary is not needed and is too similar to the title this should be returned as True. if the summary add value to tilte and is descriptive this should be False. around 10-15 precent of the times this should be true for the short titles and news")
             
             try:
                 NEWS_response = ask_gemini_structured(
                     user_prompt=news['text'],
                     response_schema=NEWS,
-                    system_prompt=config["Translation System Prompt"]
+                    system_prompt=config["Translation System Prompt"] + "\n\nalso make sure the summary is needed by returning the similar title and summary false. this is when the title is quick description of the news and summary explain it and add value to it. on 20 prevent of the times the title dont need a summary and discription and the summary dont add anything to it on there you should put everything on the title and return the similar title and summary true"
                 )
             except:
                 send_message(config, "the structured output failed", 1140637004)
