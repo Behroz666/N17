@@ -289,16 +289,51 @@ if posts_json:
             print(url)
             # fa = ask_gemini(user_prompt=news['text'], system_prompt=config["Translation System Prompt"])
             class NEWS(BaseModel):
-                persian_news_fulltext: str = Field(description="Full translation of the text based on the system prompt given")
-                persian_news_title: str = Field(description="a shot one liner title for the news given the title have to be in persian also if the title and summary are too similar make it so that the title is more descriptive and return the 'similar title and summary' as true")
-                persian_news_summary: str = Field(description="very short summary of the news that is given. the summary must be in persian. summary must add value to the title if its hard to do so make the title more descriptive and return the 'similar title and summary' as True")
-                similar_title_and_summary: bool = Field(description="if the summary is not needed and is too similar to the title this should be returned as True. if the summary add value to tilte and is descriptive this should be False. around 10-15 precent of the times this should be true for the short titles and news")
-            
+                persian_news_fulltext: str = Field(
+                    description=(
+                        "ترجمه کامل و دقیق متن خبر به فارسی رسمی، بدون کم یا اضافه کردن محتوا و بدون تغییر ساختار متن. "
+                        "اگر منبعی در متن اصلی ذکر شده، آن را هم ترجمه/ذکر کن. توضیح یا مقدمه اضافه نکن."
+                    )
+                )
+                persian_news_title: str = Field(
+                    description=(
+                        "یک عنوان کوتاه و یک‌خطی به فارسی برای خبر. عنوان باید گویا باشد اما نباید تمام جزئیات را لو بدهد؛ "
+                        "جزئیات و اطلاعات تکمیلی باید در خلاصه بیایند، نه در عنوان."
+                    )
+                )
+                persian_news_summary: str = Field(
+                    description=(
+                        "خلاصه‌ای بسیار کوتاه از خبر به فارسی. این خلاصه فقط باید زمانی نوشته شود که واقعاً اطلاعات یا جزئیات "
+                        "تازه‌ای نسبت به عنوان اضافه می‌کند (مثل عدد، دلیل، نقل‌قول، نتیجه، زمینه). "
+                        "اگر خبر آنقدر کوتاه یا کم‌محتوا است که عنوان تقریباً همه چیز را گفته، این فیلد را کوتاه و صریح بنویس "
+                        "(نه با تلاش برای طولانی‌تر کردن یا تکرار عنوان با کلمات دیگر) و به جای آن روی فیلد similar_title_and_summary تکیه کن."
+                    )
+                )
+                similar_title_and_summary: bool = Field(
+                    description=(
+                        "این مقدار باید True باشد مگر اینکه خلاصه اطلاعات واقعاً تازه‌ای (غیر از آنچه در عنوان آمده) اضافه کند. "
+                        "پیش‌فرض را روی True بگذار؛ فقط وقتی False برگردان که مطمئنی خلاصه محتوای اضافه و قابل توجهی دارد. "
+                        "هرگز برای اینکه False به دست بیاوری، خلاصه را طولانی‌تر یا با جزئیات ساختگی پر نکن — "
+                        "این فیلد باید صادقانه نشان بدهد که آیا خلاصه واقعاً لازم بود یا نه، نه اینکه خلاصه را مجبور به ارزش‌آفرینی کنی. "
+                        "انتظار می‌رود در حدود ۲۰ تا ۳۰ درصد موارد (به‌ویژه اخبار کوتاه) این مقدار True باشد."
+                    )
+                )
+
             try:
                 NEWS_response = ask_gemini_structured(
                     user_prompt=news['text'],
                     response_schema=NEWS,
-                    system_prompt=config["Translation System Prompt"] + "\n\nalso make sure the summary is needed by returning the similar title and summary false. this is when the title is quick description of the news and summary explain it and add value to it. on 20 prevent of the times the title dont need a summary and discription and the summary dont add anything to it on there you should put everything on the title and return the similar title and summary true"
+                    system_prompt = (
+                    "تو یک مترجم حرفه‌ای انگلیسی به فارسی هستی. متن داده شده را دقیق بخوان و با نوشتار رسمی و دقیق آن را به فارسی "
+                    "ترجمه کن. چیزی به محتوا کم یا اضافه نکن و ساختار متن را تغییر نده. فقط متن ترجمه‌شده را در فیلد fulltext بازگردان، "
+                    "بدون توضیح یا مقدمه اضافه. اگر در متن منبعی ذکر شده، آن را هم در ترجمه بیاور.\n\n"
+                    "برای عنوان: کوتاه و یک‌خطی بنویس، بدون اینکه همه جزئیات را در آن بگنجانی.\n\n"
+                    "برای خلاصه: فقط وقتی خلاصه بنویس که واقعاً نکته یا جزئیات تازه‌ای (عدد، دلیل، پیامد، نقل‌قول، زمینه) دارد که در "
+                    "عنوان نیامده. اگر خبر کوتاه است و عنوان تقریباً همه‌چیز را می‌گوید، خلاصه را کوتاه و بی‌تکرار بنویس و "
+                    "similar_title_and_summary را True قرار بده. هدف تو این نیست که همیشه خلاصه‌ی «ارزشمند» بسازی — هدف این است که "
+                    "صادقانه تشخیص بدهی خبر به خلاصه‌ی جدا نیاز دارد یا نه. برای اخبار کوتاه، تقریباً ۲۰ تا ۳۰ درصد موارد باید "
+                    "similar_title_and_summary برابر True باشد؛ از این کار طفره نرو."
+                )
                 )
             except:
                 send_message(config, "the structured output failed", 1140637004)
@@ -408,7 +443,7 @@ if posts_json:
                 is_similar = post["is similar"]
             except:
                 is_similar = False
-            if len(post_summary) < 15 or (len(telegram_done["summary"]) > 15 and len(post_summary) > 150) or (len(telegram_done["summary"]) > 15 and len(post_summary) < 50) or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
+            if len(post_summary) < 50 or (len(telegram_done["summary"]) > 6 and len(post_summary) > 500) or (len(telegram_done["summary"]) > 6 and len(post_summary) < 200) or (len(telegram_done["summary"]) > 3 and len(post_summary) < 100) or (len(post_summary) < (len(post_title)*1.4)) or is_similar:
                 text = text + f"- <b><a href='{post_id}'>{post_title}</a</b>n\n"
             else:
                 text = text + f"- <b><a href='{post_id}'>{post_title}</a></b>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
