@@ -307,6 +307,10 @@ if posts_json:
 
             if len(fa) < (len(news['text'])/2):
                 continue
+
+            if len(fa) > 1500:
+                fa = f"<b>{NEWS_response.persian_news_summary}</b>\n\n<blockquote expandable>{fa}</blockquote>"
+
             if news['images'] is None:
                 limit = 4096
                 if len(fa + news['text']) < (limit - 300):
