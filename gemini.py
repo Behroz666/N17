@@ -19,6 +19,7 @@ def ask_gemini_structured(
     
     # Define your fallback chain in order of preference
     models_to_try = [
+        'gemini-3.5-flash-lite',
         'gemini-3.1-flash-lite',
         'gemini-2.5-flash-lite',
         'gemma-4-31b-it' 
@@ -67,6 +68,7 @@ def ask_gemini(user_prompt: str, system_prompt: str = None) -> str:
     
     # Define your fallback chain in order of preference
     models_to_try = [
+        'gemini-3.5-flash-lite',
         'gemini-3.1-flash-lite',
         'gemini-2.5-flash-lite',
         'gemma-4-31b-it' 
