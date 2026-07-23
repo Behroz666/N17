@@ -524,7 +524,7 @@ if posts_json:
             if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
                 text = text + f"- <b><a href='{post_id}'>{post_title}</a></b>\n\n"
             else:
-                text = text + f"- <b><a href='{post_id}'>{post_title}</a></b>\n<blockquote expandable>{post_summary}</blockquote>\n\n"
+                text = text + f"<blockquote expandable>- <b><a href='{post_id}'>{post_title}</a></b>\n\n{post_summary}</blockquote>\n\n"
         text  = text + "<a href='https://t.me/+QjvW46AcqcAwZjg8'>🔸 برای اخبار فوری و متن کامل مصاحبه ها به گپ ما بپیوندید</a>\n\n" + hyperlink
         print(f"text len: {len(text)}, image_urls: {image_urls}")
         if len(text) < (1024 - 12 + 88*len(telegram_done["summary"]) + 47 + 86 - 40) and len(image_urls) > 0:
