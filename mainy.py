@@ -261,16 +261,31 @@ while True:
                 message = f"<blockquote expandable>{fa}\n\n<a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
                 img_message = f"{fa}\n\n<blockquote expandable><a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
                 try:
-                    if len(message) > 1024:
-                        message_id = send_message(config, message, config["Main Chat id"], preview= True, preview_url=news_link)
-                    else:
+                    message_id = None
+
+                    if len(message) <= 1024:
                         try:
-                            message_id = send_image(config, img_message, get_twitter_preview_url(news_link))
-                        except:
-                            print("sending/fetching the image failed")
-                            message_id = send_message(config, message, config["Main Chat id"], preview= True, preview_url=news_link)
-                    pin_message(config, message_id)
-                    telegram_done["done"].append(message_obj.get("message_id"))
+                            image_url = get_twitter_preview_url(news_link)
+                            if image_url:
+                                message_id = send_image(config, img_message, image_url)
+                        except Exception as img_err:
+                            a = f"Exception while handling image: {img_err}"
+                            print(a)
+                            send_message(config, f"{a}", 1140637004)
+
+                    # Fallback to plain text message if message was > 1024 or send_image failed/returned None
+                    if not message_id:
+                        if len(message) <= 1024:
+                            print("sending/fetching the image failed (returned None), falling back to text message")
+                        message_id = send_message(config, message, config["Main Chat id"], preview=True, preview_url=news_link)
+
+                    # Only attempt to pin if a valid message ID was returned
+                    if message_id:
+                        pin_message(config, message_id)
+                        telegram_done["done"].append(message_obj.get("message_id"))
+                    else:
+                        print(f"Failed to send any message for URL: {news_link}")
+
                 except Exception as e:
                     a = f"error with this url {news_link}: {e}"
                     print(a)
