@@ -460,7 +460,7 @@ if posts_json:
                 is_similar = post["is similar"]
             except:
                 is_similar = False
-            if len(post_summary) < 50 or (len(telegram_done["summary"]) > 6 and len(post_summary) > 500) or (len(telegram_done["summary"]) > 6 and len(post_summary) < 200) or (len(telegram_done["summary"]) > 3 and len(post_summary) < 100) or (len(post_summary) < (len(post_title)*1.4)) or is_similar:
+            if len(post_summary) < 40 or (len(telegram_done["summary"]) > 6 and len(post_summary) > 600) or (len(telegram_done["summary"]) > 6 and len(post_summary) < 150) or (len(telegram_done["summary"]) > 3 and len(post_summary) < 75) or (len(post_summary) < (len(post_title)*1.25)) or is_similar:
                 text = text + f"- <b><a href='{post_id}'>{post_title}</a></b>\n\n"
             else:
                 text = text + f"<blockquote expandable>- <b><a href='{post_id}'>{post_title}</a></b>\n{post_summary}</blockquote>\n\n"
@@ -498,7 +498,7 @@ if posts_json:
                 is_similar = post["is similar"]
             except:
                 is_similar = False
-            if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
+            if len(post_summary) < 40 or (len(telegram_done["summary"]) > 6 and len(post_summary) > 600) or (len(telegram_done["summary"]) > 6 and len(post_summary) < 150) or (len(telegram_done["summary"]) > 3 and len(post_summary) < 75) or (len(post_summary) < (len(post_title)*1.25)) or is_similar:
                 text = text + f"- <b><a href='{post_id}'>{post_title}</a></b>\n\n"
             else:
                 text = text + f"<blockquote expandable>- <b><a href='{post_id}'>{post_title}</a></b>\n{post_summary}</blockquote>\n\n"
@@ -536,7 +536,7 @@ if posts_json:
                 is_similar = post["is similar"]
             except:
                 is_similar = False
-            if len(post_summary) < 15 or (len(post_summary) < (len(post_title)*1.1)) or is_similar:
+            if len(post_summary) < 40 or (len(telegram_done["summary"]) > 6 and len(post_summary) > 600) or (len(telegram_done["summary"]) > 6 and len(post_summary) < 150) or (len(telegram_done["summary"]) > 3 and len(post_summary) < 75) or (len(post_summary) < (len(post_title)*1.25)) or is_similar:
                 text = text + f"- <b><a href='{post_id}'>{post_title}</a></b>\n\n"
             else:
                 text = text + f"<blockquote expandable>- <b><a href='{post_id}'>{post_title}</a></b>\n\n{post_summary}</blockquote>\n\n"
