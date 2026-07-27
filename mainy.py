@@ -258,7 +258,7 @@ while True:
                     if str(news_text).startswith("RT by "):
                         print(fa)
                     time.sleep(3)
-                message = f"<blockquote expandable>{fa}\n\n<a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
+                message = f"<blockquote expandable>{fa}</blockquote>\n\n<blockquote expandable><a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
                 img_message = f"{fa}\n\n<blockquote expandable><a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
                 try:
                     message_id = None
