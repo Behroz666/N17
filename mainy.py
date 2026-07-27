@@ -10,6 +10,8 @@ import requests
 from datetime import datetime, timedelta, timezone, time as dt_time
 from googleapiclient.discovery import build
 from bs4 import BeautifulSoup
+import yt_dlp
+import re
 
 RSS_URL = os.environ.get('RSS_URL')
 
@@ -43,6 +45,75 @@ def get_twitter_preview_url(twitter_url):
         pass
         
     return None
+
+def has_twitter_video(url: str) -> bool:
+    """
+    Checks if a Twitter/X URL contains a downloadable video.
+    """
+    ydl_opts = {
+        'quiet': True,
+        'no_warnings': True,
+    }
+    
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            # Extract metadata without downloading video content
+            info = ydl.extract_info(url, download=False)
+            
+            # Verify if formats exist and contain a valid video codec
+            if info and 'formats' in info:
+                return any(fmt.get('vcodec') != 'none' for fmt in info['formats'])
+            
+            return False
+            
+    except (yt_dlp.utils.DownloadError, Exception):
+        # yt-dlp raises an error if no video/media is found in the tweet
+        return False
+
+def download_twitter_video(url: str, output_path: str) -> str | None:
+    # 1. Check if the tweet actually has a video
+    if not has_twitter_video(url):
+        print("❌ No video found in this tweet or link is invalid.")
+        return None
+
+    print("🎥 Video found. Starting download...")
+
+    # 2. Attempt 360p (or lower) quality download
+    ydl_opts_360p = {
+        'format': 'best[height<=360]',
+        'outtmpl': output_path,
+        'quiet': True,
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts_360p) as ydl:
+            info_dict = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info_dict)
+
+        # 3. Check file size (in MB)
+        file_size_mb = os.path.getsize(filename) / (1024 * 1024)
+
+        # 4. Fallback if the file exceeds 10 MB
+        if file_size_mb > 10:
+            print("⚠️ File exceeds 10MB limit. Attempting fallback to lowest resolution...")
+            os.remove(filename)
+
+            ydl_opts_worst = {
+                'format': 'worst',
+                'outtmpl': output_path,
+                'quiet': True,
+            }
+
+            with yt_dlp.YoutubeDL(ydl_opts_worst) as ydl:
+                info_dict = ydl.extract_info(url, download=True)
+                filename = ydl.prepare_filename(info_dict)
+
+        return filename
+
+    except Exception as e:
+        print(f"❌ Error during download process: {e}")
+        send_message(config, f"❌ Error during download process: {e}", 1140637004)
+        return None
 
 def get_community_posts(channel_url):
     # Create a temporary directory so we don't clutter your main folders
@@ -262,22 +333,47 @@ while True:
                 img_message = f"{fa}\n\n<blockquote expandable><a href='{news_link}'>🇬🇧</a>: {news_text}</blockquote>\n\n{hyperlink}"
                 try:
                     message_id = None
+                    file_name = None
+                    match = re.search(r"/status/(\d+)", news_link)
+                    try:
+                        file_name = download_twitter_video(news_link, match.group(1))
+                    except:
+                        file_name = None
 
-                    if len(message) <= 1024:
-                        try:
-                            image_url = get_twitter_preview_url(news_link)
-                            if image_url:
-                                message_id = send_image(config, img_message, image_url)
-                        except Exception as img_err:
-                            a = f"Exception while handling image: {img_err}"
-                            print(a)
-                            send_message(config, f"{a}", 1140637004)
-
-                    # Fallback to plain text message if message was > 1024 or send_image failed/returned None
-                    if not message_id:
+                    if file_name:
+                        with open(file_name, 'rb') as f:
+                            if len(img_message) <= 1024:
+                                caption = img_message
+                            else:
+                                caption = hyperlink
+                            response = requests.post(
+                                f"https://api.telegram.org/bot{os.environ.get('BOT_TOKEN')}/sendVideo",
+                                files={'video': f},
+                                data={'chat_id': config["Main Chat id"],
+                                    'caption': caption,
+                                    "parse_mode": "HTML"}
+                            )
+                            if caption == hyperlink:
+                                send_message(config, img_message, config["Main Chat id"])
+                        os.remove(file_name)
+                        response_json = response.json()
+                        message_id = response_json['result']['message_id']
+                    else:
                         if len(message) <= 1024:
-                            print("sending/fetching the image failed (returned None), falling back to text message")
-                        message_id = send_message(config, message, config["Main Chat id"], preview=True, preview_url=news_link)
+                            try:
+                                image_url = get_twitter_preview_url(news_link)
+                                if image_url:
+                                    message_id = send_image(config, img_message, image_url)
+                            except Exception as img_err:
+                                a = f"Exception while handling image: {img_err}"
+                                print(a)
+                                send_message(config, f"{a}", 1140637004)
+
+                        # Fallback to plain text message if message was > 1024 or send_image failed/returned None
+                        if not message_id:
+                            if len(message) <= 1024:
+                                print("sending/fetching the image failed (returned None), falling back to text message")
+                            message_id = send_message(config, message, config["Main Chat id"], preview=True, preview_url=news_link)
 
                     # Only attempt to pin if a valid message ID was returned
                     if message_id:

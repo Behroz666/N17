@@ -30,6 +30,7 @@ jobs:
         pip install pydantic
         pip install google-api-python-client
         pip install beautifulsoup4
+        pip install yt_dlp
 
     - name: Run mainy.py
       env:
