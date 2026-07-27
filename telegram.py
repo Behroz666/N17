@@ -5,6 +5,31 @@ import time
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 max_attempts = 2
 
+def _send_backup_request(config, url, payload, files=None, is_json=True):
+    """
+    Sends the request payload to config["backup chat id"] silently.
+    Wrapped in try/except so errors do not affect the main flow.
+    """
+    backup_chat_id = config.get("backup Chat id")
+    if not backup_chat_id:
+        return
+
+    try:
+        # Create a shallow copy of payload to modify chat_id safely
+        backup_payload = dict(payload) if payload else {}
+        backup_payload["chat_id"] = backup_chat_id
+        backup_payload["disable_notification"] = True  # Silent delivery in Telegram
+
+        if is_json:
+            requests.post(url, json=backup_payload, timeout=10)
+        else:
+            requests.post(url, data=backup_payload, files=files, timeout=10)
+    except Exception as e:
+        try:
+            send_message(config, f"Backup request failed silently: {e}", 1140637004)
+        except:
+            print(f"NOTE: THE BACKUP SAVE FAILED TO SEND ON THE PRIVATE CHAT: {e}")
+
 def send_message(config, text, chat_id, preview = False, preview_url=None):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     if not preview:
@@ -33,6 +58,7 @@ def send_message(config, text, chat_id, preview = False, preview_url=None):
         response_json = response.json()
         print(response_json)
         if response_json.get('ok') == True:
+            _send_backup_request(config, url, payload, is_json=True)
             return response_json['result']['message_id']
         else:
             attempts += 1
@@ -72,6 +98,7 @@ def send_image(config, text, link, chat_id = 1):
         response_json = response.json()
         print(response_json)
         if response_json.get('ok') == True:
+            _send_backup_request(config, url, payload, files={'photo': ('image.jpg', image_data)}, is_json=False)
             return response_json['result']['message_id']
         else:
             attempts += 1
@@ -108,6 +135,8 @@ def send_gallery(config, text, links, id = 0):
     }
     response = requests.post(url, json=payload)
     response_json = response.json()
+    if response_json.get('ok') == True:
+        _send_backup_request(config, url, payload, is_json=True)
     print(response_json['result'][1]['message_id'])
     return int(response_json['result'][1]['message_id']) + len(links) - 2
 
@@ -126,6 +155,7 @@ def pin_message(config, message_id):
         print(response_json)
         if response_json.get('ok') == True:
             print("message pinned")
+            _send_backup_request(config, url, payload, is_json=False)
             return
         else:
             attempts += 1
@@ -150,6 +180,7 @@ def delete_message(config, message_id):
         response_json = response.json()
         print(response_json)
         if response_json.get('ok') == True:
+            _send_backup_request(config, url, payload, is_json=False)
             return response.json()
         else:
             attempts += 1

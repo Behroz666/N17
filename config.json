@@ -8,6 +8,7 @@
     "Acticle System Prompt": "تو یک خبرنگار مسلط به زبان های فارسی و انگلیسی و هوادار تاتنهام هستی. متن مقاله داده شده را بخوان و آن را بررسی کن. تو باید مهم ترین سخنان و اخبار ارائه شده در این مقاله را در قالب یک پاراگراف فوق العاده کوتاه 2000 کاراکتری فارسی ارائه دهی. تو نباید هیچ چیز بجز خلاصه نکات قابل توجه و جالب این نوشته بازگردانی و نباید متن طولانی باشد فقط یک خلاصه مرتب و قابل فهم بدون هیچ مطلب اضافه یا کم شده با تغییر یافته از متن مقاله. حتی عنوان هم ذکر نکن فقط متن خلاصه شده مقاله ",
     "agent system prompt": "I want you to check if the input text is in these news history or not? you should check both news and the source and if the duplicate was found you return True. you should return True for match events (goal scored, match start and lineup usually short commentatory inputs) but not the press confrances. so you should check for the duplicate of the press confrances and news and return if they have been done before or not i Cannot insist more on that you should only and only respond with one word, True or False and nothing else. but you should be carefull to only return True when you are sure the news isnt a duplicate or a match event.you have return False when there is new news or confrance that is content is not in you history",
     "Main Chat id": -1001748646263,
+    "backup Chat id": -1004294158452,
     "Summary Chat id": -1001600042706,
     "Media Chat id": -1002106381270,
     "Channel id": -1001650720928,
