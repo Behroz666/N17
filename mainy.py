@@ -550,9 +550,9 @@ if posts_json:
 
     if summary_count > 9:
         post_reason = "went on the ton of messages"
-    elif time_passed > timedelta(hours=7.5) and (now.time() >= dt_time(19, 30) or now.time() <= dt_time(10, 30)) and summary_count > 3:
+    elif time_passed > timedelta(hours=7.5) and (now.time() >= dt_time(20, 30) or now.time() <= dt_time(12, 30)) and summary_count > 3:
         post_reason = "went on day time post"
-    elif dt_time(16, 30) <= now.time() <= dt_time(19, 30) and summary_count > 1 and time_passed > timedelta(hours=3):
+    elif dt_time(16, 30) <= now.time() <= dt_time(20, 30) and summary_count > 1 and time_passed > timedelta(hours=3):
         post_reason = "went on nightly post"
 
     # 2. Execute post creation and sending if any condition matched
