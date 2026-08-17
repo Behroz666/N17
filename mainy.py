@@ -535,7 +535,7 @@ if posts_json:
     while len(image_urls) < MAX_ALBUM_SIZE:
         added_any = False
         for imgs in post_image_lists:
-            if round_idx < len(imgs):
+            if round_idx < len(imgs) and requests.head(imgs[round_idx], allow_redirects=True, timeout=3).ok:
                 image_urls.append(imgs[round_idx])
                 added_any = True
                 if len(image_urls) >= MAX_ALBUM_SIZE:
