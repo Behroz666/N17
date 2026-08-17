@@ -163,10 +163,26 @@ def send_gallery(config, text, links, id=0):
                     print(f"send gallery: Rate limit exceeded (429). Retrying after {retry_after} seconds...")
                     time.sleep(retry_after + 1)
                 elif "WEBPAGE_MEDIA_EMPTY" in description or "wrong file identifier" in description.lower() or "invalid http url" in description.lower():
-                    print(f"send gallery: Invalid image detected ({description}). Removing the last image and retrying...")
-                    # Remove the last image which might be the problematic one, then retry
-                    current_links.pop()
-                    break # Break the attempts loop to rebuild the payload with fewer images
+                    # Parse which message number failed (e.g., "message #2")
+                    import re
+                    match = re.search(r'message #(\d+)', description)
+                    if match:
+                        bad_msg_num = int(match.group(1))
+                        bad_index = bad_msg_num - 1  # Convert to 0-indexed
+                        print(f"send gallery: Invalid image detected at position #{bad_msg_num}. Removing it and retrying...")
+                        if 0 <= bad_index < len(current_links):
+                            bad_url = current_links.pop(bad_index)
+                            print(f"Removed: {bad_url[:80]}...")
+                            break  # Break the attempts loop to rebuild the payload
+                        else:
+                            print(f"send gallery: Invalid index {bad_index}, removing last image instead")
+                            current_links.pop()
+                            break
+                    else:
+                        # Fallback: if we can't parse the number, remove the last one
+                        print(f"send gallery: Invalid image detected ({description}). Removing the last image and retrying...")
+                        current_links.pop()
+                        break
                 else:
                     # For other errors, raise exception so the caller can handle the fallback gracefully
                     raise Exception(f"Telegram API Error: {description}")
