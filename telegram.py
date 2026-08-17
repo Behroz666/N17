@@ -137,6 +137,7 @@ def send_gallery(config, text, links, id = 0):
     response_json = response.json()
     if response_json.get('ok') == True:
         _send_backup_request(config, url, payload, is_json=True)
+    print(response_json)
     print(response_json['result'][1]['message_id'])
     return int(response_json['result'][1]['message_id']) + len(links) - 2
 
