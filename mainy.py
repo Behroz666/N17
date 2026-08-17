@@ -535,7 +535,7 @@ if posts_json:
     while len(image_urls) < MAX_ALBUM_SIZE:
         added_any = False
         for imgs in post_image_lists:
-            if round_idx < len(imgs) and requests.get(imgs[round_idx], headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}, stream=True, timeout=3, allow_redirects=True).headers.get("content-type", "").lower().startswith("image"):
+            if round_idx < len(imgs):
                 image_urls.append(imgs[round_idx])
                 added_any = True
                 if len(image_urls) >= MAX_ALBUM_SIZE:
