@@ -78,7 +78,11 @@ if __name__ == "__main__":
         if link in seen_articles:
             continue  # Skip duplicates
 
-        article_text, pub_date, banner_url = scrape_article(link)
+        try:
+            article_text, pub_date, banner_url = scrape_article(link)
+        except:
+            print(f"failed this url: {link}")
+            continue
         if not article_text or not pub_date:
             continue
         print(pub_date)
