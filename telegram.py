@@ -110,36 +110,69 @@ def send_image(config, text, link, chat_id = 1):
             else:
                 raise Exception(f"Telegram API Error: {response_json.get('description', 'Unknown Error')}")
 
-def send_gallery(config, text, links, id = 0):
+def send_gallery(config, text, links, id=0):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMediaGroup"
 
-    if id == 0 :
+    if id == 0:
         chat_id = config["Main Chat id"]
     else: 
         chat_id = id
     
-    media = []
-    for i, link in enumerate(links):
-        media_item = {
-            "type": "photo",
-            "media": link
-        }
-        if i == 0:
-            media_item["caption"] = text
-            media_item["parse_mode"] = "HTML"
-        media.append(media_item)
+    # Create a copy of links so we can remove bad ones without affecting the original list
+    current_links = list(links)
+    last_error = "Unknown Error"
     
-    payload = {
-        "chat_id": chat_id,
-        "media": media 
-    }
-    response = requests.post(url, json=payload)
-    response_json = response.json()
-    if response_json.get('ok') == True:
-        _send_backup_request(config, url, payload, is_json=True)
-    print(response_json)
-    print(response_json['result'][1]['message_id'])
-    return int(response_json['result'][1]['message_id']) + len(links) - 2
+    while len(current_links) > 0:
+        media = []
+        for i, link in enumerate(current_links):
+            media_item = {
+                "type": "photo",
+                "media": link
+            }
+            if i == 0:
+                media_item["caption"] = text
+                media_item["parse_mode"] = "HTML"
+            media.append(media_item)
+        
+        payload = {
+            "chat_id": chat_id,
+            "media": media 
+        }
+        
+        attempts = 0
+        while attempts < max_attempts: 
+            response = requests.post(url, json=payload)
+            response_json = response.json()
+            print(response_json)
+            
+            if response_json.get('ok') == True:
+                _send_backup_request(config, url, payload, is_json=True)
+                result_list = response_json.get('result', [])
+                if result_list:
+                    # Safely return the last message ID in the media group
+                    return result_list[-1]['message_id']
+                return None
+            else:
+                attempts += 1
+                error_code = response_json.get('error_code')
+                description = response_json.get('description', 'Unknown Error')
+                last_error = description
+                
+                if error_code == 429:
+                    retry_after = response_json.get('parameters', {}).get('retry_after', 5)
+                    print(f"send gallery: Rate limit exceeded (429). Retrying after {retry_after} seconds...")
+                    time.sleep(retry_after + 1)
+                elif "WEBPAGE_MEDIA_EMPTY" in description or "wrong file identifier" in description.lower() or "invalid http url" in description.lower():
+                    print(f"send gallery: Invalid image detected ({description}). Removing the last image and retrying...")
+                    # Remove the last image which might be the problematic one, then retry
+                    current_links.pop()
+                    break # Break the attempts loop to rebuild the payload with fewer images
+                else:
+                    # For other errors, raise exception so the caller can handle the fallback gracefully
+                    raise Exception(f"Telegram API Error: {description}")
+                    
+    # If we exhausted all images and still failed, raise an exception to trigger the caller's fallback
+    raise Exception(f"Telegram API Error: Failed to send gallery after removing invalid images. Last error: {last_error}")
 
 def pin_message(config, message_id):
     print(message_id)
